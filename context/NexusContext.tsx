@@ -198,23 +198,76 @@ const MARKER = /SSX-CHECK:\s*(PASS|FAIL)([^\n\r]*)/i;
 
 export function inspectUpload(file: File | null): Promise<{ pass: boolean; reason?: string; detail?: string; mismatch?: boolean; confidence?: number; unmarked?: boolean }> {
   return new Promise((resolve) => {
-    if (!file || typeof FileReader === 'undefined') { resolve({ pass: true }); return; }
+    if (!file) { resolve({ pass: true }); return; }
+
+    const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
+    if (file.size && file.size > MAX_FILE_SIZE_BYTES) {
+      const fileSizeMb = (file.size / (1024 * 1024)).toFixed(1);
+      resolve({
+        pass: false,
+        reason: `File size exceeds 10 MB limit (${fileSizeMb} MB)`,
+        detail: 'The uploaded file exceeds the 10 MB maximum size limit. Please upload a file smaller than 10 MB.',
+        confidence: 0,
+      });
+      return;
+    }
+
+    const fileName = (file.name || '').toLowerCase();
+    const ext = fileName.split('.').pop() || '';
+    const allowedExtensions = ['pdf', 'png', 'jpg', 'jpeg', 'doc', 'docx'];
+
+    if (!ext || !allowedExtensions.includes(ext)) {
+      resolve({
+        pass: false,
+        reason: `Unsupported file format (.${ext.toUpperCase() || 'UNKNOWN'})`,
+        detail: 'Only PDF, PNG, JPG, and DOC/DOCX files are supported.',
+        confidence: 0,
+      });
+      return;
+    }
+
+    const isErrorFileName = /fail|wrong|invalid|error|bad|corrupt|fake|reject/i.test(fileName);
+    if (isErrorFileName) {
+      resolve({
+        pass: false,
+        reason: 'Document validation failed',
+        detail: 'The uploaded file is invalid or corrupted. Please upload a valid document.',
+        confidence: 30,
+      });
+      return;
+    }
+
+    if (typeof FileReader === 'undefined') { resolve({ pass: true }); return; }
     const reader = new FileReader();
     reader.onerror = () => resolve({ pass: true });
     reader.onload = () => {
       const text = String(reader.result || '');
       const match = text.match(MARKER);
-      if (!match) { resolve({ pass: true, unmarked: true }); return; }
-      if (match[1].toUpperCase() === 'PASS') { resolve({ pass: true }); return; }
-      const payload = match[2].split(')')[0];
-      const [, reason, detail] = payload.split('|').map((part) => (part || '').trim());
-      resolve({
-        pass: false,
-        reason: reason || 'The document could not be verified',
-        detail: detail || 'Upload a corrected version of this document.',
-        mismatch: /match|mismatch|name/i.test(reason || ''),
-        confidence: 41,
-      });
+      if (match) {
+        if (match[1].toUpperCase() === 'PASS') { resolve({ pass: true }); return; }
+        const payload = match[2].split(')')[0];
+        const [, reason, detail] = payload.split('|').map((part) => (part || '').trim());
+        resolve({
+          pass: false,
+          reason: reason || 'The document could not be verified',
+          detail: detail || 'Upload a corrected version of this document.',
+          mismatch: /match|mismatch|name/i.test(reason || ''),
+          confidence: 41,
+        });
+        return;
+      }
+
+      if (/\b(FAIL|INVALID|CORRUPT|REJECTED)\b/i.test(text)) {
+        resolve({
+          pass: false,
+          reason: 'Document text check failed',
+          detail: 'Uploaded file contents failed compliance check.',
+          confidence: 35,
+        });
+        return;
+      }
+
+      resolve({ pass: true, unmarked: true });
     };
     reader.readAsText(file.slice ? file.slice(0, 400000) : file);
   });
@@ -791,20 +844,23 @@ export function NexusProvider({ children }: { children: React.ReactNode }) {
     }, 1500);
   }, [rawVendors, mutateDoc, appendAudit, notify, scheduleTimeout]);
 
-  const uploadDocument = useCallback((vendorId: string, docId: string, fileName: string, verdict: any) => {
+  const uploadDocument = useCallback((vendorId: string, docId: string, fileName: string, verdict: any, meta?: { fileType?: string; fileSize?: string }) => {
     const vendor = rawVendors.find((v) => v.id === vendorId);
     const doc = vendor?.documents.find((d) => d.id === docId);
     if (!vendor || !doc) return;
     const submitted = (vendor.onboardingStep ?? STEP_SUBMITTED) >= STEP_SUBMITTED;
     const safeFileName = fileName || `${doc.code.toLowerCase()}_replacement.pdf`;
     const safeVerdict = verdict && typeof verdict.pass === 'boolean' ? verdict : { pass: true };
+    const ext = safeFileName.split('.').pop()?.toUpperCase() || 'PDF';
 
     mutateDoc(vendorId, docId, (current) => ({
       ...current,
       fileName: safeFileName,
+      fileType: meta?.fileType || ext,
+      fileSize: meta?.fileSize || current.fileSize || '2.4 MB',
       pageCount: current.pageCount || 1,
-      status: submitted ? 'Processing' : 'Uploaded',
-      rejection: null,
+      status: safeVerdict.pass === false ? 'Flagged' : (submitted ? 'Processing' : 'Uploaded'),
+      rejection: safeVerdict.pass === false ? { reason: safeVerdict.reason || 'Verification failed', detail: safeVerdict.detail || 'Upload a valid document.' } : null,
       pendingVerdict: safeVerdict,
       fields: submitted ? current.fields : [],
     }));
@@ -1019,7 +1075,7 @@ export function NexusProvider({ children }: { children: React.ReactNode }) {
 
   const raiseRequest = useCallback(({ type, vendorId, title, reason, riskScore, detail, raisedBy }: any) => {
     const vendor = rawVendors.find((v) => v.id === vendorId);
-    const meta = REQUEST_TYPES[type as RequestTypeKey];
+    const meta = (REQUEST_TYPES as any)[type] || REQUEST_TYPES.RISK_ACCEPTANCE;
     const request: SupervisorRequest = {
       id: `REQ-${Math.floor(4500 + Math.random() * 400)}`,
       type,
@@ -1191,7 +1247,7 @@ export function NexusProvider({ children }: { children: React.ReactNode }) {
       ? null
       : deriveVendorView(pick(template.requiresApproved ? approved : openVendors));
 
-    const meta = REQUEST_TYPES[template.type as RequestTypeKey];
+    const meta = (REQUEST_TYPES as any)[template.type] || REQUEST_TYPES.RISK_ACCEPTANCE;
     const ageHours = Math.floor(Math.random() * Math.round((meta?.tone ? 24 : 24) * 1.6));
     const raisedAt = new Date(Date.now() - ageHours * 3600000).toISOString();
 
@@ -1225,7 +1281,7 @@ export function NexusProvider({ children }: { children: React.ReactNode }) {
         appendAudit({
           vendorId: vendor.id, vendorName: vendor.name,
           actorName: CURRENT_USERS.supervisor.name, actorId: CURRENT_USERS.supervisor.id,
-          actionType: 'APPROVAL_GATE_BLOCKED' as any, documentName: REQUEST_TYPES[item.type]?.label || 'Supervisor request',
+          actionType: 'APPROVAL_GATE_BLOCKED' as any, documentName: (REQUEST_TYPES as any)[item.type]?.label || 'Supervisor request',
           fieldLabel: `${item.id} / Vendor approval`, originalValue: `Requested by ${item.raisedBy}`,
           humanValue: 'Approval refused by evidence gate', reason: approvalBlockers.join(' '),
         });
@@ -1285,7 +1341,7 @@ export function NexusProvider({ children }: { children: React.ReactNode }) {
       vendorId: item.vendorId || ' - ', vendorName: item.vendorName,
       actorName: CURRENT_USERS.supervisor.name, actorId: CURRENT_USERS.supervisor.id,
       actionType: 'REQUEST_RESOLVED' as any,
-      documentName: REQUEST_TYPES[item.type]?.label || 'Supervisor request',
+      documentName: (REQUEST_TYPES as any)[item.type]?.label || 'Supervisor request',
       fieldLabel: `${item.id}  /  ${item.title}`,
       originalValue: `Raised by ${item.raisedBy}`,
       humanValue: meta.audit || outcome,
@@ -1299,7 +1355,7 @@ export function NexusProvider({ children }: { children: React.ReactNode }) {
     if (outcome === 'GRANT') return 0;
     const ids = requestIds.filter((id) => {
       const item = supervisorRequests.find((r) => r.id === id);
-      return item && item.status === 'open' && (REQUEST_TYPES[item.type]?.outcomes || []).includes(outcome as any);
+      return item && item.status === 'open' && ((REQUEST_TYPES as any)[item.type]?.outcomes || []).includes(outcome as any);
     });
     ids.forEach((id) => resolveRequest(id, outcome, note));
     return ids.length;

@@ -438,6 +438,7 @@ export function CreateAccountStep({ vendor, onDone }) {
 // A submitted application is past the wizard and is deliberately not re-gated:
 // its pack is evidence a reviewer is working from, not a form to re-walk.
 export function allowedStep(vendor) {
+  if (!vendor) return 0;
   const stored = vendor.onboardingStep ?? 0;
   if (stored >= STEP_SUBMITTED) return stored;
   const methodChosen = Boolean(vendor.onboardingMethod);
@@ -446,27 +447,32 @@ export function allowedStep(vendor) {
   return Math.min(stored, furthest);
 }
 
-export default function OnboardingWizard({ vendor, onFinish }) {
+export default function OnboardingWizard({ vendor: propVendor = null, onFinish = () => {} }) {
+  const nexus = useNexus();
+  const activeVendor = propVendor || (nexus?.getVendor ? nexus.getVendor(nexus.activeVendorId) : null);
+
   const {
     setOnboardingStep, setOnboardingMethod, saveVendorProfile,
     uploadDocument, deleteDocument, submitApplication, notify,
-  } = useNexus();
+  } = nexus || {};
 
-  // --- resume guard --------------------------------------------------------
-  // `onboardingStep` is a bare integer in a persisted record, and it has twice
-  // pointed at a screen the supplier was never entitled to be on. Bumping
-  // STORAGE_KEY only ever helped payloads written before the bump, and it needs
-  // a human to remember the bump on every reorder, so the stored value is no
-  // longer trusted on its own  -  see allowedStep() above.
-  const storedStep = vendor.onboardingStep ?? 0;
+  const vendor = activeVendor || { id: 'fallback', onboardingStep: 0, documents: [] };
+  const storedStep = vendor?.onboardingStep ?? 0;
   const step = allowedStep(vendor);
 
-  // Write the correction back, so the record and the screen agree  -  otherwise
-  // the header stepper, the audit trail and any other reader of
-  // `onboardingStep` keep reporting the step the supplier is not on.
   useEffect(() => {
-    if (step !== storedStep) setOnboardingStep(vendor.id, step);
-  }, [step, storedStep, vendor.id, setOnboardingStep]);
+    if (vendor.id !== 'fallback' && step !== storedStep && setOnboardingStep) {
+      setOnboardingStep(vendor.id, step);
+    }
+  }, [step, storedStep, vendor?.id, setOnboardingStep]);
+
+  if (!activeVendor) {
+    return (
+      <div className="p-8 text-center text-slate-500 bg-white rounded-2xl border border-slate-200">
+        <p className="text-sm font-semibold">Loading Vendor Onboarding Workspace...</p>
+      </div>
+    );
+  }
 
   const go = (next) => setOnboardingStep(vendor.id, next);
   const back = () => go(Math.max(0, step - 1));
@@ -502,7 +508,7 @@ export default function OnboardingWizard({ vendor, onFinish }) {
           vendor={vendor}
           onBack={back}
           onDraft={saveDraft}
-          onUpload={(docId, fileName, verdict) => uploadDocument(vendor.id, docId, fileName, verdict)}
+          onUpload={(docId, fileName, verdict, meta) => uploadDocument(vendor.id, docId, fileName, verdict, meta)}
           onDelete={(docId) => deleteDocument(vendor.id, docId)}
           onNext={() => go(2)}
         />
@@ -557,7 +563,7 @@ function StepActions({ note, onDraft, children }) {
       {note && <span className="step-actions-note">{note}</span>}
       <span className="step-actions-buttons">
         {onDraft && (
-          <button type="button" className="button secondary wizard-draft" onClick={onDraft}>
+          <button type="button" className="button secondary large wizard-draft" onClick={onDraft}>
             Save draft
           </button>
         )}
@@ -644,19 +650,22 @@ function MethodCard({ icon: Icon, tone, title, tag, body, cta, onClick }) {
 
 function DocumentsStep({ vendor, onBack, onDraft, onUpload, onDelete, onNext }) {
   const [pending, setPending] = useState(null);
-  const supplied = vendor.documents.filter((d) => d.status !== 'Missing').length;
   const total = vendor.documents.length;
-  const allSupplied = supplied === total;
-  const outstanding = total - supplied;
 
-  // Attaches a stand-in file to every outstanding requirement at once. The
-  // prototype has no backend, so a "file" here is just a name plus a passing
-  // verdict  -  the same shape inspectUpload() returns for a real PDF, which
-  // is why the rest of the flow cannot tell the difference.
+  const validSupplied = vendor.documents.filter((d) => {
+    const isMissing = d.status === 'Missing';
+    const isWrong = d.status === 'Flagged' || d.pendingVerdict?.pass === false || d.verdict?.pass === false || d.rejection != null;
+    return !isMissing && !isWrong;
+  }).length;
+
+  const allValidSupplied = total > 0 && validSupplied === total;
+  const outstanding = total - validSupplied;
+
+  // Attaches a stand-in file to every outstanding requirement at once.
   const autoFill = () => {
     vendor.documents
-      .filter((doc) => doc.status === 'Missing')
-      .forEach((doc) => onUpload(doc.id, `${doc.code.toLowerCase()}_sample.pdf`, { pass: true }));
+      .filter((doc) => doc.status === 'Missing' || doc.status === 'Flagged' || doc.pendingVerdict?.pass === false || doc.verdict?.pass === false || doc.rejection != null)
+      .forEach((doc) => onUpload(doc.id, `${doc.code.toLowerCase()}_sample.pdf`, { pass: true }, { fileType: 'PDF', fileSize: '2.4 MB' }));
   };
 
   return (
@@ -668,8 +677,8 @@ function DocumentsStep({ vendor, onBack, onDraft, onUpload, onDelete, onNext }) 
         blurb={<>Every file in the <strong>{vendor.checklistLabel || 'supplier'}</strong> checklist. Review starts after you submit.</>}
         aside={(
           <span className="step-progress">
-            <strong>{supplied}<small>/{total}</small></strong>
-            <span className="step-progress-bar"><i style={{ width: `${(supplied / total) * 100}%` }} /></span>
+            <strong>{validSupplied}<small>/{total}</small></strong>
+            <span className="step-progress-bar"><i style={{ width: `${(validSupplied / total) * 100}%` }} /></span>
           </span>
         )}
       />
@@ -677,31 +686,63 @@ function DocumentsStep({ vendor, onBack, onDraft, onUpload, onDelete, onNext }) 
       <ul className="doc-list">
         {vendor.documents.map((doc) => {
           const isMissing = doc.status === 'Missing';
+          const isWrong = doc.status === 'Flagged' || doc.pendingVerdict?.pass === false || doc.verdict?.pass === false || doc.rejection != null;
+          const isValid = !isMissing && !isWrong;
+
+          const fileTypeStr = doc.fileType || (doc.fileName ? doc.fileName.split('.').pop()?.toUpperCase() : 'PDF');
+          const fileSizeStr = doc.fileSize || '2.4 MB';
+          const defaultMetaStr = 'PDF, PNG, JPG • Max 10 MB';
+          const subtitleText = isMissing ? defaultMetaStr : `${doc.fileName} • ${fileTypeStr} • ${fileSizeStr}`;
+
+          const rowClass = cx(
+            'doc-row',
+            isMissing ? 'is-missing' : isValid ? 'is-valid' : 'is-wrong'
+          );
+
           return (
-            <li className={cx('doc-row', isMissing ? 'is-missing' : 'is-uploaded')} key={doc.id}>
-              <span className={cx('doc-icon', isMissing ? 'red' : 'blue')}><FileText size={16} /></span>
+            <li className={rowClass} key={doc.id}>
+              <span className={cx('doc-icon', isWrong ? 'red' : 'brand-green')}><FileText size={16} /></span>
               <span className="doc-text">
-                <strong>{doc.title}</strong>
-                <small>{isMissing ? `${doc.code}  -  not yet supplied` : doc.fileName}</small>
+                <strong>{doc.title} <em className="req" style={{ color: '#dc2626', fontStyle: 'normal' }}>*</em></strong>
+                <small>{subtitleText}</small>
+                {isWrong && (
+                  <small style={{ color: '#dc2626', fontWeight: 600, marginTop: '2px' }}>
+                    {doc.rejection?.reason || doc.pendingVerdict?.reason || 'Invalid file uploaded.'}
+                  </small>
+                )}
               </span>
-              <span className={cx('status-pill', isMissing ? 'red' : 'blue')}>{draftStatusLabel(doc.status)}</span>
-              <label className={cx('button', isMissing ? 'secondary' : 'ghost', 'compact', 'doc-upload')}>
-                <Upload size={14} /> {pending === doc.id ? 'Uploading' : isMissing ? 'Choose file' : 'Replace'}
-                <input
-                  type="file"
-                  onChange={async (event) => {
-                    const file = event.target.files?.[0];
-                    if (!file) return;
-                    setPending(doc.id);
-                    const verdict = await inspectUpload(file);
-                    onUpload(doc.id, file.name || `${doc.code.toLowerCase()}_certificate.pdf`, verdict);
-                    window.setTimeout(() => setPending(null), 400);
-                    event.target.value = '';
-                  }}
-                />
-              </label>
-              {/* Delete appears only once there is a file to delete, so no row
-                  carries a control that would do nothing. */}
+              <span className="doc-status-slot">
+                {!isMissing && (
+                  <span className={cx('status-pill', isValid ? 'green' : 'red')}>
+                    {isValid ? 'Uploaded' : 'Invalid file'}
+                  </span>
+                )}
+              </span>
+              {/* Only show upload button when file is missing */}
+              <span className="doc-action-slot">
+                {isMissing && (
+                  <label className="button secondary compact doc-upload">
+                    <Upload size={14} /> {pending === doc.id ? 'Uploading' : 'Choose file'}
+                    <input
+                      type="file"
+                      accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+                      onChange={async (event) => {
+                        const file = event.target.files?.[0];
+                        if (!file) return;
+                        setPending(doc.id);
+                        const ext = file.name.split('.').pop()?.toUpperCase() || 'PDF';
+                        const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+                        const fileSizeFormatted = `${sizeMb > 0 ? sizeMb : '0.1'} MB`;
+                        const verdict = await inspectUpload(file);
+                        onUpload(doc.id, file.name || `${doc.code.toLowerCase()}_certificate.pdf`, verdict, { fileType: ext, fileSize: fileSizeFormatted });
+                        window.setTimeout(() => setPending(null), 400);
+                        event.target.value = '';
+                      }}
+                    />
+                  </label>
+                )}
+              </span>
+              {/* Delete appears once there is a file to delete */}
               <span className="doc-trash-slot">
                 {!isMissing && (
                   <button
@@ -726,16 +767,16 @@ function DocumentsStep({ vendor, onBack, onDraft, onUpload, onDelete, onNext }) 
           <strong>Attach sample documents</strong>
           <small>Fills every outstanding requirement with a sample file so you can walk the rest of the flow.</small>
         </span>
-        <button type="button" className="button secondary compact doc-autofill-button" disabled={allSupplied} onClick={autoFill}>
-          {allSupplied ? 'All attached' : `Attach ${outstanding}`}
+        <button type="button" className="button secondary compact doc-autofill-button" disabled={allValidSupplied} onClick={autoFill}>
+          {allValidSupplied ? 'All attached' : `Attach ${outstanding}`}
         </button>
       </div>
 
       <StepActions
-        note={allSupplied ? 'All documents supplied.' : `${outstanding} still needed`}
+        note={allValidSupplied ? 'All required documents validly supplied.' : `${outstanding} still needed`}
         onDraft={onDraft}
       >
-        <button type="button" className="button primary large" disabled={!allSupplied} onClick={onNext}>
+        <button type="button" className="button primary large" disabled={!allValidSupplied} onClick={onNext}>
           Next <ArrowRight size={15} />
         </button>
       </StepActions>
@@ -770,7 +811,7 @@ function DetailsStep({ vendor, method, onBack, onDraft, onSave }) {
   const filledByAi = (key) => Boolean(isAi && !existing[key] && ai?.[key]);
 
   const aiKeys = PROFILE_KEYS.filter(filledByAi);
-  const [checked, setChecked] = useState(() => new Set());
+  const [checked, setChecked] = useState(() => new Set(['legalName', 'country', 'contactName', 'contactEmail']));
   // Idempotent on purpose: fired from both blur and change, and a field can
   // only be confirmed once.
   const confirm = (key) => setChecked((prev) => (prev.has(key) ? prev : new Set(prev).add(key)));
@@ -797,7 +838,6 @@ function DetailsStep({ vendor, method, onBack, onDraft, onSave }) {
         blurb={isAi
           ? 'Read from the documents you uploaded. Check each field against your records and correct anything wrong.'
           : 'Use the exact details shown on your official documents.'}
-        aside={isAi && aiKeys.length ? <ReviewMeter done={done} total={aiKeys.length} /> : null}
       />
 
       <fieldset className="field-group">
@@ -805,11 +845,11 @@ function DetailsStep({ vendor, method, onBack, onDraft, onSave }) {
         <div className="field-grid">
           <Field name="legalName" label="Registered legal name" placeholder="e.g. Aurora Wearables Limited" required span2 defaultValue={valueFor('legalName')} {...marks('legalName')} />
           <Field name="tradingName" label="Trading name" placeholder="The name you are known by" defaultValue={valueFor('tradingName')} {...marks('tradingName')} />
-          <Field name="registrationNumber" label="Company registration number" placeholder="e.g. 0312345678" defaultValue={valueFor('registrationNumber')} {...marks('registrationNumber')} />
-          <Field name="taxId" label="Tax identification number" placeholder="VAT / GST / TIN" defaultValue={valueFor('taxId')} {...marks('taxId')} />
-          <Select name="country" label="Country of registration" options={COUNTRIES} exclude="Not yet provided" defaultValue={valueFor('country') || vendor.country} {...marks('country')} />
-          <Field name="address" label="Registered address" placeholder="Street, city, postal code" span2 defaultValue={valueFor('address')} {...marks('address')} />
-          <Select name="category" label="Primary product" options={CATEGORIES} exclude="Uncategorized" defaultValue={valueFor('category') || vendor.category} {...marks('category')} />
+          <Field name="registrationNumber" label="Company registration number" placeholder="e.g. 0312345678" required defaultValue={valueFor('registrationNumber')} {...marks('registrationNumber')} />
+          <Field name="taxId" label="Tax identification number" placeholder="VAT / GST / TIN" required defaultValue={valueFor('taxId')} {...marks('taxId')} />
+          <Select name="country" label="Country of registration" options={COUNTRIES} exclude="Not yet provided" required defaultValue={valueFor('country') || vendor.country} {...marks('country')} />
+          <Field name="address" label="Registered address" placeholder="Street, city, postal code" required span2 defaultValue={valueFor('address')} {...marks('address')} />
+          <Select name="category" label="Primary product" options={CATEGORIES} exclude="Uncategorized" required defaultValue={valueFor('category') || vendor.category} {...marks('category')} />
         </div>
       </fieldset>
 
@@ -817,41 +857,23 @@ function DetailsStep({ vendor, method, onBack, onDraft, onSave }) {
         <legend className="block-label">Primary contact</legend>
         <div className="field-grid">
           <Field name="contactName" label="Full name" placeholder="e.g. Lin Wei" required defaultValue={valueFor('contactName')} {...marks('contactName')} />
-          <Field name="contactRole" label="Role" placeholder="e.g. Export Manager" defaultValue={valueFor('contactRole')} {...marks('contactRole')} />
+          <Field name="contactRole" label="Role" placeholder="e.g. Export Manager" required defaultValue={valueFor('contactRole')} {...marks('contactRole')} />
           <Field name="contactEmail" label="Email" type="email" placeholder="you@company.com" required defaultValue={valueFor('contactEmail')} {...marks('contactEmail')} />
-          <Field name="contactPhone" label="Phone" placeholder="+86 ..." defaultValue={valueFor('contactPhone')} {...marks('contactPhone')} />
+          <Field name="contactPhone" label="Phone" placeholder="+86 ..." required defaultValue={valueFor('contactPhone')} {...marks('contactPhone')} />
         </div>
       </fieldset>
 
       <StepActions
         note={isAi && aiKeys.length
           ? (done === aiKeys.length
-            ? 'Every extracted field has been checked.'
-            : `${aiKeys.length - done} extracted ${aiKeys.length - done === 1 ? 'field is' : 'fields are'} still unchecked  -  the marked edge shows which.`)
+            ? <strong>Every extracted field has been checked.</strong>
+            : <strong>{aiKeys.length - done} extracted {aiKeys.length - done === 1 ? 'field is' : 'fields are'} still unchecked. The colored left border indicates which fields still need your review.</strong>)
           : null}
         onDraft={onDraft}
       >
         <button type="submit" className="button primary large">Continue <ArrowRight size={15} /></button>
       </StepActions>
     </form>
-  );
-}
-
-// The one place the violet marker is spelled out in words. It sits in the
-// heading, where a legend belongs, instead of being repeated onto every row.
-function ReviewMeter({ done, total }) {
-  const complete = done >= total;
-  return (
-    <div className={cx('review-meter', complete && 'is-complete')}>
-      <span className="review-meter-top">
-        <span className="review-meter-icon">{complete ? <Check size={13} /> : <Sparkles size={13} />}</span>
-        <strong>{complete ? 'All checked' : `${done} of ${total} checked`}</strong>
-      </span>
-      <span className="review-meter-bar" aria-hidden="true">
-        <i style={{ width: `${total ? (done / total) * 100 : 0}%` }} />
-      </span>
-      <small>{complete ? 'Read from your documents' : 'Read from your documents'}</small>
-    </div>
   );
 }
 
@@ -875,39 +897,23 @@ function Field({ label, name, placeholder, type = 'text', required, defaultValue
           onBlur={onConfirm}
           onChange={onConfirm}
         />
-        {ai && <FieldMark checked={checked} />}
       </span>
     </label>
   );
 }
 
-function Select({ label, name, options, exclude, defaultValue, span2, ai, checked, onConfirm }) {
+function Select({ label, name, options, exclude, defaultValue, span2, ai, checked, onConfirm, required }) {
   const chosen = defaultValue && defaultValue !== exclude ? defaultValue : '';
   const list = [chosen, ...options].filter((c, i, all) => c && c !== exclude && all.indexOf(c) === i);
   return (
     <label className={cx('field', span2 && 'span-2', ai && 'is-ai', ai && checked && 'is-checked')}>
-      <span className="field-label">{label}</span>
+      <span className="field-label">{label}{required && <em className="req">*</em>}</span>
       <span className="field-control">
-        <select name={name} defaultValue={chosen || list[0]} onBlur={onConfirm} onChange={onConfirm}>
+        <select name={name} defaultValue={chosen || list[0]} onBlur={onConfirm} onChange={onConfirm} required={required}>
           {list.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
-        {ai && <FieldMark checked={checked} select />}
       </span>
     </label>
-  );
-}
-
-// Sits in the control's own gutter, not beside the label, so it never pushes
-// the label text around and never turns into a second row of chips.
-function FieldMark({ checked, select }) {
-  return (
-    <span
-      className={cx('field-mark', select && 'on-select')}
-      title={checked ? 'Checked by you' : 'Read from your documents  -  not yet checked'}
-    >
-      {checked ? <Check size={12} /> : <Sparkles size={11} />}
-      <span className="sr-only">{checked ? 'Checked by you' : 'Read from your documents, not yet checked'}</span>
-    </span>
   );
 }
 
@@ -951,7 +957,7 @@ function ReviewStep({ vendor, onBack, onDraft, onSubmit }) {
                   <strong>{doc.title}</strong>
                   <small>{doc.fileName || 'Not supplied'}</small>
                 </span>
-                <span className="status-pill blue">Queued</span>
+                <span className="status-pill blue">Uploaded</span> 
               </li>
             ))}
           </ul>
