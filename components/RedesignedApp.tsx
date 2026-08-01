@@ -332,9 +332,9 @@ function OnboardingExperience({ vendor, onSwitch, density, children }: { vendor:
         {inWizard && (
           <span><Lock size={13} /> Your progress is saved on this device. You can close this page and return to the same link.</span>
         )}
-        <button type="button" className="onboarding-exit" onClick={() => onSwitch('admin')}>
+        {/* <button type="button" className="onboarding-exit" onClick={() => onSwitch('admin')}>
           Prototype: view as the StyleSphere team
-        </button>
+        </button> */}
       </footer>
     </div>
   );
@@ -513,7 +513,7 @@ function VendorDashboard({ onNavigate, onModal }: any) {
           ? 'Review is complete. StyleSphere will activate your supplier record next.'
           : reviewRunning
             ? 'Your files are being checked. We will contact you if anything is needed.'
-            : 'Review is complete and waiting for a human decision.';
+            : 'Review is complete and waiting for admin decision.';
   const ringLabel = actionRequired
     ? 'Action'
     : vendor.finalStatus === 'Active'
@@ -551,7 +551,7 @@ function VendorDashboard({ onNavigate, onModal }: any) {
         {[
           [CheckCircle2, 'green', `${vendor.verifiedCount}/${vendor.documents.length}`, 'Documents reviewed'],
           [Inbox, actionRequired ? 'amber' : 'green', `${openActionCount} action${openActionCount === 1 ? '' : 's'}`, 'Needs your attention'],
-          [Clock3, 'blue', stageLabel, 'Current stage'],
+          // [Clock3, 'blue', stageLabel, 'Current stage'],
         ].map(([Icon, tone, value, label]: any) => <article key={label}><span className={cx('metric-icon', tone)}><Icon size={18} /></span><span><strong>{value}</strong><small>{label}</small></span></article>)}
       </section>
       <section className="vendor-grid">
@@ -570,6 +570,7 @@ function VendorDashboard({ onNavigate, onModal }: any) {
           )}
           {actionRequired && <button className="link-row" onClick={() => onNavigate('actions')}>See what is outstanding <span><ChevronRight size={14} /></span></button>}
         </article>
+        
         <article className="panel contact-card">
           <span className="section-kicker">Onboarding contact</span>
           <div><span className="user-avatar">ER</span><span><strong>Elena Rostova</strong><small>Vendor onboarding executive</small></span><i /></div>
@@ -578,9 +579,10 @@ function VendorDashboard({ onNavigate, onModal }: any) {
             <button className="button secondary" onClick={() => onModal({ type: 'contact' })}><Send size={14} /> Email Elena</button>
             <button className="button primary" onClick={() => onModal({ type: 'assistant' })}><Sparkles size={14} /> Ask a question</button>
           </div>
+          
         </article>
         <article className="panel journey-card"><PanelHeading eyebrow="Application" title="Review progress" action="View details" onAction={() => onNavigate('onboarding')} /><Journey vendor={vendor} /></article>
-        <article className="panel ai-explainer"><span className="ai-orb"><Sparkles size={22} /></span><div><span className="section-kicker">Review method</span><h3>AI checks; a person decides</h3><p>AI checks dates and mismatches. A compliance reviewer makes the decision.</p><button onClick={() => onNavigate('onboarding')}>View review status <ArrowRight size={13} /></button></div></article>
+        {/* <article className="panel ai-explainer"><span className="ai-orb"><Sparkles size={22} /></span><div><span className="section-kicker">Review method</span><h3>AI checks; a person decides</h3><p>AI checks dates and mismatches. A compliance reviewer makes the decision.</p><button onClick={() => onNavigate('onboarding')}>View review status <ArrowRight size={13} /></button></div></article> */}
       </section>
     </div>
   );
