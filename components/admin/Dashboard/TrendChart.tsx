@@ -46,8 +46,8 @@ export default function TrendChart({ onDrill }: TrendChartProps) {
   const deltaLabel = range === '7d' ? '+57% vs prev. 8 weeks' : range === '30d' ? '+18% vs prev. 30 days' : '+22% vs prev. 90 days';
 
   return (
-    <article style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '8px' }}>
+    <article style={{ backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', padding: '20px', display: 'flex', flexDirection: 'column', height: '100%', boxSizing: 'border-box', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '12px' }}>
         <div>
           <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase' }}>APPROVAL TREND</div>
           <div style={{ fontSize: '14px', fontWeight: 600, color: '#0F172A', marginTop: '2px' }}>
@@ -84,45 +84,43 @@ export default function TrendChart({ onDrill }: TrendChartProps) {
         </div>
       </div>
 
-      <div className="mt-2 -ml-2 cursor-pointer" style={{ height: '208px', minHeight: '208px', width: '100%' }} onClick={onDrill}>
+      <div style={{ flex: 1, minHeight: '220px', width: '100%', position: 'relative' }} onClick={onDrill} className="cursor-pointer">
         {mounted ? (
-          <ResponsiveContainer width="100%" height={208}>
-            <LineChart data={data} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={data} margin={{ top: 12, right: 12, left: -16, bottom: 4 }}>
               <CartesianGrid stroke="#F1F5F9" vertical={false} />
               <XAxis 
                 dataKey="week" 
                 tick={{ fontSize: 11, fill: '#94A3B8' }} 
                 axisLine={{ stroke: '#E2E8F0' }} 
                 tickLine={false} 
-                label={{ value: 'Period', position: 'insideBottom', offset: -2, fontSize: 10, fill: '#94A3B8' }} 
               />
               <YAxis 
                 tick={{ fontSize: 11, fill: '#94A3B8' }} 
                 axisLine={false} 
                 tickLine={false} 
                 width={28} 
-                label={{ value: 'Approvals', angle: -90, position: 'insideLeft', fontSize: 10, fill: '#94A3B8' }} 
               />
               <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }} />
-              <Legend verticalAlign="top" height={20} formatter={() => <span style={{ fontSize: 11, color: '#64748B' }}>Vendor approvals</span>} />
+              <Legend verticalAlign="top" height={24} formatter={() => <span style={{ fontSize: 11, color: '#64748B' }}>Vendor approvals</span>} />
               <Line 
                 type="monotone" 
                 dataKey="approvals" 
                 name="Approvals" 
                 stroke="#059669" 
-                strokeWidth={2.25} 
-                dot={{ r: 3, fill: '#059669' }} 
-                activeDot={{ r: 5 }} 
+                strokeWidth={2.5} 
+                dot={{ r: 4, fill: '#059669' }} 
+                activeDot={{ r: 6 }} 
               />
             </LineChart>
           </ResponsiveContainer>
         ) : (
-          <div style={{ height: '208px', width: '100%' }} />
+          <div style={{ height: '100%', width: '100%' }} />
         )}
       </div>
 
       <div 
-        className="text-xs text-slate-400 mt-2 cursor-pointer hover:text-emerald-600 font-medium transition-colors" 
+        style={{ fontSize: '12px', color: '#94A3B8', marginTop: '8px', cursor: 'pointer', fontWeight: 500 }}
         onClick={onDrill}
       >
         Click chart to view full approvals report →

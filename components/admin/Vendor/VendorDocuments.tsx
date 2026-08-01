@@ -12,13 +12,13 @@ interface VendorDocumentsProps {
 }
 
 const STATUS_MAP: Record<string, { label: string; tone: string }> = {
-  Verified: { label: 'Approved', tone: 'green' },
-  Missing: { label: 'Pending Review', tone: 'neutral' },
-  Uploaded: { label: 'In Review', tone: 'blue' },
-  Processing: { label: 'In Review', tone: 'blue' },
-  Flagged: { label: 'Changes Requested', tone: 'amber' },
-  'Needs Review': { label: 'In Review', tone: 'blue' },
-  Rejected: { label: 'Rejected', tone: 'red' }
+  Verified: { label: 'Verified', tone: 'green' },
+  Missing: { label: 'Needs Review', tone: 'amber' },
+  Uploaded: { label: 'Needs Review', tone: 'amber' },
+  Processing: { label: 'Needs Review', tone: 'amber' },
+  Flagged: { label: 'Mismatch', tone: 'red' },
+  'Needs Review': { label: 'Needs Review', tone: 'amber' },
+  Rejected: { label: 'Mismatch', tone: 'red' }
 };
 
 export default function VendorDocuments({ vendor, readOnly = false }: VendorDocumentsProps) {
@@ -48,7 +48,6 @@ export default function VendorDocuments({ vendor, readOnly = false }: VendorDocu
 
   const handleApproveDocument = () => {
     if (!activeDoc) return;
-    // Auto-approve all unresolved fields
     const unresolvedFields = activeDoc.fields.filter((f: any) => !f.resolved);
     unresolvedFields.forEach((f: any) => {
       acceptField(vendor.id, activeDoc.id, f.key);
@@ -62,7 +61,6 @@ export default function VendorDocuments({ vendor, readOnly = false }: VendorDocu
       return;
     }
     
-    // Call submitDecision to request changes or reject
     const decisionType = isRequestChanges ? 'REQUEST_DOCS' : 'REJECT';
     submitDecision(vendor.id, decisionType, rejectionNotes, {
       finding: { id: activeDoc.id, title: activeDoc.title }

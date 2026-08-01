@@ -26,17 +26,17 @@ export default function ApprovalRate({ onDrill }: { onDrill?: () => void }) {
     <article
       style={{
         backgroundColor: '#FFFFFF',
-        borderRadius: '12px',
+        borderRadius: '16px',
         border: '1px solid #E2E8F0',
         padding: '20px',
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
         boxSizing: 'border-box',
-        boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '8px' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '12px' }}>
         <div>
           <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase' }}>APPROVAL RATE</div>
           <div style={{ fontSize: '14px', fontWeight: 600, color: '#0F172A', marginTop: '2px' }}>China Region</div>
@@ -62,7 +62,7 @@ export default function ApprovalRate({ onDrill }: { onDrill?: () => void }) {
           display: 'flex',
           alignItems: 'center',
           cursor: 'pointer',
-          minHeight: '180px',
+          minHeight: '200px',
         }}
         onClick={onDrill}
       >

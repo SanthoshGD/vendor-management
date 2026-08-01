@@ -36,12 +36,14 @@ export default function PipelineFunnel({ vendors = [], onNavigate }: PipelineFun
     <article
       style={{
         backgroundColor: '#FFFFFF',
-        borderRadius: '12px',
+        borderRadius: '16px',
         border: '1px solid #E2E8F0',
         padding: '20px',
         display: 'flex',
         flexDirection: 'column',
-        boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+        height: '100%',
+        boxSizing: 'border-box',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>

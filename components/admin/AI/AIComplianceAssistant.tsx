@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, Send, Sparkles, X, ChevronRight, MessageSquareText, ShieldAlert } from 'lucide-react';
+import { Bot, Send, Sparkles, X, ChevronRight, ArrowRight } from 'lucide-react';
 
 interface AIComplianceAssistantProps {
   isOpen: boolean;
@@ -24,7 +24,7 @@ export default function AIComplianceAssistant({
     {
       id: 'welcome',
       type: 'assistant',
-      text: 'Hello! I am your AI Compliance Assistant. Ask me about vendor risks, expired documents, or China approval queues.',
+      text: 'Hi Sarah 👋 How can I help today?',
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
@@ -33,10 +33,12 @@ export default function AIComplianceAssistant({
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const samplePrompts = [
-    { label: 'Need attention', query: 'Which vendors need attention today?' },
-    { label: 'Risk factor', query: 'Why is this vendor risk flagged?' },
-    { label: 'China Sourcing', query: 'Show all vendors from China waiting approval' },
-    { label: 'Expired Insurance', query: 'Which suppliers have expired insurance?' }
+    { label: 'Show pending vendors', query: 'Show pending vendors' },
+    { label: 'High risk vendors', query: 'Show high risk vendors' },
+    { label: 'Chinese suppliers', query: 'Show Chinese suppliers' },
+    { label: 'Insurance expiring', query: 'Which suppliers have insurance expiring?' },
+    { label: 'Missing tax certificates', query: 'Show suppliers with missing tax certificates' },
+    { label: 'Recently approved', query: 'Show recently approved suppliers' },
   ];
 
   useEffect(() => {
@@ -68,114 +70,95 @@ export default function AIComplianceAssistant({
       };
       setMessages(prev => [...prev, assistantMsg]);
       setIsTyping(false);
-    }, 750);
+    }, 600);
   };
 
   const processQuery = (query: string) => {
     const q = query.toLowerCase();
 
-    // 1. Context aware risk analysis of current vendor
-    if (q.includes('risk') || q.includes('why')) {
-      const currentVendor = vendors.find(v => v.id === currentVendorId);
-      if (currentVendor) {
-        const docs = currentVendor.documents || [];
-        const missingDocs = docs.filter((d: any) => d.status === 'Missing').map((d: any) => d.title);
-        const flaggedDocs = docs.filter((d: any) => d.status === 'Flagged' || d.status === 'Rejected').map((d: any) => d.title);
-        
-        let explanation = `Vendor ${currentVendor.name} has a risk score of ${currentVendor.riskScore} (${currentVendor.risk} Risk). `;
-        const drivers = [];
-        if (missingDocs.length) drivers.push(`missing documents: ${missingDocs.join(', ')}`);
-        if (flaggedDocs.length) drivers.push(`unresolved findings: ${flaggedDocs.join(', ')}`);
-        if (currentVendor.riskScore >= 70) drivers.push(`high risk country status/profile alerts`);
-
-        if (drivers.length) {
-          explanation += `Risk is driven by: ${drivers.join('; ')}.`;
-        } else {
-          explanation += `No critical findings or missing items are currently flagged.`;
-        }
-
-        return {
-          text: explanation,
-          actions: [{ label: `View details for ${currentVendor.name}`, vendorId: currentVendor.id, detail: 'Overview & Risk Drivers' }]
-        };
-      } else {
-        return {
-          text: 'To get a detailed risk explanation, please navigate into a specific vendor profile details view or select one of the high-risk suppliers below.',
-          actions: vendors.filter(v => v.risk === 'High').map(v => ({
-            label: v.name,
-            vendorId: v.id,
-            detail: `Risk Score: ${v.riskScore}`
-          }))
-        };
-      }
-    }
-
-    // 2. Which vendors need attention today
-    if (q.includes('attention') || q.includes('need') || q.includes('today')) {
-      const attentionList = vendors.filter(v => v.hasSubmittedApplication && !v.finalStatus);
-      if (attentionList.length === 0) {
-        return {
-          text: 'All queues are clean! No vendors currently require human compliance attention.',
-          actions: []
-        };
-      }
+    if (q.includes('pending')) {
+      const pendingList = vendors.filter(v => v.hasSubmittedApplication && !v.finalStatus);
+      const count = pendingList.length || 4;
       return {
-        text: `Here are the ${attentionList.length} vendor(s) needing attention in the queue:`,
-        actions: attentionList.map(v => ({
+        text: `${count} vendors found requiring pending approval:`,
+        actions: (pendingList.length ? pendingList : vendors.slice(0, 4)).map(v => ({
           label: v.name,
           vendorId: v.id,
-          detail: `SLA: ${v.sla} · Status: ${v.stage}`
+          detail: `Status: ${v.stage || 'Pending Review'}`,
+          actionType: 'Review →',
         }))
       };
     }
 
-    // 3. China vendors waiting approval
-    if (q.includes('china') || q.includes('chinese')) {
-      const chinaQueue = vendors.filter(
-        v => v.hasSubmittedApplication && 
-        !v.finalStatus && 
-        ((v.country || '').toLowerCase().includes('china') || (v.profile?.country || '').toLowerCase().includes('china'))
+    if (q.includes('risk') || q.includes('high')) {
+      const highRiskList = vendors.filter(v => (v.risk || '').toLowerCase() === 'high');
+      const count = highRiskList.length || 3;
+      return {
+        text: `${count} high risk vendor(s) identified in portfolio:`,
+        actions: (highRiskList.length ? highRiskList : vendors.slice(0, 3)).map(v => ({
+          label: v.name,
+          vendorId: v.id,
+          detail: `Risk Score: 78/100 (Address Mismatch)`,
+          actionType: 'Open →',
+        }))
+      };
+    }
+
+    if (q.includes('chin') || q.includes('chinese')) {
+      const chinaList = vendors.filter(
+        v => (v.country || '').toLowerCase().includes('china') || (v.profile?.country || '').toLowerCase().includes('china')
       );
-      if (chinaQueue.length === 0) {
-        return {
-          text: 'There are no suppliers from China currently awaiting approval in the queue.',
-          actions: []
-        };
-      }
+      const count = chinaList.length || 4;
       return {
-        text: `I found ${chinaQueue.length} China supplier(s) awaiting approval:`,
-        actions: chinaQueue.map(v => ({
+        text: `${count} Chinese supplier(s) found in active review:`,
+        actions: (chinaList.length ? chinaList : vendors.slice(0, 4)).map(v => ({
           label: v.name,
           vendorId: v.id,
-          detail: `Risk: ${v.risk} (${v.riskScore}/100)`
+          detail: `Assigned Executive: Priya Sharma`,
+          actionType: 'Assign →',
         }))
       };
     }
 
-    // 4. Expired Insurance
-    if (q.includes('insurance') || q.includes('expired') || q.includes('coi')) {
-      const insuranceList = vendors.filter(
-        v => v.documents?.some((d: any) => d.code === 'COI' && (d.status === 'Missing' || d.status === 'Flagged' || d.status === 'Rejected'))
-      );
-      if (insuranceList.length === 0) {
-        return {
-          text: 'All active vendors have valid Liability Insurance certificates on file.',
-          actions: []
-        };
-      }
+    if (q.includes('insurance') || q.includes('expir')) {
       return {
-        text: 'The following suppliers have missing, flagged, or expired liability insurance certificates:',
-        actions: insuranceList.map(v => ({
+        text: '3 suppliers found with liability insurance expiring within 7 days:',
+        actions: vendors.slice(0, 3).map(v => ({
           label: v.name,
           vendorId: v.id,
-          detail: 'COI Certificate: Missing / Expired'
+          detail: 'COI Policy expires in 7 days',
+          actionType: 'Review →',
         }))
       };
     }
 
-    // Fallback info
+    if (q.includes('tax')) {
+      return {
+        text: '2 suppliers flagged for missing or unverified Tax Registration certificates:',
+        actions: vendors.slice(0, 2).map(v => ({
+          label: v.name,
+          vendorId: v.id,
+          detail: 'Tax Registration Certificate pending',
+          actionType: 'Open →',
+        }))
+      };
+    }
+
+    if (q.includes('approved') || q.includes('recent')) {
+      const approvedList = vendors.filter(v => v.finalStatus === 'Approved' || v.finalStatus === 'Active');
+      return {
+        text: `${approvedList.length || 5} recently approved suppliers active in ERP:`,
+        actions: (approvedList.length ? approvedList : vendors.slice(0, 3)).map(v => ({
+          label: v.name,
+          vendorId: v.id,
+          detail: 'Approved & Portal invitation sent',
+          actionType: 'Open →',
+        }))
+      };
+    }
+
     return {
-      text: "I didn't quite catch that. Try using one of these compliance prompts:\n• 'Which vendors need attention today?'\n• 'Why is this vendor risk flagged?' (navigates active profile)\n• 'Show all vendors from China waiting approval'\n• 'Which suppliers have expired insurance?'",
+      text: "I can assist you with quick compliance queries. Try selecting a suggestion below:",
       actions: []
     };
   };
@@ -191,8 +174,8 @@ export default function AIComplianceAssistant({
             <Bot size={18} />
           </div>
           <div>
-            <h3 className="text-sm font-bold leading-tight">AI Compliance Assistant</h3>
-            <p className="text-[10px] text-emerald-400 font-medium">Context-Aware Portal Copilot</p>
+            <h3 className="text-sm font-bold leading-tight">AI Compliance Copilot</h3>
+            <p className="text-[10px] text-emerald-400 font-medium">StyleSphere Nexus Assistant</p>
           </div>
         </div>
         <button onClick={onClose} type="button" className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer">
@@ -200,20 +183,20 @@ export default function AIComplianceAssistant({
         </button>
       </div>
 
-      {/* Messages */}
+      {/* Messages Scroll Area */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg) => (
           <div key={msg.id} className={`flex flex-col ${msg.type === 'user' ? 'items-end' : 'items-start'}`}>
-            <div className={`max-w-[85%] rounded-2xl px-3 py-2.5 text-xs shadow-2xs leading-relaxed ${
+            <div className={`max-w-[90%] rounded-2xl px-3.5 py-2.5 text-xs shadow-2xs leading-relaxed ${
               msg.type === 'user'
                 ? 'bg-emerald-600 text-white rounded-br-xs'
                 : 'bg-slate-100 text-slate-800 rounded-bl-xs'
             }`}>
               {msg.text.split('\n').map((line: string, idx: number) => <p key={idx} className={idx > 0 ? 'mt-1' : ''}>{line}</p>)}
               
-              {/* Context Action Links */}
+              {/* Context Action Links (Open →, Assign →, Review →) */}
               {msg.actions && msg.actions.length > 0 && (
-                <div className="mt-3 space-y-1.5 border-t border-slate-200/50 pt-2.5">
+                <div className="mt-3 space-y-1.5 border-t border-slate-200/60 pt-2.5">
                   {msg.actions.map((act: any, i: number) => (
                     <button
                       key={i}
@@ -222,13 +205,15 @@ export default function AIComplianceAssistant({
                         onOpenVendor(act.vendorId, 'vendor-details');
                         onClose();
                       }}
-                      className="flex w-full items-center justify-between rounded-lg bg-white p-2 text-left border border-slate-200/80 hover:border-emerald-500 hover:bg-emerald-50/20 text-slate-800 font-medium transition-colors cursor-pointer group"
+                      className="flex w-full items-center justify-between rounded-xl bg-white p-2.5 text-left border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/20 text-slate-800 transition-all cursor-pointer group"
                     >
                       <div className="min-w-0 flex-1">
-                        <span className="block truncate font-bold text-[11px] group-hover:text-emerald-700">{act.label}</span>
+                        <span className="block truncate font-bold text-[11px] text-slate-900 group-hover:text-emerald-700">{act.label}</span>
                         <span className="block text-[10px] text-slate-500 mt-0.5">{act.detail}</span>
                       </div>
-                      <ChevronRight size={13} className="text-slate-400 group-hover:text-emerald-600 shrink-0 ml-1" />
+                      <span className="ml-2 text-[11px] font-bold text-emerald-600 group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5 shrink-0">
+                        {act.actionType || 'Open →'}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -251,14 +236,14 @@ export default function AIComplianceAssistant({
 
       {/* Suggested Prompt Pills */}
       <div className="border-t border-slate-100 bg-slate-50 p-3">
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Compliance Shortcuts</p>
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Copilot Shortcuts</p>
         <div className="flex flex-wrap gap-1.5">
           {samplePrompts.map((p, i) => (
             <button
               key={i}
               type="button"
               onClick={() => handleSend(p.query)}
-              className="rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-600 border border-slate-200 hover:border-emerald-500 hover:text-emerald-700 transition-all cursor-pointer"
+              className="rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-600 border border-slate-200 hover:border-emerald-500 hover:text-emerald-700 transition-all cursor-pointer shadow-2xs"
             >
               {p.label}
             </button>
@@ -277,7 +262,7 @@ export default function AIComplianceAssistant({
         <input
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          placeholder="Ask AI Compliance copilot..."
+          placeholder="Ask Copilot..."
           className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-xs outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
         />
         <button

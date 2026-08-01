@@ -9,6 +9,7 @@ import ApprovalRate from './ApprovalRate';
 import TrendChart from './TrendChart';
 import PipelineFunnel from './PipelineFunnel';
 import RecentActivity from './RecentActivity';
+import RiskDistributionChart from './RiskDistributionChart';
 
 interface DashboardProps {
   onNavigate?: (page: string) => void;
@@ -36,7 +37,7 @@ export default function Dashboard({ onNavigate, onModal, onOpenVendor }: Dashboa
             Admin Operational Dashboard
           </h1>
           <p style={{ fontSize: '13px', color: '#64748B', margin: '2px 0 0 0' }}>
-            Central operational hub for vendor onboarding, document review, and risk management.
+            Central operational hub — what requires your attention today?
           </p>
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
@@ -49,7 +50,7 @@ export default function Dashboard({ onNavigate, onModal, onOpenVendor }: Dashboa
                 style={{
                   height: '36px',
                   padding: '0 14px',
-                  borderRadius: '8px',
+                  borderRadius: '10px',
                   border: '1px solid #CBD5E1',
                   backgroundColor: '#FFFFFF',
                   color: '#334155',
@@ -71,7 +72,7 @@ export default function Dashboard({ onNavigate, onModal, onOpenVendor }: Dashboa
                 style={{
                   height: '36px',
                   padding: '0 14px',
-                  borderRadius: '8px',
+                  borderRadius: '10px',
                   border: 0,
                   backgroundColor: '#0F172A',
                   color: '#FFFFFF',
@@ -90,23 +91,26 @@ export default function Dashboard({ onNavigate, onModal, onOpenVendor }: Dashboa
         </div>
       </section>
 
-      {/* Primary Metrics Row (Pending Vendors, In Review, Approved, Rejected) */}
+      {/* Row 1: Top Metrics (Pending | In Review | Approved | Rejected) */}
       <MetricsRow vendors={vendors} onNavigate={onNavigate} />
 
-      {/* Row 2: Priority Queue (2/3) + Approval Rate China 93% (1/3) */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px', marginBottom: '24px' }}>
-        <PriorityQueue vendors={vendors} onOpenVendor={onOpenVendor} onNavigate={onNavigate} />
-        <ApprovalRate />
-      </div>
-
-      {/* Row 3: Approval Trend Line Chart (2/3) + Operational Workflow Pipeline (1/3) */}
+      {/* Row 2: Approval Trend (2/3) + Priority Queue (1/3) */}
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px', marginBottom: '24px' }}>
         <TrendChart vendors={vendors} onDrill={() => onNavigate?.('vendors')} />
-        <PipelineFunnel vendors={vendors} onNavigate={onNavigate} />
+        <PriorityQueue vendors={vendors} onOpenVendor={onOpenVendor} onNavigate={onNavigate} />
       </div>
 
-      {/* Row 4: Recent Activity Feed */}
-      <RecentActivity auditLogs={auditLogs} onOpenVendor={onOpenVendor} onNavigate={onNavigate} />
+      {/* Row 3: Pipeline Funnel (1/2) + Recent Activity (1/2) */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+        <PipelineFunnel vendors={vendors} onNavigate={onNavigate} />
+        <RecentActivity auditLogs={auditLogs} onOpenVendor={onOpenVendor} onNavigate={onNavigate} />
+      </div>
+
+      {/* Row 4: Vendor Risk Distribution (1/2) + China Approval Rate (1/2) */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+        <RiskDistributionChart vendors={vendors} onNavigate={onNavigate} />
+        <ApprovalRate />
+      </div>
     </div>
   );
 }

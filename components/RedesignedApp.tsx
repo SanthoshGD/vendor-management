@@ -31,6 +31,8 @@ import VendorDetailView from './admin/Vendor/VendorDetailView';
 import AIComplianceAssistant from './admin/AI/AIComplianceAssistant';
 import ApprovalToast from './admin/Shared/ApprovalToast';
 import DocumentsView from './admin/DocumentReview/DocumentsView';
+import ProductCatalog from './admin/Product/ProductCatalog';
+import AnalyticsView from './admin/Analytics/AnalyticsView';
 
 const adminNav: [string, string, any][] = [
   ['overview', 'Dashboard', LayoutDashboard],
@@ -411,9 +413,10 @@ function Page({ persona, page, query, selectedVendorId, onNavigate, onModal, onO
     );
   }
   if (page === 'review-queue') return <SupervisorRequests onOpenVendor={onOpenVendor} onOpenAsAdmin={onOpenAsAdmin} />;
-  if (page === 'onboarding') return <DocumentsView onOpenVendor={onOpenVendor} />;
+  if (page === 'products' || page === 'onboarding') return <ProductCatalog />;
   if (page === 'compliance') return <CompliancePage onNavigate={onNavigate} onOpenVendor={onOpenVendor} />;
-  if (page === 'agents') return <AgentConsole persona="admin" />;
+  if (page === 'ai-assistant' || page === 'agents') return <AgentConsole persona="admin" />;
+  if (page === 'analytics') return <AnalyticsView onNavigate={onNavigate} />;
   return <ActivityView onOpenVendor={onOpenVendor} />;
 }
 
