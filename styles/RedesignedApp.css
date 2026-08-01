@@ -5806,3 +5806,55 @@ input,select,textarea{margin:0}
   border-top-left-radius: var(--r-xl);
   border-bottom-left-radius: var(--r-xl);
 }
+
+/* Decision Button hover and selected effects */
+.catalog-btn-reject {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid #CBD5E1;
+  background-color: #FFFFFF;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  transition: all 0.15s ease-in-out;
+}
+.catalog-btn-reject:hover {
+  border-color: #FDA4AF;
+  background-color: #FFF1F2;
+  color: #E11D48;
+}
+.catalog-btn-reject:active {
+  transform: scale(0.96);
+  background-color: #FFE4E6;
+}
+
+.catalog-btn-approve {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 0;
+  background-color: #059669;
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  transition: all 0.15s ease-in-out;
+}
+.catalog-btn-approve:hover {
+  background-color: #047857;
+  box-shadow: 0 2px 4px rgba(4, 120, 87, 0.2);
+}
+.catalog-btn-approve:active {
+  transform: scale(0.96);
+  background-color: #065F46;
+}

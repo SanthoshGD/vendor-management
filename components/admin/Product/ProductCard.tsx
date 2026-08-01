@@ -235,53 +235,6 @@ export default function ProductCard({ product, showVendorName = true }: ProductC
         </span>
       </div>
 
-      {/* Action Buttons */}
-      {!isApproved && !isRejected && (
-        <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
-          <button
-            type="button"
-            onClick={handleReject}
-            style={{
-              flex: 1,
-              height: '32px',
-              borderRadius: '8px',
-              border: '1px solid #E2E8F0',
-              backgroundColor: '#FFFFFF',
-              color: '#475569',
-              fontSize: '12px',
-              fontWeight: 500,
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '4px',
-              cursor: 'pointer',
-            }}
-          >
-            <X size={13} /> Reject
-          </button>
-          <button
-            type="button"
-            onClick={handleApprove}
-            style={{
-              flex: 1,
-              height: '32px',
-              borderRadius: '8px',
-              border: 0,
-              backgroundColor: '#059669',
-              color: '#FFFFFF',
-              fontSize: '12px',
-              fontWeight: 600,
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '4px',
-              cursor: 'pointer',
-            }}
-          >
-            <Check size={13} /> Approve
-          </button>
-        </div>
-      )}
     </article>
   );
 }
