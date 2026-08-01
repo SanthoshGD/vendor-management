@@ -33,19 +33,12 @@ import ApprovalToast from './admin/Shared/ApprovalToast';
 import DocumentsView from './admin/DocumentReview/DocumentsView';
 
 const adminNav: [string, string, any][] = [
-  ['overview', 'Overview', LayoutDashboard],
-  ['vendors', 'Vendor queue', Users],
-  ['onboarding', 'Document collection', FolderKanban],
+  ['overview', 'Dashboard', LayoutDashboard],
+  ['vendors', 'Vendors', Users],
+  ['review-queue', 'Review Queue', Inbox],
   ['compliance', 'Compliance', ShieldCheck],
-  ['agents', 'Agent console', Bot],
-  ['activity', 'Activity', Activity],
-];
-
-const supervisorNav: [string, string, any][] = [
-  ['oversight', 'Oversight', LayoutDashboard],
-  ['requests', 'Requests', Inbox],
-  ['vendors', 'All vendors', Users],
-  ['agents', 'Agent policy', Bot],
+  ['onboarding', 'Product Catalog', FolderKanban],
+  ['agents', 'Agent Console', Bot],
   ['activity', 'Activity', Activity],
 ];
 
@@ -58,20 +51,14 @@ const vendorNav: [string, string, any][] = [
 
 const pageNamesByPersona: Record<string, Record<string, string>> = {
   admin: {
-    overview: 'Overview',
-    vendors: 'Vendor queue',
-    onboarding: 'Document collection',
+    overview: 'Dashboard',
+    vendors: 'Vendors',
+    'review-queue': 'Review Queue',
+    onboarding: 'Product Catalog',
     compliance: 'Compliance',
     'ai-review': 'Review workspace',
-    agents: 'Agent console',
-    activity: 'Activity',
-  },
-  supervisor: {
-    oversight: 'Oversight',
-    requests: 'Requests',
-    vendors: 'All vendors',
-    'ai-review': 'Case review',
-    agents: 'Agent policy',
+    'vendor-details': 'Vendor Details',
+    agents: 'Agent Console',
     activity: 'Activity',
   },
   vendor: {
@@ -83,20 +70,18 @@ const pageNamesByPersona: Record<string, Record<string, string>> = {
 };
 
 const ROLE_PAGES: Record<string, string[]> = {
-  admin: ['overview', 'vendors', 'onboarding', 'ai-review', 'compliance', 'agents', 'activity', 'vendor-details'],
-  supervisor: ['oversight', 'requests', 'vendors', 'agents', 'activity', 'ai-review', 'vendor-details'],
+  admin: ['overview', 'vendors', 'review-queue', 'onboarding', 'ai-review', 'compliance', 'agents', 'activity', 'vendor-details'],
   vendor: ['overview', 'onboarding', 'actions', 'documents'],
 };
 
-const HOME_PAGE: Record<string, string> = { admin: 'overview', supervisor: 'oversight', vendor: 'overview' };
+const HOME_PAGE: Record<string, string> = { admin: 'overview', vendor: 'overview' };
 
 const ROLE_LABEL: Record<string, string> = {
-  admin: 'Admin workspace', supervisor: 'Supervisor workspace', vendor: 'Vendor portal',
+  admin: 'Admin Portal', vendor: 'Vendor Portal',
 };
 
 const BELL_FOOTER: Record<string, { page: string; label: string }> = {
-  admin: { page: 'activity', label: 'Open audit record' },
-  supervisor: { page: 'requests', label: 'Open requests' },
+  admin: { page: 'activity', label: 'Open activity log' },
   vendor: { page: 'actions', label: 'Open action center' },
 };
 
@@ -189,7 +174,7 @@ function NexusShell() {
   const [aiAssistantOpen, setAiAssistantOpen] = useState(false);
   const [approvedToastVendor, setApprovedToastVendor] = useState<{ vendorId: string; vendorName: string } | null>(null);
 
-  const nav = persona === 'admin' ? adminNav : persona === 'supervisor' ? supervisorNav : vendorNav;
+  const nav = persona === 'admin' ? adminNav : vendorNav;
   const invitedRef = useRef(false);
 
   const safePage = ROLE_PAGES[persona].includes(page) ? page : HOME_PAGE[persona];
@@ -407,24 +392,7 @@ function Page({ persona, page, query, selectedVendorId, onNavigate, onModal, onO
     return <VendorDocuments onModal={onModal} />;
   }
 
-  if (persona === 'supervisor') {
-    if (page === 'oversight') return <SupervisorOversight onNavigate={onNavigate} onOpenVendor={onOpenVendor} onOpenAsAdmin={onOpenAsAdmin} />;
-    if (page === 'requests') return <SupervisorRequests onOpenVendor={onOpenVendor} onOpenAsAdmin={onOpenAsAdmin} />;
-    if (page === 'vendors') return <VendorList onOpenVendor={onOpenVendor} onModal={onModal} />;
-    if (page === 'vendor-details' || page === 'ai-review') {
-      return (
-        <VendorDetailView
-          vendorId={selectedVendorId}
-          onBack={() => onNavigate('vendors')}
-          onApproveSuccess={onApproveSuccess}
-          readOnly
-        />
-      );
-    }
-    if (page === 'agents') return <AgentConsole persona="supervisor" />;
-    return <ActivityView onOpenVendor={onOpenVendor} />;
-  }
-
+  // Admin Portal (unified — includes former Vendor Executive capabilities)
   if (page === 'overview') return <Dashboard onNavigate={onNavigate} onModal={onModal} onOpenVendor={onOpenVendor} />;
   if (page === 'vendors') return <VendorList onOpenVendor={onOpenVendor} onModal={onModal} />;
   if (page === 'vendor-details' || page === 'ai-review') {
@@ -436,6 +404,7 @@ function Page({ persona, page, query, selectedVendorId, onNavigate, onModal, onO
       />
     );
   }
+  if (page === 'review-queue') return <SupervisorRequests onOpenVendor={onOpenVendor} onOpenAsAdmin={onOpenAsAdmin} />;
   if (page === 'onboarding') return <DocumentsView onOpenVendor={onOpenVendor} />;
   if (page === 'compliance') return <CompliancePage onNavigate={onNavigate} onOpenVendor={onOpenVendor} />;
   if (page === 'agents') return <AgentConsole persona="admin" />;
