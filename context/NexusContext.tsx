@@ -396,8 +396,8 @@ export function NexusProvider({ children }: { children: React.ReactNode }) {
   const pendingFingerprintsRef = useRef(new Set<string>());
 
   const [rawVendors, setRawVendors] = useState<Vendor[]>(seedVendors);
-  const [requests, setRequests] = useState<ProcurementRequest[]>(() => clone(INITIAL_REQUESTS));
-  const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>(() => clone(INITIAL_AUDIT_LOGS));
+  const [requests, setRequests] = useState<ProcurementRequest[]>(() => clone(INITIAL_REQUESTS) as ProcurementRequest[]);
+  const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>(() => clone(INITIAL_AUDIT_LOGS) as unknown as AuditLogEntry[]);
   const [settings, setSettings] = useState(() => ({ ...DEFAULT_SETTINGS }));
   const [toast, setToast] = useState('');
 
@@ -418,7 +418,7 @@ export function NexusProvider({ children }: { children: React.ReactNode }) {
   const [findingResolutions, setFindingResolutions] = useState<Record<string, any>>({});
   const [chaseState, setChaseState] = useState<Record<string, any>>({});
   const [supervisorRequests, setSupervisorRequests] = useState<SupervisorRequest[]>(
-    () => clone(INITIAL_REQUESTS_TO_SUPERVISOR),
+    () => clone(INITIAL_REQUESTS_TO_SUPERVISOR) as unknown as SupervisorRequest[],
   );
   const [actorRole, setActorRole] = useState('Compliance Manager');
   const [activeVendorId, setActiveVendorId] = useState(DEMO_VENDOR_ID);

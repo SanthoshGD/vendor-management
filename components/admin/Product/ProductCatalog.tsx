@@ -1,6 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
-import React from 'react';
-import { Package, ShieldAlert, CheckCircle2, AlertCircle } from 'lucide-react';
+'use client';
+
+import React, { useMemo } from 'react';
+import { Package } from 'lucide-react';
+import ProductCard from './ProductCard';
 
 export const MOCK_PRODUCTS = [
   {
@@ -9,7 +11,7 @@ export const MOCK_PRODUCTS = [
     vendorId: 'VEN-8842',
     vendorName: 'SilkRoad Textiles Co., Ltd.',
     country: 'Vietnam',
-    category: 'T-shirts',
+    category: 'Denim',
     status: 'Approved',
     lastUpdated: '2 days ago',
     image: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&auto=format&fit=crop&q=80',
@@ -60,14 +62,31 @@ export const MOCK_PRODUCTS = [
   }
 ];
 
-export default function ProductCatalogView({ vendorId = null }) {
-  const filteredProducts = vendorId 
-    ? MOCK_PRODUCTS.filter(p => p.vendorId === vendorId)
-    : MOCK_PRODUCTS;
+interface ProductCatalogProps {
+  vendorId?: string | null;
+}
+
+export default function ProductCatalog({ vendorId = null }: ProductCatalogProps) {
+  const filteredProducts = useMemo(() => {
+    // If vendorId is VEN-3312 (Guangzhou Artisan), let's show its China leather products, etc.
+    // We can also fallback map vendor IDs to names dynamically or use mock mappings
+    if (!vendorId) return MOCK_PRODUCTS;
+
+    // Let's perform a loose or direct check. Since VEN-3312 is our main Guangzhou Leather,
+    // and other vendors exist in mock data, let's map them to make it look realistic.
+    const mapVendorIdToName: Record<string, string> = {
+      'v1': 'VEN-3312', // Wei Mingzhi (Jinpeng Leather / Guangzhou Artisan)
+      'v2': 'VEN-8842', // Chen Lihua (Dongfang Footwear / SilkRoad)
+      'v7': 'VEN-9104', // Priya Sharma (Delhi Craft Circle)
+    };
+    
+    const targetId = mapVendorIdToName[vendorId] || vendorId;
+    return MOCK_PRODUCTS.filter(p => p.vendorId === targetId || p.vendorName.toLowerCase().includes(vendorId.toLowerCase()));
+  }, [vendorId]);
 
   return (
     <div className="product-catalog-view">
-      <div className="portfolio-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+      <div className="portfolio-stats mb-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '24px' }}>
         <span><strong>{filteredProducts.length}</strong><small>Total Products</small></span>
         <span><strong>{filteredProducts.filter(p => p.status === 'Approved').length}</strong><small>Approved Catalog Items</small></span>
         <span><strong>{filteredProducts.filter(p => p.status === 'Pending Review').length}</strong><small>Awaiting Verification</small></span>
@@ -81,42 +100,7 @@ export default function ProductCatalogView({ vendorId = null }) {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
           {filteredProducts.map(product => (
-            <article className="panel" key={product.id} style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '16px', borderRadius: '12px' }}>
-              <div style={{ position: 'relative', width: '100%', height: '180px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#f1f5f9' }}>
-                <img 
-                  src={product.image} 
-                  alt={product.name} 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-                <span 
-                  className={`status-pill ${product.status === 'Approved' ? 'green' : 'amber'}`}
-                  style={{ position: 'absolute', top: '8px', right: '8px' }}
-                >
-                  {product.status}
-                </span>
-              </div>
-              
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyBetween: 'space-between' }}>
-                <div>
-                  <h4 style={{ fontWeight: 700, fontSize: '14px', color: 'var(--text-primary)', marginBottom: '4px' }}>{product.name}</h4>
-                  {!vendorId && (
-                    <p style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '8px' }}>
-                      {product.vendorName} <span style={{ color: 'var(--faint)' }}>({product.vendorId})</span>
-                    </p>
-                  )}
-                </div>
-
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>
-                  <span className="status-pill neutral" style={{ fontSize: '11px' }}>{product.category}</span>
-                  <span className="status-pill neutral" style={{ fontSize: '11px' }}>{product.country}</span>
-                </div>
-
-                <div style={{ borderTop: '1px solid var(--line)', marginTop: '12px', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--faint)' }}>
-                  <span>ID: {product.id}</span>
-                  <span>Updated {product.lastUpdated}</span>
-                </div>
-              </div>
-            </article>
+            <ProductCard key={product.id} product={product} showVendorName={!vendorId} />
           ))}
         </div>
       )}

@@ -24,12 +24,12 @@ const shortTime = (iso: string) => {
 const pageNamesByPersona: Record<string, Record<string, string>> = {
   admin: {
     overview: 'Overview',
-    vendors: 'Vendor queue',
+    vendors: 'Vendor',
     onboarding: 'Document collection',
     compliance: 'Compliance',
     'ai-review': 'Review workspace',
     agents: 'Agent console',
-    activity: 'Audit record',
+    activity: 'Activity',
   },
   supervisor: {
     oversight: 'Oversight',
@@ -37,7 +37,7 @@ const pageNamesByPersona: Record<string, Record<string, string>> = {
     vendors: 'All vendors',
     'ai-review': 'Case review',
     agents: 'Agent policy',
-    activity: 'Audit record',
+    activity: 'Activity',
   },
   vendor: {
     overview: 'My workspace',
@@ -48,7 +48,7 @@ const pageNamesByPersona: Record<string, Record<string, string>> = {
 };
 
 const ROLE_LABEL: Record<string, string> = {
-  admin: 'Admin workspace', supervisor: 'Supervisor workspace', vendor: 'Vendor portal',
+  admin: 'Admin workspace', supervisor: 'Vendor Executive workspace', vendor: 'Vendor portal',
 };
 
 const BELL_FOOTER: Record<string, { page: string; label: string }> = {
@@ -342,7 +342,7 @@ export function Topbar({ persona, page, query, setQuery, onSwitch, onMobile, onH
 
       <div className="persona-toggle">
         <button className={persona === 'admin' ? 'active' : ''} aria-label="Switch to admin workspace" aria-pressed={persona === 'admin'} onClick={() => onSwitch('admin')}><Building2 size={15} /><span>Admin</span></button>
-        <button className={persona === 'supervisor' ? 'active' : ''} aria-label="Switch to supervisor workspace" aria-pressed={persona === 'supervisor'} onClick={() => onSwitch('supervisor')}><ShieldCheck size={15} /><span>Supervisor</span></button>
+        <button className={persona === 'supervisor' ? 'active' : ''} aria-label="Switch to vendor executive workspace" aria-pressed={persona === 'supervisor'} onClick={() => onSwitch('supervisor')}><ShieldCheck size={15} /><span>Vendor Executive</span></button>
         <button className={persona === 'vendor' ? 'active' : ''} aria-label="Switch to vendor workspace" aria-pressed={persona === 'vendor'} onClick={() => onSwitch('vendor')}><PackageCheck size={15} /><span>Vendor</span></button>
       </div>
 

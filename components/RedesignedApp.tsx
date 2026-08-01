@@ -16,7 +16,7 @@ import { encodeInvite, inviteUrl, readInviteFromUrl } from '../lib/base64';
 import { BANDS } from '../services/agentEngine';
 import { AGENTS_BY_ID } from '../services/agentCatalog';
 import ReviewWorkspace from './ReviewWorkspace';
-import AuditTrail from './AuditTrail';
+import ActivityView from './admin/Activity/ActivityView';
 import OnboardingWizard, { InviteEmailStep, CreateAccountStep, WizardStepper, allowedStep } from './OnboardingWizard';
 import AgentConsole from './AgentConsole';
 import ChaserPanel from './ChaserPanel';
@@ -25,13 +25,20 @@ import Sidebar from './layout/Sidebar';
 import Topbar from './layout/Topbar';
 import type { Vendor } from '../types/vendor';
 
+import Dashboard from './admin/Dashboard/Dashboard';
+import VendorList from './admin/Vendor/VendorList';
+import VendorDetailView from './admin/Vendor/VendorDetailView';
+import AIComplianceAssistant from './admin/AI/AIComplianceAssistant';
+import ApprovalToast from './admin/Shared/ApprovalToast';
+import DocumentsView from './admin/DocumentReview/DocumentsView';
+
 const adminNav: [string, string, any][] = [
   ['overview', 'Overview', LayoutDashboard],
   ['vendors', 'Vendor queue', Users],
   ['onboarding', 'Document collection', FolderKanban],
   ['compliance', 'Compliance', ShieldCheck],
   ['agents', 'Agent console', Bot],
-  ['activity', 'Audit record', Activity],
+  ['activity', 'Activity', Activity],
 ];
 
 const supervisorNav: [string, string, any][] = [
@@ -39,7 +46,7 @@ const supervisorNav: [string, string, any][] = [
   ['requests', 'Requests', Inbox],
   ['vendors', 'All vendors', Users],
   ['agents', 'Agent policy', Bot],
-  ['activity', 'Audit record', Activity],
+  ['activity', 'Activity', Activity],
 ];
 
 const vendorNav: [string, string, any][] = [
@@ -57,7 +64,7 @@ const pageNamesByPersona: Record<string, Record<string, string>> = {
     compliance: 'Compliance',
     'ai-review': 'Review workspace',
     agents: 'Agent console',
-    activity: 'Audit record',
+    activity: 'Activity',
   },
   supervisor: {
     oversight: 'Oversight',
@@ -65,7 +72,7 @@ const pageNamesByPersona: Record<string, Record<string, string>> = {
     vendors: 'All vendors',
     'ai-review': 'Case review',
     agents: 'Agent policy',
-    activity: 'Audit record',
+    activity: 'Activity',
   },
   vendor: {
     overview: 'My workspace',
@@ -76,8 +83,8 @@ const pageNamesByPersona: Record<string, Record<string, string>> = {
 };
 
 const ROLE_PAGES: Record<string, string[]> = {
-  admin: ['overview', 'vendors', 'onboarding', 'ai-review', 'compliance', 'agents', 'activity'],
-  supervisor: ['oversight', 'requests', 'vendors', 'agents', 'activity', 'ai-review'],
+  admin: ['overview', 'vendors', 'onboarding', 'ai-review', 'compliance', 'agents', 'activity', 'vendor-details'],
+  supervisor: ['oversight', 'requests', 'vendors', 'agents', 'activity', 'ai-review', 'vendor-details'],
   vendor: ['overview', 'onboarding', 'actions', 'documents'],
 };
 
@@ -171,7 +178,7 @@ export default function RedesignedApp() {
 }
 
 function NexusShell() {
-  const { toast, settings, activeVendorId, setActiveVendorId, ensureVendorFromInvite, getVendor } = useNexus();
+  const { vendors, toast, settings, activeVendorId, setActiveVendorId, ensureVendorFromInvite, getVendor } = useNexus();
   const [persona, setPersona] = useState('admin');
   const [page, setPage] = useState('overview');
   const [collapsed, setCollapsed] = useState(false);
@@ -179,6 +186,9 @@ function NexusShell() {
   const [modal, setModal] = useState<any>(null);
   const [query, setQuery] = useState('');
   const [selectedVendorId, setSelectedVendorId] = useState(activeVendorId);
+  const [aiAssistantOpen, setAiAssistantOpen] = useState(false);
+  const [approvedToastVendor, setApprovedToastVendor] = useState<{ vendorId: string; vendorName: string } | null>(null);
+
   const nav = persona === 'admin' ? adminNav : persona === 'supervisor' ? supervisorNav : vendorNav;
   const invitedRef = useRef(false);
 
@@ -222,7 +232,7 @@ function NexusShell() {
     setMobileNav(false);
   };
 
-  const openVendor = (vendorId: string, targetPage = 'ai-review') => {
+  const openVendor = (vendorId: string, targetPage = 'vendor-details') => {
     setActiveVendorId(vendorId);
     setSelectedVendorId(vendorId);
     setPage(targetPage);
@@ -230,13 +240,17 @@ function NexusShell() {
     setMobileNav(false);
   };
 
-  const openAsAdmin = (vendorId: string, targetPage = 'ai-review') => {
+  const openAsAdmin = (vendorId: string, targetPage = 'vendor-details') => {
     setPersona('admin');
     setActiveVendorId(vendorId);
     setSelectedVendorId(vendorId);
     setPage(targetPage);
     setModal(null);
     setMobileNav(false);
+  };
+
+  const handleApproveSuccess = (vId: string, vName: string) => {
+    setApprovedToastVendor({ vendorId: vId, vendorName: vName });
   };
 
   const onboardingVendor = persona === 'vendor' ? getVendor(activeVendorId) : null;
@@ -272,9 +286,46 @@ function NexusShell() {
             persona={persona} page={safePage} query={query} selectedVendorId={selectedVendorId}
             onNavigate={navigate} onModal={setModal}
             onOpenVendor={openVendor} onViewAsVendor={viewAsVendor} onOpenAsAdmin={openAsAdmin}
+            onApproveSuccess={handleApproveSuccess}
           />
         </main>
       </div>
+
+      {/* Floating AI Compliance Assistant button for Admin / Executive */}
+      {persona !== 'vendor' && (
+        <button
+          type="button"
+          className="fixed bottom-6 right-6 z-40 flex h-13 w-13 items-center justify-center rounded-full bg-slate-900 text-emerald-400 shadow-2xl hover:scale-105 hover:bg-slate-800 transition-all cursor-pointer border border-emerald-500/30"
+          title="Open AI Compliance Assistant"
+          onClick={() => setAiAssistantOpen(true)}
+          style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 40, width: '52px', height: '52px', borderRadius: '50%', background: '#10231d', color: '#4FCB99', display: 'grid', placeItems: 'center', boxShadow: '0 8px 24px rgba(0,0,0,0.3)', border: '1px solid #4FCB9940', cursor: 'pointer' }}
+        >
+          <Sparkles size={22} />
+        </button>
+      )}
+
+      {/* Global AI Compliance Assistant slide-out panel */}
+      {persona !== 'vendor' && (
+        <AIComplianceAssistant
+          isOpen={aiAssistantOpen}
+          onClose={() => setAiAssistantOpen(false)}
+          vendors={vendors}
+          onOpenVendor={openVendor}
+          currentVendorId={selectedVendorId}
+          currentPage={safePage}
+        />
+      )}
+
+      {/* Custom Approval Success Toast */}
+      {approvedToastVendor && (
+        <ApprovalToast
+          vendorId={approvedToastVendor.vendorId}
+          vendorName={approvedToastVendor.vendorName}
+          onClose={() => setApprovedToastVendor(null)}
+          onViewVendor={(vId) => openVendor(vId, 'vendor-details')}
+        />
+      )}
+
       {mobileNav && <button className="mobile-scrim" aria-label="Close navigation" onClick={() => setMobileNav(false)} />}
       {modal && (
         <Modal modal={modal} onClose={() => setModal(null)} onOpenVendor={openVendor} onViewAsVendor={viewAsVendor} />
@@ -348,7 +399,7 @@ const ONBOARDING_LABELS = [
   'Application submitted',
 ];
 
-function Page({ persona, page, query, selectedVendorId, onNavigate, onModal, onOpenVendor, onViewAsVendor, onOpenAsAdmin }: any) {
+function Page({ persona, page, query, selectedVendorId, onNavigate, onModal, onOpenVendor, onViewAsVendor, onOpenAsAdmin, onApproveSuccess }: any) {
   if (persona === 'vendor') {
     if (page === 'overview') return <VendorDashboard onNavigate={onNavigate} onModal={onModal} />;
     if (page === 'onboarding') return <VendorOnboarding onModal={onModal} onNavigate={onNavigate} />;
@@ -359,124 +410,40 @@ function Page({ persona, page, query, selectedVendorId, onNavigate, onModal, onO
   if (persona === 'supervisor') {
     if (page === 'oversight') return <SupervisorOversight onNavigate={onNavigate} onOpenVendor={onOpenVendor} onOpenAsAdmin={onOpenAsAdmin} />;
     if (page === 'requests') return <SupervisorRequests onOpenVendor={onOpenVendor} onOpenAsAdmin={onOpenAsAdmin} />;
-    if (page === 'vendors') return <VendorsPage query={query} onOpenVendor={onOpenVendor} onModal={onModal} onViewAsVendor={onViewAsVendor} readOnly />;
-    if (page === 'ai-review') return <ReviewWorkspace vendorId={selectedVendorId} readOnly onBack={() => onNavigate('requests')} onOpenAudit={() => onNavigate('activity')} onCollectDocuments={() => onNavigate('onboarding')} onNextVendor={onOpenVendor} />;
+    if (page === 'vendors') return <VendorList onOpenVendor={onOpenVendor} onModal={onModal} />;
+    if (page === 'vendor-details' || page === 'ai-review') {
+      return (
+        <VendorDetailView
+          vendorId={selectedVendorId}
+          onBack={() => onNavigate('vendors')}
+          onApproveSuccess={onApproveSuccess}
+          readOnly
+        />
+      );
+    }
     if (page === 'agents') return <AgentConsole persona="supervisor" />;
-    return <AuditTrail onNavigateVendor={(vendorId: string) => onOpenVendor(vendorId, 'ai-review')} />;
+    return <ActivityView onOpenVendor={onOpenVendor} />;
   }
 
-  if (page === 'overview') return <CustomerDashboard onNavigate={onNavigate} onModal={onModal} onOpenVendor={onOpenVendor} />;
-  if (page === 'vendors') return <VendorsPage query={query} onOpenVendor={onOpenVendor} onModal={onModal} onViewAsVendor={onViewAsVendor} />;
-  if (page === 'onboarding') return <OnboardingPipeline onOpenVendor={onOpenVendor} onModal={onModal} />;
-  if (page === 'compliance') return <CompliancePage onNavigate={onNavigate} onOpenVendor={onOpenVendor} />;
-  if (page === 'ai-review') {
+  if (page === 'overview') return <Dashboard onNavigate={onNavigate} onModal={onModal} onOpenVendor={onOpenVendor} />;
+  if (page === 'vendors') return <VendorList onOpenVendor={onOpenVendor} onModal={onModal} />;
+  if (page === 'vendor-details' || page === 'ai-review') {
     return (
-      <ReviewWorkspace
+      <VendorDetailView
         vendorId={selectedVendorId}
         onBack={() => onNavigate('vendors')}
-        onOpenAudit={() => onNavigate('activity')}
-        onCollectDocuments={() => onNavigate('onboarding')}
-        onNextVendor={onOpenVendor}
+        onApproveSuccess={onApproveSuccess}
       />
     );
   }
+  if (page === 'onboarding') return <DocumentsView onOpenVendor={onOpenVendor} />;
+  if (page === 'compliance') return <CompliancePage onNavigate={onNavigate} onOpenVendor={onOpenVendor} />;
   if (page === 'agents') return <AgentConsole persona="admin" />;
-  return <AuditTrail onNavigateVendor={(vendorId: string) => onOpenVendor(vendorId, 'ai-review')} />;
+  return <ActivityView onOpenVendor={onOpenVendor} />;
 }
 
 function CustomerDashboard({ onNavigate, onModal, onOpenVendor }: any) {
-  const { vendors, auditLogs, getTriage, getAssessment, pendingApprovals, agentConfig } = useNexus();
-  const [todayLabel, setTodayLabel] = useState('');
-  useEffect(() => {
-    setTodayLabel(new Date().toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long' }));
-  }, []);
-
-  const agentImpact = useMemo(() => {
-    let checked = 0; let cleared = 0; let human = 0; let chasing = 0;
-    for (const vendor of vendors) {
-      const a = getAssessment(vendor.id);
-      checked += a.stats.checked || 0;
-      cleared += a.stats.autoCleared || 0;
-      human += a.stats.needsHuman || 0;
-      chasing += a.blockers.filter((b: any) => b.kind === 'missing').length;
-    }
-    return {
-      checked, cleared, human, chasing,
-      rate: checked ? Math.round((cleared / checked) * 100) : 0,
-      needsHuman: vendors.filter((v: any) => ['decide', 'blocked'].includes(getTriage(v.id).band)).length,
-    };
-  }, [vendors, getAssessment, getTriage]);
-
-  const metrics: [string, string, string, any, string][] = [
-    ['Needs a human today', String(agentImpact.needsHuman), `${vendors.filter((v: any) => !v.finalStatus).length} applications in progress`, Users, 'blue'],
-    ['Documents reviewed', String(vendors.reduce((sum: number, vendor: any) => sum + vendor.verifiedCount, 0)), `${vendors.reduce((sum: number, vendor: any) => sum + vendor.documents.filter((doc: any) => doc.status === 'Processing').length, 0)} processing now`, CalendarClock, 'green'],
-    ['Documents being chased', String(agentImpact.chasing), 'No team action needed', MessageSquareText, 'amber'],
-    ['Agent configuration', `v${agentConfig.version}`, `${agentConfig.agents.filter((a: any) => a.enabled).length} of ${agentConfig.agents.length} agents active`, Bot, 'violet'],
-  ];
-  const attention = attentionItems(vendors);
-  const recent = auditLogs.slice(0, 3);
-
-  return (
-    <div className="nexus-page">
-      <PageHero eyebrow={todayLabel} title="Overview"
-        description="Decisions waiting on your team.">
-        <button className="button secondary" onClick={() => onModal({ type: 'invite' })}><Plus size={15} /> Invite vendor</button>
-        <button className="button primary" onClick={() => onModal({ type: 'request' })}><ShoppingBag size={15} /> Create request</button>
-      </PageHero>
-      <section className="metric-grid">
-        {metrics.map(([label, value, note, Icon, tone]) => <article className="metric-card" key={label}>
-          <span className={cx('metric-icon', tone)}><Icon size={18} /></span>
-          <span><small>{label}</small><strong>{value}</strong><em>{note}</em></span>
-        </article>)}
-      </section>
-      <section className="dashboard-grid">
-        <article className="panel onboarding-panel">
-          <PanelHeading eyebrow={`${vendors.filter((v: any) => !v.finalStatus).length} in progress`} title="Onboarding progress" action="View pipeline" onAction={() => onNavigate('onboarding')} />
-          <div className="portfolio-stats">
-            <span><strong>{vendors.filter((v: any) => !v.finalStatus).length}</strong><small>In progress</small></span>
-            <span><strong>{vendors.filter((v: any) => v.missingCount > 0).length}</strong><small>Need action</small></span>
-            <span><strong>{vendors.filter((v: any) => v.status === 'Ready').length}</strong><small>Ready this week</small></span>
-            <span><strong>{vendors.filter((v: any) => v.finalStatus).length}</strong><small>Decided</small></span>
-          </div>
-          <div className="stage-bar"><i /><i /><i /><i /><i /></div>
-          <div className="stage-labels"><span>Invited</span><span>Documents</span><span>Review</span><span>Approval</span><span>Activation</span></div>
-          <div className="vendor-rows">{vendors.slice(0, 3).map((vendor: any) => <button key={vendor.id} onClick={() => onOpenVendor(vendor.id)}><VendorIdentity vendor={vendor} /><span><strong>{vendor.stage}</strong><small>{vendor.docs} documents / {vendor.sla} SLA</small></span><Progress value={vendor.progress} /><ChevronRight size={16} /></button>)}</div>
-        </article>
-        <article className="panel attention-panel">
-          <PanelHeading eyebrow="Priority queue" title="Needs attention" action="Open queue" onAction={() => onNavigate('ai-review')} />
-          <div className="attention-list">
-            {attention.length === 0 && <p className="attention-empty"><CheckCircle2 size={16} /> No items need attention.</p>}
-            {attention.map((item) => (
-              <Attention key={item.vendorId + item.title} tone={item.tone} icon={item.icon} title={item.title} detail={item.detail} badge={item.badge} onClick={() => onOpenVendor(item.vendorId, item.target)} />
-            ))}
-          </div>
-          <div className="ai-impact">
-            <span><Bot size={20} /></span>
-            <div>
-              <small>Agent activity</small>
-              <strong>{agentImpact.checked} checks across the portfolio</strong>
-              <em>{agentImpact.rate}% auto-cleared / {agentImpact.human} routed to a human / {agentImpact.chasing} documents being chased</em>
-            </div>
-          </div>
-          {pendingApprovals.length > 0 && (
-            <button className="approval-nudge" onClick={() => onNavigate('agents')}>
-              <ShieldCheck size={15} />
-              <span><strong>{pendingApprovals.length} agent action{pendingApprovals.length > 1 ? 's' : ''} held for your approval</strong>
-                <small>Human-in-the-loop gate / review in the Agent console</small></span>
-              <ChevronRight size={15} />
-            </button>
-          )}
-        </article>
-        <article className="panel activity-snapshot">
-          <PanelHeading eyebrow="Live workspace" title="Recent activity" action="View audit" onAction={() => onNavigate('activity')} />
-          <div className="mini-activity">{recent.map((log: any) => {
-            const [Icon, tone] = ACTION_META[log.actionType] || [Sparkles, 'blue'];
-            return <div key={log.id}><span className={cx('activity-icon', tone)}><Icon size={14} /></span><span><strong>{log.vendorName}</strong><small>{log.fieldLabel}{log.documentName ? ` / ${log.documentName}` : ''}</small></span><time>{shortTime(log.timestamp)}</time></div>;
-          })}</div>
-        </article>
-      </section>
-    </div>
-  );
+  return <Dashboard onNavigate={onNavigate} onModal={onModal} onOpenVendor={onOpenVendor} />;
 }
 
 function VendorDashboard({ onNavigate, onModal }: any) {

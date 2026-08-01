@@ -11,7 +11,7 @@ const cx = (...items: (string | boolean | undefined | null)[]): string =>
   items.filter(Boolean).join(' ');
 
 const ROLE_LABEL: Record<string, string> = {
-  admin: 'Admin workspace', supervisor: 'Supervisor workspace', vendor: 'Vendor portal',
+  admin: 'Admin workspace', supervisor: 'Vendor Executive workspace', vendor: 'Vendor portal',
 };
 
 function useDismiss(isOpen: boolean, onDismiss: () => void) {
