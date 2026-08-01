@@ -364,4 +364,19 @@ export interface AuditLogEntry {
 
 ---
 
-*This document serves as the complete, authoritative source of truth for the project structure, state management, and design rules for StyleSphere Nexus.*
+## 7. Python FastAPI Backend & AI Service (`backend/`)
+
+The repository includes a production-grade Python FastAPI backend under `backend/` paired with Supabase PostgreSQL and Gemini 2.5/Flash AI services.
+
+### Key Backend Components:
+* **Entry Point**: `backend/app/main.py` (FastAPI app factory, CORS, exception handlers).
+* **API Router**: `backend/api/v1/router.py` assembling endpoints for `vendors`, `documents`, `assistant`, `dashboard`, `activity`, `analytics`, `products`, `auth`, `health`.
+* **AI Engine**: `backend/services/ai/` featuring `chat_service.py` (RAG pipeline), `extraction_service.py` (OCR document field extraction), `key_rotation.py` (API key rotation manager), and `gemini_provider.py`.
+* **Database & ORM**: Supabase client (`backend/core/supabase.py`) and table definitions (`backend/models/tables.py`).
+* **Risk Calculation Engine**: `backend/core/risk_engine.py` applying compliance rules (`settings/risk_rules.json`, `sla.json`, `country` factors).
+* **Background Workers**: `backend/workers/` for async OCR, embedding indexing, risk recalculation, and notification dispatches.
+* **Design Doc**: Refer to `BACKEND_AI_INTEGRATION_PLAN.md` for full database schemas, endpoint specs, and deployment setups.
+
+---
+
+*This document serves as the complete, authoritative source of truth for the project structure, state management, frontend components, and backend architecture for StyleSphere Nexus.*
