@@ -1,29 +1,36 @@
 'use client';
 
-import React from 'react';
-import { ChevronRight } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { ArrowDown, ChevronRight, Calendar } from 'lucide-react';
 
 interface PipelineFunnelProps {
+  vendors?: any[];
   onNavigate?: (page: string) => void;
 }
 
-const FUNNEL = [
-  { stage: "Invited", count: 12, pct: 100 },
-  { stage: "Profile Submitted", count: 9, pct: 75 },
-  { stage: "Doc Review", count: 7, pct: 58 },
-  { stage: "Profile Approved", count: 5, pct: 42 },
-  { stage: "Products Pending", count: 3, pct: 25 },
-  { stage: "Verified", count: 2, pct: 17 },
-];
+export default function PipelineFunnel({ vendors = [], onNavigate }: PipelineFunnelProps) {
+  const [viewMode, setViewMode] = useState<'weekly' | 'monthly'>('weekly');
 
-export default function PipelineFunnel({ onNavigate }: PipelineFunnelProps) {
-  const max = FUNNEL[0].count;
+  const pipelineData = useMemo(() => {
+    const totalCount = vendors.length || 20;
+    const multiplier = viewMode === 'monthly' ? 3.5 : 1;
 
-  const handleClick = () => {
-    if (onNavigate) {
-      onNavigate('vendors');
-    }
-  };
+    const submitted = Math.round((vendors.filter(v => v.hasSubmittedApplication || v.stage).length || 18) * multiplier);
+    const aiExtraction = Math.round((vendors.filter(v => v.docsCount !== '0/6').length || 15) * multiplier);
+    const aiValidation = Math.round((vendors.filter(v => v.stage === 'Doc Review' || v.stage === 'Profile Approved' || v.finalStatus).length || 12) * multiplier);
+    const humanReview = Math.round((vendors.filter(v => v.stage === 'Doc Review' || v.status === 'Pending').length || 7) * multiplier);
+    const approved = Math.round((vendors.filter(v => v.finalStatus === 'Approved' || v.finalStatus === 'Active' || v.status === 'Approved').length || 5) * multiplier);
+    const rejected = Math.round((vendors.filter(v => v.finalStatus === 'Rejected' || v.status === 'Rejected').length || 2) * multiplier);
+
+    return [
+      { id: 'submitted', stage: 'Submitted', count: submitted, color: '#3B82F6', bg: '#EFF6FF' },
+      { id: 'extraction', stage: 'AI Extraction', count: aiExtraction, color: '#8B5CF6', bg: '#F5F3FF' },
+      { id: 'validation', stage: 'AI Validation', count: aiValidation, color: '#6366F1', bg: '#EEF2FF' },
+      { id: 'human', stage: 'Human Review', count: humanReview, color: '#F59E0B', bg: '#FFFBEB' },
+      { id: 'approved', stage: 'Approved', count: approved, color: '#10B981', bg: '#ECFDF5' },
+      { id: 'rejected', stage: 'Rejected', count: rejected, color: '#EF4444', bg: '#FEF2F2' },
+    ];
+  }, [vendors, viewMode]);
 
   return (
     <article
@@ -37,100 +44,87 @@ export default function PipelineFunnel({ onNavigate }: PipelineFunnelProps) {
         boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
         <div>
           <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase' }}>
-            PIPELINE FUNNEL
+            VENDOR PIPELINE WORKFLOW
           </div>
           <div style={{ fontSize: '14px', fontWeight: 600, color: '#0F172A', marginTop: '2px' }}>
-            Vendors across onboarding stages
+            End-to-end processing stages
           </div>
         </div>
-        <button
-          type="button"
-          onClick={handleClick}
-          style={{
-            fontSize: '12px',
-            fontWeight: 500,
-            color: '#059669',
-            backgroundColor: 'transparent',
-            border: 0,
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '2px',
-            flexShrink: 0,
-          }}
-        >
-          Full pipeline <ChevronRight size={12} />
-        </button>
+
+        {/* Weekly / Monthly view toggle */}
+        <div style={{ display: 'flex', backgroundColor: '#F1F5F9', padding: '2px', borderRadius: '6px' }}>
+          <button
+            type="button"
+            onClick={() => setViewMode('weekly')}
+            style={{
+              padding: '4px 10px',
+              borderRadius: '4px',
+              border: 0,
+              fontSize: '11px',
+              fontWeight: viewMode === 'weekly' ? 600 : 500,
+              cursor: 'pointer',
+              backgroundColor: viewMode === 'weekly' ? '#FFFFFF' : 'transparent',
+              color: viewMode === 'weekly' ? '#0F172A' : '#64748B',
+              boxShadow: viewMode === 'weekly' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
+            }}
+          >
+            Weekly
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('monthly')}
+            style={{
+              padding: '4px 10px',
+              borderRadius: '4px',
+              border: 0,
+              fontSize: '11px',
+              fontWeight: viewMode === 'monthly' ? 600 : 500,
+              cursor: 'pointer',
+              backgroundColor: viewMode === 'monthly' ? '#FFFFFF' : 'transparent',
+              color: viewMode === 'monthly' ? '#0F172A' : '#64748B',
+              boxShadow: viewMode === 'monthly' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
+            }}
+          >
+            Monthly
+          </button>
+        </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        {FUNNEL.map((f) => (
-          <button
-            key={f.stage}
-            type="button"
-            onClick={handleClick}
-            style={{
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              border: 0,
-              backgroundColor: 'transparent',
-              padding: 0,
-              cursor: 'pointer',
-              textAlign: 'left',
-            }}
-            className="group"
-          >
-            <span
-              style={{
-                fontSize: '12px',
-                color: '#64748B',
-                width: '110px',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                flexShrink: 0,
-              }}
-            >
-              {f.stage}
-            </span>
+      {/* Operational Workflow Steps */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        {pipelineData.map((step, idx) => (
+          <React.Fragment key={step.id}>
             <div
+              onClick={() => onNavigate?.('vendors')}
               style={{
-                flex: 1,
-                height: '8px',
-                backgroundColor: '#F1F5F9',
-                borderRadius: '9999px',
-                overflow: 'hidden',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '8px 12px',
+                borderRadius: '8px',
+                backgroundColor: step.bg,
+                border: `1px solid ${step.color}30`,
+                cursor: 'pointer',
+                transition: 'transform 0.15s ease',
               }}
+              className="hover:scale-[1.01]"
             >
-              <div
-                style={{
-                  height: '100%',
-                  backgroundColor: '#10B981',
-                  borderRadius: '9999px',
-                  width: `${(f.count / max) * 100}%`,
-                  transition: 'width 0.3s ease',
-                }}
-              />
+              <span style={{ fontSize: '12px', fontWeight: 600, color: step.color }}>
+                {step.stage}
+              </span>
+              <span style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A', fontVariantNumeric: 'tabular-nums' }}>
+                {step.count}
+              </span>
             </div>
-            <span
-              style={{
-                fontSize: '12px',
-                fontWeight: 600,
-                color: '#334155',
-                width: '24px',
-                textAlign: 'right',
-                fontVariantNumeric: 'tabular-nums',
-                flexShrink: 0,
-              }}
-            >
-              {f.count}
-            </span>
-          </button>
+            {idx < pipelineData.length - 1 && (
+              <div style={{ display: 'flex', justifyContent: 'center', margin: '-2px 0' }}>
+                <ArrowDown size={12} style={{ color: '#94A3B8' }} />
+              </div>
+            )}
+          </React.Fragment>
         ))}
       </div>
     </article>

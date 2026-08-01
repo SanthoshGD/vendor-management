@@ -1,51 +1,69 @@
 'use client';
 
 import React from 'react';
-import { FileText, Sparkles, Zap } from 'lucide-react';
+import { AlertCircle, Clock, ShieldAlert, FileText, ChevronRight } from 'lucide-react';
 
 interface PriorityQueueProps {
   vendors?: any[];
-  onOpenVendor?: (vendorId: string) => void;
+  onOpenVendor?: (vendorId: string, tab?: string) => void;
   onNavigate?: (page: string) => void;
 }
 
-const DOCUMENTS = [
-  { id: "d1", title: "Company Registration Certificate", vendor: "Zhang Weilong", company: "Hualong Garment Factory", pages: 5, confidence: 41, risk: "high" },
-  { id: "d2", title: "GST / VAT Certificate", vendor: "Meera Nair", company: "Nair Global Exports Pvt. Ltd.", pages: 2, confidence: 62, risk: "medium" },
-  { id: "d3", title: "Supplier Code of Conduct Sign-off", vendor: "Chen Lihua", company: "Dongfang Footwear Export", pages: 4, confidence: 99, risk: "low" },
-  { id: "d4", title: "Bank Account Verification Letter", vendor: "Meera Nair", company: "Nair Global Exports Pvt. Ltd.", pages: 1, confidence: 88, risk: "low" },
-];
-
-const BADGE_STYLES: Record<string, { bg: string; color: string; border: string }> = {
-  high: { bg: '#FFF1F2', color: '#E11D48', border: '#FECDD3' },
-  medium: { bg: '#FFFBEB', color: '#D97706', border: '#FDE68A' },
-  low: { bg: '#F0F9FF', color: '#0369A1', border: '#BAE6FD' },
-};
-
-function ConfidenceBadge({ confidence, risk }: { confidence: number; risk: string }) {
-  const style = BADGE_STYLES[risk] || BADGE_STYLES.low;
-  return (
-    <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '4px',
-        padding: '2px 8px',
-        borderRadius: '6px',
-        fontSize: '12px',
-        fontWeight: 600,
-        backgroundColor: style.bg,
-        color: style.color,
-        border: `1px solid ${style.border}`,
-      }}
-    >
-      <Sparkles size={11} />
-      {confidence}%
-    </span>
-  );
+export interface PriorityItem {
+  id: string;
+  vendorId: string;
+  vendorName: string;
+  companyName: string;
+  issue: string;
+  priorityLevel: 'High Risk' | 'Missing Tax' | 'Insurance Expired' | 'Overdue >5d' | 'Manual Verification';
+  slaLeft: string;
+  tone: 'red' | 'amber' | 'violet';
 }
 
-export default function PriorityQueue({ onNavigate }: PriorityQueueProps) {
+export default function PriorityQueue({ vendors = [], onOpenVendor, onNavigate }: PriorityQueueProps) {
+  const priorityList: PriorityItem[] = [
+    {
+      id: 'p1',
+      vendorId: 'v1',
+      vendorName: 'Zhang Weilong',
+      companyName: 'Hualong Garment Factory',
+      issue: 'Missing Tax Registration Certificate & Address Mismatch',
+      priorityLevel: 'High Risk',
+      slaLeft: '4h left',
+      tone: 'red',
+    },
+    {
+      id: 'p2',
+      vendorId: 'v3',
+      vendorName: 'Meera Nair',
+      companyName: 'Nair Global Exports Pvt. Ltd.',
+      issue: 'Liability Insurance Expired (COI Certificate)',
+      priorityLevel: 'Insurance Expired',
+      slaLeft: '12h left',
+      tone: 'amber',
+    },
+    {
+      id: 'p3',
+      vendorId: 'v2',
+      vendorName: 'Chen Lihua',
+      companyName: 'Dongfang Footwear Export',
+      issue: 'Awaiting Human Review for >5 days',
+      priorityLevel: 'Overdue >5d',
+      slaLeft: 'Overdue',
+      tone: 'red',
+    },
+    {
+      id: 'p4',
+      vendorId: 'v9',
+      vendorName: 'Fatima Zahra',
+      companyName: 'Casa Textile SARL',
+      issue: 'Manual Bank Letter Verification Required',
+      priorityLevel: 'Manual Verification',
+      slaLeft: '1d left',
+      tone: 'violet',
+    },
+  ];
+
   return (
     <article
       style={{
@@ -55,82 +73,104 @@ export default function PriorityQueue({ onNavigate }: PriorityQueueProps) {
         padding: '20px',
         display: 'flex',
         flexDirection: 'column',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
         <div>
-          <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase' }}>SMART QUEUE</div>
+          <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase' }}>PRIORITY QUEUE</div>
           <div style={{ fontSize: '14px', fontWeight: 600, color: '#0F172A', marginTop: '2px' }}>
-            Today's review queue — prioritized by AI risk &amp; SLA, not FIFO
+            Vendors requiring immediate attention
           </div>
         </div>
         <button
           type="button"
-          onClick={() => onNavigate?.('onboarding')}
+          onClick={() => onNavigate?.('vendors')}
           style={{
             fontSize: '12px',
-            fontWeight: 500,
-            backgroundColor: '#0F172A',
-            color: '#FFFFFF',
-            padding: '6px 12px',
-            borderRadius: '8px',
+            fontWeight: 600,
+            color: '#059669',
+            backgroundColor: 'transparent',
             border: 0,
+            cursor: 'pointer',
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '6px',
-            cursor: 'pointer',
-            whiteSpace: 'nowrap',
+            gap: '4px',
           }}
         >
-          <Zap size={13} /> Start review
+          View all <ChevronRight size={13} />
         </button>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {DOCUMENTS.map((d, index) => (
-          <div
-            key={d.id}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {priorityList.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => onOpenVendor?.(item.vendorId, 'vendor-details')}
             style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              paddingTop: '10px',
-              paddingBottom: '10px',
-              borderTop: index > 0 ? '1px solid #F1F5F9' : 'none',
+              padding: '12px 14px',
+              borderRadius: '8px',
+              border: '1px solid #F1F5F9',
+              backgroundColor: '#FFFFFF',
+              textAlign: 'left',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
             }}
+            className="hover:bg-slate-50 hover:border-slate-200"
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
-              <FileText size={16} style={{ color: '#94A3B8', flexShrink: 0 }} />
+              <span
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  backgroundColor: item.tone === 'red' ? '#FFF1F2' : item.tone === 'amber' ? '#FFFBEB' : '#F5F3FF',
+                  color: item.tone === 'red' ? '#E11D48' : item.tone === 'amber' ? '#D97706' : '#7C3AED',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                {item.tone === 'red' ? <ShieldAlert size={16} /> : <AlertCircle size={16} />}
+              </span>
               <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: '14px', fontWeight: 500, color: '#1E293B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {d.title}
+                <div style={{ fontSize: '13px', fontWeight: 600, color: '#1E293B', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>{item.vendorName}</span>
+                  <span style={{ color: '#94A3B8', fontWeight: 400 }}>·</span>
+                  <span style={{ color: '#64748B', fontWeight: 500 }}>{item.companyName}</span>
                 </div>
-                <div style={{ fontSize: '12px', color: '#94A3B8', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {d.vendor} · {d.company}
+                <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {item.issue}
                 </div>
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, marginLeft: '16px' }}>
-              <ConfidenceBadge confidence={d.confidence} risk={d.risk} />
-              <kbd
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, marginLeft: '16px' }}>
+              <span
                 style={{
-                  fontSize: '12px',
-                  color: '#94A3B8',
-                  border: '1px solid #E2E8F0',
-                  borderRadius: '4px',
-                  padding: '2px 6px',
-                  fontFamily: 'monospace',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  padding: '2px 8px',
+                  borderRadius: '6px',
+                  backgroundColor: item.tone === 'red' ? '#FFF1F2' : item.tone === 'amber' ? '#FFFBEB' : '#F5F3FF',
+                  color: item.tone === 'red' ? '#E11D48' : item.tone === 'amber' ? '#D97706' : '#7C3AED',
+                  border: `1px solid ${item.tone === 'red' ? '#FECDD3' : item.tone === 'amber' ? '#FDE68A' : '#DDD6FE'}`,
                 }}
               >
-                A / R
-              </kbd>
+                {item.priorityLevel}
+              </span>
+              <span style={{ fontSize: '12px', color: item.slaLeft.includes('Overdue') ? '#E11D48' : '#94A3B8', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <Clock size={12} /> {item.slaLeft}
+              </span>
+              <ChevronRight size={14} style={{ color: '#CBD5E1' }} />
             </div>
-          </div>
+          </button>
         ))}
-      </div>
-
-      <div style={{ fontSize: '12px', color: '#94A3B8', marginTop: '12px', paddingTop: '8px', borderTop: '1px solid #F8FAFC' }}>
-        Tip: split-pane review supports keyboard shortcuts (A approve, R reject, ↓ next) for high-volume days.
       </div>
     </article>
   );

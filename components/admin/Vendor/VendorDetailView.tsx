@@ -11,6 +11,7 @@ import ProductCatalog from '../Product/ProductCatalog';
 import VendorActivity from './VendorActivity';
 import VendorCommunication from './VendorCommunication';
 import VendorApprovalHistory from './VendorApprovalHistory';
+import VendorRiskCard from './VendorRiskCard';
 
 interface VendorDetailViewProps {
   vendorId: string;
@@ -151,10 +152,11 @@ export default function VendorDetailView({
 
   const rawVendor = getVendor(vendorId);
 
-  // Normalize vendor object with presentation defaults matching screenshot
+  // Normalize vendor object with presentation defaults
   const vendor = useMemo(() => {
     if (!rawVendor) return null;
     return {
+      ...rawVendor,
       id: rawVendor.id || 'V3',
       name: rawVendor.name || 'Zhang Weilong',
       company: rawVendor.company || rawVendor.legalName || rawVendor.profile?.companyName || 'Hualong Garment Factory',
@@ -162,8 +164,8 @@ export default function VendorDetailView({
       category: rawVendor.category || 'Apparels',
       stage: rawVendor.stage || 'Profile Submitted',
       status: decisionState || rawVendor.finalStatus || rawVendor.status || 'Pending',
-      docs: rawVendor.docsCount || '0/6',
-      supervisor: rawVendor.owner || 'Liu Yanbo',
+      docs: rawVendor.docsCount || `${(rawVendor.documents || []).filter((d: any) => d.status === 'Verified').length}/6`,
+      supervisor: rawVendor.owner || 'Priya Sharma (Vendor Executive)',
       submitted: rawVendor.submitted || 'Yesterday, 4:30 PM',
       risk: rawVendor.risk || 'high',
       initials: (rawVendor.name || 'Zhang Weilong').split(' ').map((p: string) => p[0]).slice(0, 2).join(''),
@@ -181,13 +183,13 @@ export default function VendorDetailView({
     );
   }
 
-  const docsDone = parseInt(vendor.docs) || 0;
+  const docsDone = parseInt(String(vendor.docs)) || (rawVendor.documents || []).filter((d: any) => d.status === 'Verified').length || 0;
   const pct = Math.round((docsDone / 6) * 100);
-  const canDecide = !readOnly && !decisionState && (vendor.status === 'In Review' || vendor.status === 'Pending');
+  const canDecide = !readOnly && !decisionState && (vendor.status === 'In Review' || vendor.status === 'Pending' || vendor.status === 'Doc Review');
 
   const handleApprove = () => {
     setDecisionState('Approved');
-    const ok = submitDecision(vendor.id, 'APPROVE', 'Approved by Vendor Executive', {});
+    submitDecision(vendor.id, 'APPROVE', 'Approved by Admin', {});
     if (onApproveSuccess) {
       onApproveSuccess(vendor.id, vendor.name);
     } else {
@@ -271,13 +273,13 @@ export default function VendorDetailView({
         ))}
       </div>
 
-      {/* TAB CONTENT: Overview tab matches exact screenshot design */}
+      {/* TAB CONTENT: Overview tab */}
       {activeTab === 'overview' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {/* Card 1: Onboarding Stage Stepper */}
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
             <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '16px' }}>
-              ONBOARDING STAGE
+              STATUS STAGE
             </div>
             <Stepper stage={vendor.stage} />
           </div>
@@ -288,18 +290,18 @@ export default function VendorDetailView({
               <Sparkles size={14} /> AI summary
             </div>
             <p style={{ fontSize: '13px', lineHeight: '1.6', color: '#4C1D95', margin: 0 }}>
-              <strong>{vendor.company}</strong> is currently in the <strong>{vendor.stage}</strong> stage with <strong>{vendor.docs}</strong> required documents submitted. A minor inconsistency was flagged during automated review; recommend a manual check before proceeding. 6 documents still required to complete profile approval.
+              <strong>{vendor.company}</strong> is currently in the <strong>{vendor.stage}</strong> status stage with <strong>{vendor.docs}</strong> required documents verified. AI validation extracted business registration and tax data. Deterministic risk score is currently flagged at 26/100 (Low Risk).
             </p>
           </div>
 
           {/* Two Column Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', alignItems: 'start' }}>
-            {/* Left Column: Vendor Info & Sample Products */}
+            {/* Left Column: Vendor Info & Risk Engine */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               {/* Vendor Information Card */}
               <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                 <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '16px' }}>
-                  VENDOR INFORMATION
+                  COMPANY INFORMATION
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingBottom: '16px', marginBottom: '16px', borderBottom: '1px solid #F1F5F9' }}>
                   <span style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#F3E8FF', color: '#6D28D9', fontWeight: 600, fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -322,50 +324,40 @@ export default function VendorDetailView({
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span style={{ color: '#94A3B8', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
-                      <MapPin size={13} /> Region
+                      <MapPin size={13} /> Country / Region
                     </span>
                     <span style={{ color: '#334155', fontWeight: 500 }}>{vendor.region}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span style={{ color: '#94A3B8', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
-                      <UserCog size={13} /> Vendor Executive
+                      <UserCog size={13} /> Assigned Vendor Executive
                     </span>
-                    <span style={{ color: '#334155', fontWeight: 500 }}>{vendor.supervisor}</span>
+                    <span style={{ color: '#334155', fontWeight: 600 }}>{vendor.supervisor}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span style={{ color: '#94A3B8', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
-                      <Clock size={13} /> Submitted
+                      <Clock size={13} /> Submission Date
                     </span>
                     <span style={{ color: '#334155', fontWeight: 500 }}>{vendor.submitted}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span style={{ color: '#94A3B8', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
-                      <FileText size={13} /> Docs stage
+                      <FileText size={13} /> Overall Status
                     </span>
-                    <span style={{ color: '#334155', fontWeight: 500 }}>{vendor.stage}</span>
+                    <StatusBadge status={vendor.status} />
                   </div>
                 </div>
               </div>
 
-              {/* Sample Products Card */}
-              <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-                  <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase' }}>
-                    SAMPLE PRODUCTS
-                  </div>
-                  <span style={{ fontSize: '12px', color: '#94A3B8' }}>0 products submitted</span>
-                </div>
-                <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '24px', textAlign: 'center', color: '#94A3B8', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                  <Package size={14} /> No products submitted for this vendor yet
-                </div>
-              </div>
+              {/* Vendor Risk Card */}
+              <VendorRiskCard vendor={rawVendor || vendor} />
             </div>
 
             {/* Right Column: Documents Checklist */}
             <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
                 <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase' }}>
-                  DOCUMENTS
+                  DOCUMENTS SUMMARY
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: '18px', fontWeight: 700, color: '#0F172A' }}>{pct}%</div>
@@ -414,11 +406,11 @@ export default function VendorDetailView({
       )}
 
       {/* Sub-tab views */}
-      {activeTab === 'documents' && <VendorDocuments vendor={rawVendor} readOnly={readOnly} />}
+      {activeTab === 'documents' && <VendorDocuments vendor={rawVendor || vendor} readOnly={readOnly} />}
       {activeTab === 'products' && <ProductCatalog vendorId={vendor.id} />}
-      {activeTab === 'activity' && <VendorActivity vendor={rawVendor} auditLogs={auditLogs} />}
-      {activeTab === 'communication' && <VendorCommunication vendor={rawVendor} />}
-      {activeTab === 'history' && <VendorApprovalHistory vendor={rawVendor} auditLogs={auditLogs} />}
+      {activeTab === 'activity' && <VendorActivity vendor={rawVendor || vendor} auditLogs={auditLogs} />}
+      {activeTab === 'communication' && <VendorCommunication vendor={rawVendor || vendor} />}
+      {activeTab === 'history' && <VendorApprovalHistory vendor={rawVendor || vendor} auditLogs={auditLogs} />}
 
       {/* Sticky Decision Bar */}
       {canDecide && (

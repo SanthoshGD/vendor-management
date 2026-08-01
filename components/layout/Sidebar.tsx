@@ -11,7 +11,7 @@ const cx = (...items: (string | boolean | undefined | null)[]): string =>
   items.filter(Boolean).join(' ');
 
 const ROLE_LABEL: Record<string, string> = {
-  admin: 'Admin workspace', supervisor: 'Vendor Executive workspace', vendor: 'Vendor portal',
+  admin: 'Admin Portal', vendor: 'Vendor Portal',
 };
 
 function useDismiss(isOpen: boolean, onDismiss: () => void) {
@@ -103,10 +103,8 @@ export function Sidebar({ persona, nav, page, collapsed, mobileNav, onNavigate, 
     ? activeVendor?.verifiedCount || 0
     : vendors.reduce((sum: number, vendor: any) => sum + vendor.documents.filter((doc: any) => doc.status === 'Verified').length, 0);
   const footerAction = persona === 'admin'
-    ? ['ai-review', 'Open review']
-    : persona === 'supervisor'
-      ? ['oversight', 'Open oversight']
-      : ['onboarding', 'View application'];
+    ? ['vendors', 'Open Vendors']
+    : ['onboarding', 'View application'];
 
   return (
     <aside className={cx('nexus-sidebar', collapsed && 'collapsed', mobileNav && 'mobile-open')}>
@@ -117,7 +115,7 @@ export function Sidebar({ persona, nav, page, collapsed, mobileNav, onNavigate, 
       </div>
       <WorkspacePicker persona={persona} collapsed={collapsed} onViewAsVendor={onViewAsVendor} />
       <nav>
-        {!collapsed && <label>{persona === 'admin' ? 'Manage' : persona === 'supervisor' ? 'Oversee' : 'Workspace'}</label>}
+        {!collapsed && <label>{persona === 'admin' ? 'Manage' : 'Workspace'}</label>}
         {nav.map(([id, title, Icon]) => (
           <button key={id}
             className={cx('sidebar-link', page === id && 'active')} onClick={() => onNavigate(id)}
@@ -131,7 +129,7 @@ export function Sidebar({ persona, nav, page, collapsed, mobileNav, onNavigate, 
           <div className="ai-savings">
             <span><Zap size={15} /></span>
             <strong>{reviewedDocuments} documents reviewed</strong>
-            <small>Current simulated review state</small>
+            <small>Simulated review state</small>
             <button onClick={() => onNavigate(footerAction[0])}>{footerAction[1]} <ArrowRight size={12} /></button>
           </div>
         )}

@@ -37,9 +37,11 @@ const adminNav: [string, string, any][] = [
   ['vendors', 'Vendors', Users],
   ['review-queue', 'Review Queue', Inbox],
   ['compliance', 'Compliance', ShieldCheck],
-  ['onboarding', 'Product Catalog', FolderKanban],
-  ['agents', 'Agent Console', Bot],
+  ['products', 'Product Catalog', FolderKanban],
+  ['ai-assistant', 'AI Assistant', Bot],
   ['activity', 'Activity', Activity],
+  ['analytics', 'Analytics', Gauge],
+  ['settings', 'Settings', Settings],
 ];
 
 const vendorNav: [string, string, any][] = [
@@ -54,12 +56,16 @@ const pageNamesByPersona: Record<string, Record<string, string>> = {
     overview: 'Dashboard',
     vendors: 'Vendors',
     'review-queue': 'Review Queue',
-    onboarding: 'Product Catalog',
     compliance: 'Compliance',
-    'ai-review': 'Review workspace',
-    'vendor-details': 'Vendor Details',
-    agents: 'Agent Console',
+    products: 'Product Catalog',
+    onboarding: 'Product Catalog',
+    'ai-assistant': 'AI Assistant',
+    agents: 'AI Assistant',
     activity: 'Activity',
+    analytics: 'Analytics',
+    settings: 'Settings',
+    'ai-review': 'Vendor Details',
+    'vendor-details': 'Vendor Details',
   },
   vendor: {
     overview: 'My workspace',
@@ -70,7 +76,7 @@ const pageNamesByPersona: Record<string, Record<string, string>> = {
 };
 
 const ROLE_PAGES: Record<string, string[]> = {
-  admin: ['overview', 'vendors', 'review-queue', 'onboarding', 'ai-review', 'compliance', 'agents', 'activity', 'vendor-details'],
+  admin: ['overview', 'vendors', 'review-queue', 'compliance', 'products', 'onboarding', 'ai-assistant', 'agents', 'activity', 'analytics', 'settings', 'ai-review', 'vendor-details'],
   vendor: ['overview', 'onboarding', 'actions', 'documents'],
 };
 

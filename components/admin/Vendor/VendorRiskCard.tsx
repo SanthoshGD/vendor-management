@@ -1,126 +1,138 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { CheckCircle2, AlertTriangle, XCircle, ShieldCheck } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, Check, AlertTriangle, Info } from 'lucide-react';
 
 interface VendorRiskCardProps {
   vendor: any;
 }
 
+export interface RiskFactor {
+  id: string;
+  label: string;
+  passed: boolean;
+  impactPoints: number;
+  note?: string;
+}
+
 export default function VendorRiskCard({ vendor }: VendorRiskCardProps) {
   const riskAnalysis = useMemo(() => {
+    if (!vendor) return { score: 15, level: 'Low Risk', factors: [] };
+
     const docs = vendor.documents || [];
-    const taxDoc = docs.find((d: any) => d.code === 'TAX');
-    const coiDoc = docs.find((d: any) => d.code === 'COI');
-    const bankDoc = docs.find((d: any) => d.code === 'BANK');
+    const hasTaxDoc = docs.some((d: any) => d.code === 'TAX' && (d.status === 'Verified' || d.status === 'Complete'));
+    const hasInsurance = docs.some((d: any) => d.code === 'COI' && (d.status === 'Verified' || d.status === 'Complete'));
+    const hasBank = docs.some((d: any) => d.code === 'BANK' && (d.status === 'Verified' || d.status === 'Complete'));
+    const hasAddressMatch = !docs.some((d: any) => d.fields?.some((f: any) => f.crossDocMismatch && !f.resolved));
+    const hasGST = docs.some((d: any) => (d.code === 'GST' || d.code === 'TAX') && d.status !== 'Missing');
 
-    // Deterministic rules
-    const taxMissing = !taxDoc || taxDoc.status === 'Missing';
-    const taxFlagged = taxDoc?.status === 'Flagged' || taxDoc?.status === 'Rejected';
-    const taxVerified = taxDoc?.status === 'Verified';
-
-    const bankMissing = !bankDoc || bankDoc.status === 'Missing';
-    const bankVerified = bankDoc?.status === 'Verified';
-
-    const coiMissing = !coiDoc || coiDoc.status === 'Missing';
-    const coiFlagged = coiDoc?.status === 'Flagged' || coiDoc?.status === 'Rejected';
-    const coiVerified = coiDoc?.status === 'Verified';
-    
-    // Scan fields for mismatches
-    const hasAddressMismatch = docs.flatMap((d: any) => d.fields || []).some(
-      (f: any) => f.crossDocMismatch || /address/i.test(f.label || '') && f.diagnostic
-    );
-
-    const coiExpiresSoon = docs.some(
-      (d: any) => d.code === 'COI' && (d.fields || []).some((f: any) => /expir/i.test(f.key) && /expir/i.test(f.diagnostic || ''))
-    );
-
-    // Calculate deterministic risk score
-    let score = 30; // base score
-    if (taxMissing) score += 20;
-    if (taxFlagged) score += 15;
-    if (bankMissing) score += 20;
-    if (coiMissing) score += 15;
-    if (coiFlagged) score += 10;
-    if (coiExpiresSoon) score += 10;
-    if (hasAddressMismatch) score += 15;
-
-    score = Math.min(100, Math.max(10, score));
-
-    let riskLevel = 'Low Risk';
-    let riskTone = 'green';
-    if (score >= 70) {
-      riskLevel = 'High Risk';
-      riskTone = 'red';
-    } else if (score >= 35) {
-      riskLevel = 'Medium Risk';
-      riskTone = 'amber';
-    }
-
-    const drivers = [
-      {
-        label: taxVerified 
-          ? 'Tax Registration Verified' 
-          : taxMissing 
-            ? 'Tax Certificate Missing' 
-            : 'Tax Certificate Pending/Flagged',
-        state: taxVerified ? 'success' : taxMissing ? 'danger' : 'warning'
-      },
-      {
-        label: hasAddressMismatch 
-          ? 'Address Mismatch Flagged' 
-          : 'Address Verification Matched',
-        state: hasAddressMismatch ? 'warning' : 'success'
-      },
-      {
-        label: coiVerified 
-          ? coiExpiresSoon 
-            ? 'Insurance Expires Soon' 
-            : 'Insurance Verification Active' 
-          : coiMissing 
-            ? 'Insurance Certificate Missing' 
-            : 'Insurance Pending Review',
-        state: coiVerified ? (coiExpiresSoon ? 'warning' : 'success') : coiMissing ? 'danger' : 'warning'
-      },
-      {
-        label: bankVerified 
-          ? 'Bank Proof Verified' 
-          : bankMissing 
-            ? 'Bank Proof Missing' 
-            : 'Bank Verification Pending',
-        state: bankVerified ? 'success' : bankMissing ? 'danger' : 'warning'
-      }
+    const factors: RiskFactor[] = [
+      { id: 'tax', label: 'Tax Registration Verified', passed: hasTaxDoc, impactPoints: 20, note: hasTaxDoc ? 'Government ID matched' : 'Tax document pending verification' },
+      { id: 'insurance', label: 'Insurance Valid', passed: hasInsurance, impactPoints: 25, note: hasInsurance ? 'Liability policy active' : 'Missing or expired insurance' },
+      { id: 'address', label: 'Address Match Across Documents', passed: hasAddressMatch, impactPoints: 15, note: hasAddressMatch ? 'Registered address consistent' : 'Address mismatch detected across files' },
+      { id: 'bank', label: 'Bank Verification Letter', passed: hasBank, impactPoints: 20, note: hasBank ? 'Bank account confirmed' : 'Missing bank confirmation letter' },
+      { id: 'gst', label: 'GST / Business License Verified', passed: hasGST, impactPoints: 20, note: hasGST ? 'GST number active' : 'GST validation pending' },
     ];
 
-    return { score, riskLevel, riskTone, drivers };
+    let penaltyScore = 0;
+    factors.forEach(f => {
+      if (!f.passed) penaltyScore += f.impactPoints;
+    });
+
+    // Base score calculation (0 to 100, lower is safer)
+    const rawScore = Math.min(100, Math.max(5, penaltyScore + (vendor.risk === 'high' || vendor.risk === 'High' ? 20 : 0)));
+    const level = rawScore >= 60 ? 'High Risk' : rawScore >= 30 ? 'Medium Risk' : 'Low Risk';
+    const badgeColor = rawScore >= 60 ? '#E11D48' : rawScore >= 30 ? '#D97706' : '#059669';
+    const badgeBg = rawScore >= 60 ? '#FFF1F2' : rawScore >= 30 ? '#FFFBEB' : '#ECFDF5';
+
+    return { score: rawScore, level, badgeColor, badgeBg, factors };
   }, [vendor]);
 
   return (
-    <article className="panel vendor-risk-card">
-      <span className="section-kicker">Risk Assessment</span>
-      
-      <div className="risk-score-display">
-        <div className={`risk-score-circle ${riskAnalysis.riskTone}`}>
-          <strong>{riskAnalysis.score}</strong>
-          <small>/ 100</small>
+    <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+        <div>
+          <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase' }}>
+            VENDOR RISK SCORE
+          </div>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: '#0F172A', marginTop: '2px' }}>
+            Rule-Based Explainable Assessment
+          </div>
         </div>
-        <div className="risk-level-meta">
-          <h3 className={`risk-level-text ${riskAnalysis.riskTone}`}>{riskAnalysis.riskLevel}</h3>
-          <p className="risk-desc">Calculated via deterministic compliance scoring engine.</p>
-        </div>
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '4px 12px',
+            borderRadius: '9999px',
+            fontSize: '12px',
+            fontWeight: 700,
+            backgroundColor: riskAnalysis.badgeBg,
+            color: riskAnalysis.badgeColor,
+            border: `1px solid ${riskAnalysis.badgeColor}30`,
+          }}
+        >
+          {riskAnalysis.score >= 60 ? <ShieldAlert size={14} /> : <ShieldCheck size={14} />}
+          {riskAnalysis.level}
+        </span>
       </div>
 
-      <div className="risk-drivers-list">
-        <h4 className="drivers-title">Compliance Drivers</h4>
-        {riskAnalysis.drivers.map((driver, idx) => (
-          <div className="driver-row" key={idx}>
-            {driver.state === 'success' && <CheckCircle2 className="text-emerald-600" size={16} />}
-            {driver.state === 'warning' && <AlertTriangle className="text-amber-500" size={16} />}
-            {driver.state === 'danger' && <XCircle className="text-rose-600" size={16} />}
-            <span className={`driver-label ${driver.state}`}>{driver.label}</span>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '16px', borderBottom: '1px solid #F1F5F9', paddingBottom: '16px' }}>
+        <span style={{ fontSize: '32px', fontWeight: 800, color: '#0F172A', fontVariantNumeric: 'tabular-nums' }}>
+          {riskAnalysis.score}
+        </span>
+        <span style={{ fontSize: '14px', color: '#94A3B8', fontWeight: 500 }}>/ 100</span>
+      </div>
+
+      <div style={{ fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '10px' }}>
+        Risk Drivers &amp; Validations:
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {riskAnalysis.factors.map((factor) => (
+          <div
+            key={factor.id}
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '10px',
+              fontSize: '12px',
+              padding: '8px 10px',
+              borderRadius: '8px',
+              backgroundColor: factor.passed ? '#F8FAFC' : '#FFF1F2',
+              border: `1px solid ${factor.passed ? '#E2E8F0' : '#FECDD3'}`,
+            }}
+          >
+            <span
+              style={{
+                width: '18px',
+                height: '18px',
+                borderRadius: '50%',
+                backgroundColor: factor.passed ? '#DCFCE7' : '#FFE4E6',
+                color: factor.passed ? '#16A34A' : '#E11D48',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                marginTop: '1px',
+              }}
+            >
+              {factor.passed ? <Check size={11} strokeWidth={3} /> : <AlertTriangle size={11} strokeWidth={2.5} />}
+            </span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 600, color: factor.passed ? '#334155' : '#991B1B' }}>
+                {factor.label}
+              </div>
+              {factor.note && (
+                <div style={{ fontSize: '11px', color: factor.passed ? '#64748B' : '#BE123C', marginTop: '1px' }}>
+                  {factor.note}
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>
-    </article>
+    </div>
   );
 }
