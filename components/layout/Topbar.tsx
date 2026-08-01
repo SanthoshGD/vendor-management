@@ -25,14 +25,9 @@ const pageNamesByPersona: Record<string, Record<string, string>> = {
   admin: {
     overview: 'Dashboard',
     vendors: 'Vendors',
-    'review-queue': 'Review Queue',
-    compliance: 'Compliance',
-    onboarding: 'Product Catalog',
     'ai-review': 'Vendor Details',
     'vendor-details': 'Vendor Details',
-    agents: 'AI Assistant',
     activity: 'Activity',
-    analytics: 'Analytics',
     settings: 'Settings',
   },
   vendor: {

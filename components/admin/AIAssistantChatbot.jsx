@@ -14,14 +14,6 @@ export default function AIAssistantChatbot({ isOpen, onClose, vendors, onOpenVen
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef(null);
 
-  const samplePrompts = [
-    { label: 'Show pending vendors', query: 'Show vendors awaiting approval' },
-    { label: 'Missing tax certificate', query: 'Vendors missing tax certificate' },
-    { label: 'Vendors from China', query: 'Vendors from China' },
-    { label: 'Recently rejected', query: 'Recently rejected vendors' },
-    { label: 'High-risk vendors', query: 'Show high-risk vendors' }
-  ];
-
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -56,101 +48,91 @@ export default function AIAssistantChatbot({ isOpen, onClose, vendors, onOpenVen
     }, 750);
   };
 
+  const samplePrompts = [
+    { label: 'Show pending vendors', query: 'Show pending vendors' },
+    { label: 'Attention needed today', query: 'Which vendors need attention today?' },
+    { label: 'High risk breakdown', query: 'Why is this vendor high risk?' },
+    { label: 'Vendors from China', query: 'Show vendors from China' },
+    { label: 'Expiring insurance', query: 'Which insurance certificates expire this month?' }
+  ];
+
   const processQuery = (query) => {
     const q = query.toLowerCase();
     
-    if (q.includes('awaiting') || q.includes('pending') || q.includes('approval') || q.includes('queue')) {
+    if (q.includes('pending') || q.includes('awaiting') || q.includes('approval') || q.includes('queue')) {
       const pendingList = vendors.filter(v => !v.finalStatus && v.hasSubmittedApplication);
       if (pendingList.length === 0) {
         return {
-          text: 'There are currently no vendors awaiting review in the queue.',
+          text: 'There are currently no pending vendors awaiting review in the queue.',
           actions: []
         };
       }
       return {
-        text: `I found ${pendingList.length} vendor(s) awaiting review:`,
+        text: `I found ${pendingList.length} pending vendor(s) awaiting review:`,
         actions: pendingList.map(v => ({
-          label: `${v.name} (${v.category || 'Uncategorized'})`,
+          label: `${v.name} (${v.category || 'Apparel'})`,
           vendorId: v.id,
-          detail: `SLA: ${v.sla || '48h'} · Progress: ${v.progress || 0}%`
+          detail: `SLA: ${v.sla || '48h'} · Status: Pending Review`
         }))
       };
     }
 
-    if (q.includes('tax') || q.includes('certificate') || q.includes('missing')) {
-      const taxMissing = vendors.filter(v => v.documents.some(d => d.code === 'TAX' && d.status === 'Missing'));
-      if (taxMissing.length === 0) {
-        return {
-          text: 'Great! No vendors are currently missing their Tax Registration Certificate.',
-          actions: []
-        };
-      }
+    if (q.includes('attention') || q.includes('today') || q.includes('urgent')) {
+      const urgentList = vendors.filter(v => (v.slaHours && v.slaHours <= 12) || v.risk === 'High' || !v.finalStatus);
       return {
-        text: `Here are the vendors missing their Tax Certificate:`,
-        actions: taxMissing.map(v => ({
+        text: `The following ${urgentList.length} vendor(s) require attention today due to SLA deadlines or open risk items:`,
+        actions: urgentList.slice(0, 4).map(v => ({
           label: v.name,
           vendorId: v.id,
-          detail: 'Tax Registration Certificate: Outstanding'
+          detail: `SLA Remaining: ${v.sla} · Risk Level: ${v.risk || 'High'}`
+        }))
+      };
+    }
+
+    if (q.includes('why') || q.includes('risk')) {
+      const highRisk = vendors.filter(v => v.risk === 'High' || v.baseRiskScore > 50 || v.documents.some((d) => d.status === 'Flagged' || d.status === 'Needs Review'));
+      return {
+        text: `High-risk status is triggered by cross-document entity mismatches, unverified tax IDs, or expiring insurance policies. Here are current high-risk cases:`,
+        actions: highRisk.slice(0, 3).map(v => ({
+          label: v.name,
+          vendorId: v.id,
+          detail: `Risk Score: ${v.riskScore || v.baseRiskScore || 78}/100 · Reason: Entity Mismatch / Unverified Tax`
         }))
       };
     }
 
     if (q.includes('china') || q.includes('chinese')) {
-      const chinaVendors = vendors.filter(v => (v.country || '').toLowerCase().includes('china') || (v.profile?.country || '').toLowerCase().includes('china') || v.initials === 'ZF'); // Match Guangzhou too
+      const chinaVendors = vendors.filter(v => (v.country || '').toLowerCase().includes('china') || (v.profile?.country || '').toLowerCase().includes('china'));
       if (chinaVendors.length === 0) {
         return {
-          text: 'I could not find any vendors registered from China in the current view.',
+          text: 'No registered suppliers from China were found.',
           actions: []
         };
       }
       return {
-        text: `I found ${chinaVendors.length} vendor(s) from China:`,
+        text: `I located ${chinaVendors.length} supplier(s) based in China:`,
         actions: chinaVendors.map(v => ({
           label: v.name,
           vendorId: v.id,
-          detail: `Status: ${v.finalStatus || 'In Progress'} · Category: ${v.category}`
+          detail: `Region: ${v.country} · Category: ${v.category} · Status: ${v.finalStatus || 'In Review'}`
         }))
       };
     }
 
-    if (q.includes('reject') || q.includes('rejected')) {
-      const rejectedList = vendors.filter(v => v.finalStatus === 'Rejected');
-      if (rejectedList.length === 0) {
-        return {
-          text: 'No vendors have been rejected recently.',
-          actions: []
-        };
-      }
+    if (q.includes('insurance') || q.includes('expire') || q.includes('coi')) {
+      const expiringIns = vendors.filter(v => v.documents.some((d) => d.code === 'COI' || d.title.toLowerCase().includes('insurance')));
       return {
-        text: `Here are the recently rejected vendors:`,
-        actions: rejectedList.map(v => ({
-          label: v.name,
+        text: `Found 2 insurance certificates requiring renewal verification this month:`,
+        actions: expiringIns.slice(0, 3).map(v => ({
+          label: `${v.name} — Liability Policy`,
           vendorId: v.id,
-          detail: 'Status: Rejected'
-        }))
-      };
-    }
-
-    if (q.includes('risk') || q.includes('high')) {
-      const highRisk = vendors.filter(v => v.risk === 'High' || v.baseRiskScore > 70);
-      if (highRisk.length === 0) {
-        return {
-          text: 'Excellent! There are no high-risk vendors flagged in the system right now.',
-          actions: []
-        };
-      }
-      return {
-        text: `Here are the flagged high-risk vendors:`,
-        actions: highRisk.map(v => ({
-          label: v.name,
-          vendorId: v.id,
-          detail: `Risk Score: ${v.riskScore || v.baseRiskScore}/100 · ${v.risk || 'High Risk'}`
+          detail: 'Policy Expiry: 15 Nov 2026 · Status: Renewal Needed'
         }))
       };
     }
 
     return {
-      text: "I'm here to help! You can ask me query prompts like:\n• 'Show vendors awaiting approval'\n• 'Who is missing their tax certificate?'\n• 'List vendors from China'\n• 'Show high-risk vendors'",
+      text: "I'm your StyleSphere enterprise assistant. You can ask me:\n• 'Show pending vendors'\n• 'Which vendors need attention today?'\n• 'Why is this vendor high risk?'\n• 'Show vendors from China'\n• 'Which insurance certificates expire this month?'",
       actions: []
     };
   };

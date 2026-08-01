@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -7,11 +8,12 @@ import {
   UserCog, FileText, CheckCircle2, AlertTriangle, CircleDot
 } from 'lucide-react';
 import VendorDocuments from './VendorDocuments';
-import ProductCatalog from '../Product/ProductCatalog';
+import ProductCatalog, { MOCK_PRODUCTS } from '../Product/ProductCatalog';
 import VendorActivity from './VendorActivity';
 import VendorCommunication from './VendorCommunication';
 import VendorApprovalHistory from './VendorApprovalHistory';
 import VendorRiskCard from './VendorRiskCard';
+import DocumentsView from '../DocumentReview/DocumentsView';
 
 interface VendorDetailViewProps {
   vendorId: string;
@@ -39,11 +41,11 @@ const DOC_TEMPLATE = [
 ];
 
 function StatusBadge({ status }: { status: string }) {
-  let bg = '#FEF3C7';
-  let color = '#D97706';
-  let border = '#FDE68A';
+  let bg = '#F1F5F9';
+  let color = '#475569';
+  let border = '#CBD5E1';
 
-  if (status === 'Approved' || status === 'Verified' || status === 'Active') {
+  if (status === 'Approved' || status === 'Verified') {
     bg = '#ECFDF5';
     color = '#059669';
     border = '#A7F3D0';
@@ -78,7 +80,7 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function Stepper({ stage }: { stage: string }) {
+function Stepper({ stage, onSelectStage }: { stage: string; onSelectStage?: (stageLabel: string) => void }) {
   const stageMap: Record<string, number> = {
     "Invited": 1,
     "Profile Submitted": 2,
@@ -91,13 +93,17 @@ function Stepper({ stage }: { stage: string }) {
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', padding: '8px 0' }}>
-      {STAGES.map((s, idx) => {
+      {STAGES.map((s) => {
         const isDone = s.num < currentStep;
         const isCurrent = s.num === currentStep;
 
         return (
           <React.Fragment key={s.num}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', zIndex: 2 }}>
+            <div 
+              onClick={() => onSelectStage && onSelectStage(s.label)}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', zIndex: 2, cursor: 'pointer' }}
+              title={`Click to switch stage to: ${s.label}`}
+            >
               <div
                 style={{
                   width: '32px',
@@ -112,6 +118,7 @@ function Stepper({ stage }: { stage: string }) {
                   color: isDone || isCurrent ? '#FFFFFF' : '#94A3B8',
                   border: isDone ? 'none' : isCurrent ? 'none' : '1px solid #E2E8F0',
                   boxShadow: isCurrent ? '0 0 0 4px rgba(15,23,42,0.1)' : 'none',
+                  transition: 'all 0.2s ease',
                 }}
               >
                 {isDone ? <Check size={14} /> : s.num}
@@ -120,8 +127,7 @@ function Stepper({ stage }: { stage: string }) {
                 {s.label}
               </span>
             </div>
-
-            {idx < STAGES.length - 1 && (
+            {s.num < STAGES.length && (
               <div
                 style={{
                   flex: 1,
@@ -130,6 +136,7 @@ function Stepper({ stage }: { stage: string }) {
                   margin: '0 8px',
                   marginTop: '-18px',
                   zIndex: 1,
+                  transition: 'background-color 0.3s ease',
                 }}
               />
             )}
@@ -147,14 +154,20 @@ export default function VendorDetailView({
   readOnly = false 
 }: VendorDetailViewProps) {
   const { getVendor, auditLogs, submitDecision, notify } = useNexus();
-  const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'products' | 'communication' | 'activity' | 'history'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'communication' | 'activity' | 'history'>('overview');
   const [decisionState, setDecisionState] = useState<'Approved' | 'Rejected' | null>(null);
+  const [previewDoc, setPreviewDoc] = useState<string | null>(null);
+  const [docDecisions, setDocDecisions] = useState<Record<string, { status: 'Verified' | 'Rejected'; comment?: string }>>({});
+  const [showRejectForm, setShowRejectForm] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [overrideStage, setOverrideStage] = useState<string | null>(null);
 
   const rawVendor = getVendor(vendorId);
 
   // Normalize vendor object with presentation defaults
   const vendor = useMemo(() => {
     if (!rawVendor) return null;
+    const currentStageLabel = overrideStage || rawVendor.stage || 'Profile Submitted';
     return {
       ...rawVendor,
       id: rawVendor.id || 'V3',
@@ -162,15 +175,46 @@ export default function VendorDetailView({
       company: rawVendor.company || rawVendor.legalName || rawVendor.profile?.companyName || 'Hualong Garment Factory',
       region: rawVendor.country || rawVendor.profile?.country || 'East Asia',
       category: rawVendor.category || 'Apparels',
-      stage: rawVendor.stage || 'Profile Submitted',
-      status: decisionState || rawVendor.finalStatus || rawVendor.status || 'Pending',
+      stage: currentStageLabel,
+      status: decisionState || (currentStageLabel === 'Verified' ? 'Approved' : currentStageLabel === 'Invited' ? 'Invited' : rawVendor.finalStatus || rawVendor.status || 'Pending'),
       docs: rawVendor.docsCount || `${(rawVendor.documents || []).filter((d: any) => d.status === 'Verified').length}/6`,
       supervisor: rawVendor.owner || 'Priya Sharma (Vendor Executive)',
       submitted: rawVendor.submitted || 'Yesterday, 4:30 PM',
       risk: rawVendor.risk || 'high',
       initials: (rawVendor.name || 'Zhang Weilong').split(' ').map((p: string) => p[0]).slice(0, 2).join(''),
     };
-  }, [rawVendor, decisionState]);
+  }, [rawVendor, decisionState, overrideStage]);
+
+  const handleStageSelect = (newStage: string) => {
+    setOverrideStage(newStage);
+    notify(`Stage switched to: ${newStage}`, 'blue');
+  };
+
+  const handleNextStage = () => {
+    const currentStageName = vendor?.stage || 'Invited';
+    const currIdx = STAGES.findIndex(s => s.label === currentStageName);
+    if (currIdx >= 0 && currIdx < STAGES.length - 1) {
+      const next = STAGES[currIdx + 1].label;
+      setOverrideStage(next);
+      notify(`Advanced to stage: ${next}`, 'blue');
+    }
+  };
+
+  const handlePrevStage = () => {
+    const currentStageName = vendor?.stage || 'Invited';
+    const currIdx = STAGES.findIndex(s => s.label === currentStageName);
+    if (currIdx > 0) {
+      const prev = STAGES[currIdx - 1].label;
+      setOverrideStage(prev);
+      notify(`Rewound to stage: ${prev}`, 'blue');
+    }
+  };
+
+  const sampleProducts = useMemo(() => {
+    if (!vendor) return [];
+    const matched = MOCK_PRODUCTS.filter(p => p.vendorId === vendor.id || p.vendorName.toLowerCase().includes(vendor.name.toLowerCase()));
+    return matched.length > 0 ? matched.slice(0, 3) : MOCK_PRODUCTS.slice(0, 3);
+  }, [vendor]);
 
   if (!vendor) {
     return (
@@ -183,8 +227,12 @@ export default function VendorDetailView({
     );
   }
 
-  const docsDone = parseInt(String(vendor.docs)) || (rawVendor.documents || []).filter((d: any) => d.status === 'Verified').length || 0;
-  const pct = Math.round((docsDone / 6) * 100);
+  const baseDocsDone = parseInt(String(vendor.docs)) || (rawVendor.documents || []).filter((d: any) => d.status === 'Verified').length || 0;
+  const verifiedCount = DOC_TEMPLATE.filter((docName, i) => {
+    if (docDecisions[docName]) return docDecisions[docName].status === 'Verified';
+    return i < baseDocsDone;
+  }).length;
+  const pct = Math.round((verifiedCount / 6) * 100);
   const canDecide = !readOnly && !decisionState && (vendor.status === 'In Review' || vendor.status === 'Pending' || vendor.status === 'Doc Review');
 
   const handleApprove = () => {
@@ -203,14 +251,20 @@ export default function VendorDetailView({
     notify(`Vendor application rejected. Notification sent to ${vendor.name}.`, 'critical');
   };
 
-  const tabs = [
+  const isInvited = vendor.stage === 'Invited' || vendor.hasSubmittedApplication === false;
+
+  const tabs: { id: 'overview' | 'products' | 'communication' | 'activity' | 'history'; label: string }[] = isInvited ? [
     { id: 'overview', label: 'Overview' },
-    { id: 'documents', label: 'Documents' },
+    { id: 'communication', label: 'Communication' },
+    { id: 'activity', label: 'Activity' },
+    { id: 'history', label: 'Approval History' },
+  ] : [
+    { id: 'overview', label: 'Overview' },
     { id: 'products', label: 'Product Catalog' },
     { id: 'communication', label: 'Communication' },
     { id: 'activity', label: 'Activity' },
     { id: 'history', label: 'Approval History' },
-  ] as const;
+  ];
 
   return (
     <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', backgroundColor: '#F8FAFC', minHeight: '100%', boxSizing: 'border-box' }}>
@@ -248,14 +302,13 @@ export default function VendorDetailView({
         </div>
         <StatusBadge status={vendor.status} />
       </div>
-
       {/* Navigation Tabs */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '4px', borderBottom: '1px solid #E2E8F0', paddingBottom: '8px' }}>
         {tabs.map((t) => (
           <button
             key={t.id}
             type="button"
-            onClick={() => setActiveTab(t.id)}
+            onClick={() => setActiveTab(t.id as any)}
             style={{
               padding: '6px 14px',
               borderRadius: '6px',
@@ -278,10 +331,48 @@ export default function VendorDetailView({
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {/* Card 1: Onboarding Stage Stepper */}
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-            <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '16px' }}>
-              STATUS STAGE
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase' }}>
+                STATUS STAGE
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={handlePrevStage}
+                  style={{
+                    height: '26px',
+                    padding: '0 10px',
+                    borderRadius: '6px',
+                    border: '1px solid #CBD5E1',
+                    backgroundColor: '#FFFFFF',
+                    color: '#475569',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  ← Prev Stage
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNextStage}
+                  style={{
+                    height: '26px',
+                    padding: '0 10px',
+                    borderRadius: '6px',
+                    border: '1px solid #059669',
+                    backgroundColor: '#ECFDF5',
+                    color: '#059669',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Next Stage →
+                </button>
+              </div>
             </div>
-            <Stepper stage={vendor.stage} />
+            <Stepper stage={vendor.stage} onSelectStage={handleStageSelect} />
           </div>
 
           {/* Card 2: AI Summary Box */}
@@ -290,9 +381,33 @@ export default function VendorDetailView({
               <Sparkles size={14} /> AI summary
             </div>
             <p style={{ fontSize: '13px', lineHeight: '1.6', color: '#4C1D95', margin: 0 }}>
-              <strong>{vendor.company}</strong> is currently in the <strong>{vendor.stage}</strong> status stage with <strong>{vendor.docs}</strong> required documents verified. AI validation extracted business registration and tax data. Deterministic risk score is currently flagged at 26/100 (Low Risk).
+              {isInvited ? (
+                <>Vendor <strong>{vendor.company}</strong> has been invited to onboard. The secure onboarding link was sent to <strong>{vendor.email || 'the vendor contact'}</strong>. Awaiting initial document submission.</>
+              ) : (
+                <><strong>{vendor.company}</strong> is currently in the <strong>{vendor.stage}</strong> status stage with <strong>{vendor.docs}</strong> required documents verified. AI validation extracted business registration and tax data. Deterministic risk score is currently flagged at {vendor.baseRiskScore || 26}/100.</>
+              )}
             </p>
           </div>
+
+          {/* STAGE 3 SPECIFIC: Embedded Document Review Workspace */}
+          {vendor.stage === 'Doc Review' && (
+            <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #0284C7', padding: '20px', boxShadow: '0 4px 12px rgba(2, 132, 199, 0.08)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid #E2E8F0' }}>
+                <div>
+                  <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.05em', color: '#0284C7', textTransform: 'uppercase' }}>
+                    STAGE 3 — DOCUMENT REVIEW WORKSPACE
+                  </div>
+                  <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#0F172A', margin: '2px 0 0 0' }}>
+                    Reviewing Submitted Documents for {vendor.name} ({vendor.company})
+                  </h3>
+                </div>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: '#0284C7', backgroundColor: '#F0F9FF', padding: '4px 10px', borderRadius: '6px', border: '1px solid #BAE6FD' }}>
+                  AI Verification Queue Active
+                </span>
+              </div>
+              <DocumentsView />
+            </div>
+          )}
 
           {/* Two Column Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', alignItems: 'start' }}>
@@ -353,60 +468,144 @@ export default function VendorDetailView({
               <VendorRiskCard vendor={rawVendor || vendor} />
             </div>
 
-            {/* Right Column: Documents Checklist */}
-            <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase' }}>
-                  DOCUMENTS SUMMARY
+            {/* Right Column: Compact Onboarding Progress or Documents Summary + Sample Products */}
+            {isInvited ? (
+              <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '24px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '12px' }}>
+                  ONBOARDING PROGRESS SUMMARY
                 </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '18px', fontWeight: 700, color: '#0F172A' }}>{pct}%</div>
-                  <div style={{ fontSize: '11px', color: '#94A3B8' }}>complete</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', backgroundColor: '#FEF3C7', border: '1px solid #FDE68A', padding: '14px', borderRadius: '10px', marginBottom: '16px' }}>
+                  <Clock size={20} className="text-amber-600" />
+                  <div>
+                    <strong style={{ fontSize: '13px', color: '#92400E' }}>Invited — Documents Pending</strong>
+                    <p style={{ fontSize: '12px', color: '#B45309', margin: '2px 0 0 0' }}>
+                      The vendor has been invited. Full Documents and Product Catalog will be unlocked once initial documents are submitted by the supplier.
+                    </p>
+                  </div>
+                </div>
+                <div style={{ fontSize: '12px', color: '#64748B', lineHeight: '1.6' }}>
+                  <strong>Next steps:</strong>
+                  <ul style={{ paddingLeft: '18px', marginTop: '6px' }}>
+                    <li>Vendor opens onboarding portal via unique invite link</li>
+                    <li>Submits Business Registration, Tax ID, and Insurance</li>
+                    <li>Uploads sample product catalog line items</li>
+                  </ul>
                 </div>
               </div>
-              <div style={{ fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '8px' }}>
-                {docsDone} of 6 submitted
-              </div>
-              <div style={{ height: '8px', backgroundColor: '#F1F5F9', borderRadius: '9999px', overflow: 'hidden', marginBottom: '16px' }}>
-                <div style={{ height: '100%', backgroundColor: '#10B981', borderRadius: '9999px', width: `${pct}%`, transition: 'width 0.3s ease' }} />
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {DOC_TEMPLATE.map((docName, i) => {
-                  const done = i < docsDone;
-                  return (
-                    <div
-                      key={docName}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        borderRadius: '8px',
-                        padding: '10px 14px',
-                        backgroundColor: done ? '#ECFDF5' : '#F8FAFC',
-                        border: `1px solid ${done ? '#A7F3D0' : '#E2E8F0'}`,
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-                        <span style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: done ? '#D1FAE5' : '#E2E8F0', color: done ? '#059669' : '#94A3B8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          {done ? <Check size={12} /> : <Clock size={11} />}
-                        </span>
-                        <div style={{ minWidth: 0 }}>
-                          <div style={{ fontSize: '13px', fontWeight: 500, color: '#1E293B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{docName}</div>
-                          <div style={{ fontSize: '11px', color: '#94A3B8' }}>{done ? 'Submitted · reviewed' : 'Not yet submitted'}</div>
-                        </div>
-                      </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                {/* Documents Summary Card */}
+                <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase' }}>
+                      DOCUMENTS SUMMARY
                     </div>
-                  );
-                })}
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontSize: '18px', fontWeight: 700, color: '#0F172A' }}>{pct}%</div>
+                      <div style={{ fontSize: '11px', color: '#94A3B8' }}>complete</div>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '8px' }}>
+                    {verifiedCount} of 6 submitted
+                  </div>
+                  <div style={{ height: '8px', backgroundColor: '#F1F5F9', borderRadius: '9999px', overflow: 'hidden', marginBottom: '16px' }}>
+                    <div style={{ height: '100%', backgroundColor: '#10B981', borderRadius: '9999px', width: `${pct}%`, transition: 'width 0.3s ease' }} />
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {DOC_TEMPLATE.map((docName, i) => {
+                      const decision = docDecisions[docName];
+                      const isVerified = decision ? decision.status === 'Verified' : i < baseDocsDone;
+                      const isRejected = decision ? decision.status === 'Rejected' : false;
+
+                      const statusBg = isVerified ? '#ECFDF5' : isRejected ? '#FFF1F2' : '#F8FAFC';
+                      const statusBorder = isVerified ? '#A7F3D0' : isRejected ? '#FECDD3' : '#E2E8F0';
+                      const iconBg = isVerified ? '#D1FAE5' : isRejected ? '#FFE4E6' : '#E2E8F0';
+                      const iconColor = isVerified ? '#059669' : isRejected ? '#E11D48' : '#94A3B8';
+
+                      return (
+                        <div
+                          key={docName}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            borderRadius: '8px',
+                            padding: '10px 14px',
+                            backgroundColor: statusBg,
+                            border: `1px solid ${statusBorder}`,
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                            <span style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: iconBg, color: iconColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              {isVerified ? <Check size={12} /> : isRejected ? <X size={12} /> : <Clock size={11} />}
+                            </span>
+                            <div style={{ minWidth: 0 }}>
+                              <div style={{ fontSize: '13px', fontWeight: 500, color: '#1E293B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{docName}</div>
+                              <div style={{ fontSize: '11px', color: isRejected ? '#E11D48' : '#94A3B8' }}>
+                                {isRejected ? (decision?.comment ? `Rejected: ${decision.comment}` : 'Rejected · Needs correction') : isVerified ? 'Submitted · Verified' : 'Not yet submitted'}
+                              </div>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPreviewDoc(docName);
+                              setShowRejectForm(false);
+                              setRejectReason('');
+                            }}
+                            style={{
+                              height: '28px',
+                              padding: '0 10px',
+                              borderRadius: '6px',
+                              border: '1px solid #CBD5E1',
+                              backgroundColor: '#FFFFFF',
+                              color: '#334155',
+                              fontSize: '11px',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              flexShrink: 0,
+                            }}
+                          >
+                            View
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Sample Products Card below Documents Summary */}
+                <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase' }}>
+                      SAMPLE PRODUCTS
+                    </div>
+                    <span style={{ fontSize: '11px', color: '#94A3B8' }}>
+                      {sampleProducts.length} product{sampleProducts.length !== 1 ? 's' : ''} submitted
+                    </span>
+                  </div>
+                  {sampleProducts.length > 0 ? (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                      {sampleProducts.map((p) => (
+                        <div key={p.id} style={{ borderRadius: '8px', overflow: 'hidden', backgroundColor: '#F1F5F9', aspectRatio: '1 / 1', border: '1px solid #E2E8F0' }}>
+                          <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#94A3B8', padding: '24px 0', justifyContent: 'center', border: '1px dashed #CBD5E1', borderRadius: '8px' }}>
+                      <Package size={14} /> No products submitted for this vendor yet
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       )}
 
       {/* Sub-tab views */}
-      {activeTab === 'documents' && <VendorDocuments vendor={rawVendor || vendor} readOnly={readOnly} />}
       {activeTab === 'products' && <ProductCatalog vendorId={vendor.id} />}
       {activeTab === 'activity' && <VendorActivity vendor={rawVendor || vendor} auditLogs={auditLogs} />}
       {activeTab === 'communication' && <VendorCommunication vendor={rawVendor || vendor} />}
@@ -457,6 +656,229 @@ export default function VendorDetailView({
             >
               <Check size={14} /> Approve
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Document Preview Modal Popup */}
+      {previewDoc && (
+        <div 
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 50,
+            backgroundColor: 'rgba(15, 23, 42, 0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '24px',
+            backdropFilter: 'blur(4px)',
+          }}
+          onClick={() => { setPreviewDoc(null); setShowRejectForm(false); }}
+        >
+          <div 
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '16px',
+              border: '1px solid #E2E8F0',
+              width: '100%',
+              maxWidth: '540px',
+              overflow: 'hidden',
+              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid #E2E8F0', backgroundColor: '#F8FAFC' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FileText size={18} className="text-slate-600" />
+                <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#0F172A', margin: 0 }}>
+                  {previewDoc}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => { setPreviewDoc(null); setShowRejectForm(false); }}
+                style={{ background: 'none', border: 0, cursor: 'pointer', color: '#64748B' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+            
+            <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ backgroundColor: '#F1F5F9', borderRadius: '10px', height: '180px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', border: '1px stroke #CBD5E1' }}>
+                <FileText size={40} style={{ color: '#059669', opacity: 0.8 }} />
+                <span style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>
+                  {previewDoc} Asset Preview
+                </span>
+                <span style={{ fontSize: '11px', color: '#64748B' }}>
+                  Official Document File · PDF (2 Pages)
+                </span>
+              </div>
+
+              <div style={{ backgroundColor: '#F8FAFC', borderRadius: '8px', padding: '12px 14px', border: '1px solid #E2E8F0', fontSize: '12px' }}>
+                <div style={{ fontWeight: 600, color: '#0F172A', marginBottom: '4px' }}>Extracted Document Data</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#475569', margin: '4px 0' }}>
+                  <span>Entity Name:</span>
+                  <strong>{vendor.company}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#475569', margin: '4px 0' }}>
+                  <span>Registration / Certificate ID:</span>
+                  <strong>REG-91330200-CN</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#475569', margin: '4px 0' }}>
+                  <span>Current Review Status:</span>
+                  <strong style={{ color: docDecisions[previewDoc]?.status === 'Rejected' ? '#E11D48' : '#059669' }}>
+                    {docDecisions[previewDoc]?.status || 'Verified by StyleSphere AI'}
+                  </strong>
+                </div>
+              </div>
+
+              {showRejectForm && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', backgroundColor: '#FFF1F2', border: '1px solid #FECDD3', padding: '14px', borderRadius: '10px' }}>
+                  <label style={{ fontSize: '12px', fontWeight: 600, color: '#BE123C' }}>
+                    Reason for Rejection / Required Corrections:
+                  </label>
+                  
+                  {/* Preset Quick Reason Pills */}
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    {[
+                      'Low contrast / unreadable image',
+                      'Entity legal name mismatch',
+                      'Registration ID unverified',
+                      'Expired document certificate',
+                    ].map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => setRejectReason(preset)}
+                        style={{
+                          fontSize: '11px',
+                          padding: '3px 8px',
+                          borderRadius: '6px',
+                          border: '1px solid #FDA4AF',
+                          backgroundColor: rejectReason === preset ? '#F43F5E' : '#FFFFFF',
+                          color: rejectReason === preset ? '#FFFFFF' : '#9F1239',
+                          cursor: 'pointer',
+                          fontWeight: 500,
+                        }}
+                      >
+                        {preset}
+                      </button>
+                    ))}
+                  </div>
+
+                  <textarea
+                    value={rejectReason}
+                    onChange={(e) => setRejectReason(e.target.value)}
+                    placeholder="Specify why this document is rejected (e.g. Tax number mismatch or page 2 unreadable)..."
+                    style={{
+                      width: '100%',
+                      height: '64px',
+                      borderRadius: '6px',
+                      border: '1px solid #FDA4AF',
+                      padding: '8px',
+                      fontSize: '12px',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                  <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                    <button
+                      type="button"
+                      onClick={() => setShowRejectForm(false)}
+                      style={{ padding: '4px 12px', borderRadius: '6px', border: '1px solid #CBD5E1', backgroundColor: '#FFFFFF', fontSize: '11px', cursor: 'pointer' }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!rejectReason.trim()) {
+                          notify('Please enter a rejection reason before confirming.', 'critical');
+                          return;
+                        }
+                        setDocDecisions(prev => ({ ...prev, [previewDoc]: { status: 'Rejected', comment: rejectReason } }));
+                        submitDecision(vendor.id, 'REJECT_DOC', rejectReason, { docTitle: previewDoc });
+                        notify(`❌ Document "${previewDoc}" rejected. Reason sent to supplier.`, 'critical');
+                        setPreviewDoc(null);
+                        setShowRejectForm(false);
+                        setRejectReason('');
+                      }}
+                      style={{ padding: '4px 12px', borderRadius: '6px', border: 0, backgroundColor: '#E11D48', color: '#FFFFFF', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+                    >
+                      Confirm Rejection
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div style={{ padding: '12px 20px', borderTop: '1px solid #E2E8F0', backgroundColor: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDocDecisions(prev => ({ ...prev, [previewDoc]: { status: 'Verified' } }));
+                    notify(`✅ Document "${previewDoc}" approved and verified.`, 'green');
+                    setPreviewDoc(null);
+                    setShowRejectForm(false);
+                  }}
+                  style={{
+                    height: '32px',
+                    padding: '0 14px',
+                    borderRadius: '6px',
+                    border: '1px solid #A7F3D0',
+                    backgroundColor: '#ECFDF5',
+                    color: '#059669',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                  }}
+                >
+                  <Check size={14} /> Approve Document
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowRejectForm(true)}
+                  style={{
+                    height: '32px',
+                    padding: '0 14px',
+                    borderRadius: '6px',
+                    border: '1px solid #FECDD3',
+                    backgroundColor: '#FFF1F2',
+                    color: '#E11D48',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                  }}
+                >
+                  <X size={14} /> Reject Document
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => { setPreviewDoc(null); setShowRejectForm(false); }}
+                style={{
+                  height: '32px',
+                  padding: '0 14px',
+                  borderRadius: '6px',
+                  border: '1px solid #CBD5E1',
+                  backgroundColor: '#FFFFFF',
+                  color: '#334155',
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                }}
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

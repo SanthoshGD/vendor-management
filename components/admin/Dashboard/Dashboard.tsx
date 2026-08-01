@@ -91,25 +91,25 @@ export default function Dashboard({ onNavigate, onModal, onOpenVendor }: Dashboa
         </div>
       </section>
 
-      {/* Row 1: Top Metrics (Pending | In Review | Approved | Rejected) */}
+      {/* Row 1: Top Metrics Summary */}
       <MetricsRow vendors={vendors} onNavigate={onNavigate} />
 
-      {/* Row 2: Approval Trend (2/3) + Priority Queue (1/3) */}
+      {/* Sequence 1 & 2: 1. Approval Trend (2/3) + 2. Approval Rate (1/3) */}
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px', marginBottom: '24px' }}>
         <TrendChart vendors={vendors} onDrill={() => onNavigate?.('vendors')} />
-        <PriorityQueue vendors={vendors} onOpenVendor={onOpenVendor} onNavigate={onNavigate} />
+        <ApprovalRate />
       </div>
 
-      {/* Row 3: Pipeline Funnel (1/2) + Recent Activity (1/2) */}
+      {/* Sequence 3 & 4: 3. Priority Queue (1/2) + 4. Recent Activity (1/2) */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
-        <PipelineFunnel vendors={vendors} onNavigate={onNavigate} />
+        <PriorityQueue vendors={vendors} onOpenVendor={onOpenVendor} onNavigate={onNavigate} />
         <RecentActivity auditLogs={auditLogs} onOpenVendor={onOpenVendor} onNavigate={onNavigate} />
       </div>
 
-      {/* Row 4: Vendor Risk Distribution (1/2) + China Approval Rate (1/2) */}
+      {/* Sequence 5 & 6: 5. Vendor Pipeline Workflow (1/2) + 6. Vendor Risk Distribution (1/2) */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+        <PipelineFunnel vendors={vendors} onNavigate={onNavigate} />
         <RiskDistributionChart vendors={vendors} onNavigate={onNavigate} />
-        <ApprovalRate />
       </div>
     </div>
   );

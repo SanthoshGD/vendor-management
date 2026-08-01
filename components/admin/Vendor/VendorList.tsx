@@ -103,7 +103,7 @@ function RiskBadge({ risk }: { risk: string }) {
 }
 
 export default function VendorList({ onOpenVendor, onModal }: { onOpenVendor: (id: string, tab?: string) => void; onModal?: (modal: any) => void }) {
-  const { vendors } = useNexus();
+  const { vendors, submitDecision, notify } = useNexus();
   const [search, setSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState<string>('All');
   const [page, setPage] = useState(1);
@@ -322,10 +322,77 @@ export default function VendorList({ onOpenVendor, onModal }: { onOpenVendor: (i
                   <td style={{ padding: '12px 8px', color: '#475569', fontSize: '13px', fontWeight: 500 }}>{v.supervisor}</td>
                   <td style={{ padding: '12px 8px', color: '#64748B', fontSize: '12px' }}>{v.submitted}</td>
                   <td style={{ padding: '12px 8px', color: '#475569', fontSize: '12px', fontWeight: 500 }}>{v.priority}</td>
-                  <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                    <span style={{ fontSize: '12px', color: '#059669', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                      View Details <ChevronRight size={13} />
-                    </span>
+                  <td style={{ padding: '12px 16px', textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          decide(v.id, 'approve');
+                          submitDecision(v.id, 'APPROVE', 'Approved from directory', {});
+                          notify(`✅ Vendor Approved\nApproval email has been sent to ${v.name}.`, 'green');
+                        }}
+                        style={{
+                          height: '28px',
+                          padding: '0 10px',
+                          borderRadius: '6px',
+                          border: '1px solid #A7F3D0',
+                          backgroundColor: '#ECFDF5',
+                          color: '#059669',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                        }}
+                      >
+                        <Check size={12} /> Approve
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          decide(v.id, 'reject');
+                          submitDecision(v.id, 'REJECT', 'Rejected from directory', {});
+                          notify(`❌ Vendor Rejected\nVendor ${v.name} has been notified.`, 'critical');
+                        }}
+                        style={{
+                          height: '28px',
+                          padding: '0 10px',
+                          borderRadius: '6px',
+                          border: '1px solid #FECDD3',
+                          backgroundColor: '#FFF1F2',
+                          color: '#E11D48',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                        }}
+                      >
+                        <X size={12} /> Reject
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onOpenVendor(v.id, 'vendor-details')}
+                        style={{
+                          height: '28px',
+                          padding: '0 8px',
+                          borderRadius: '6px',
+                          border: '1px solid #E2E8F0',
+                          backgroundColor: '#FFFFFF',
+                          color: '#475569',
+                          fontSize: '11px',
+                          fontWeight: 500,
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '2px',
+                        }}
+                      >
+                        Details <ChevronRight size={12} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               );

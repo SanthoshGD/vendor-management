@@ -7,7 +7,7 @@ import {
   Clock3, CornerUpLeft, FileCheck2, FileText, FolderKanban, Gauge, Headphones, HelpCircle, Home, Inbox,
   LayoutDashboard, Link2, Lock, Menu, MessageSquareText, PackageCheck, PanelLeftClose,
   PanelLeftOpen, Plus, RefreshCw, Search, Send, Settings, ShieldCheck, ShoppingBag, Sparkles,
-  Upload, Users, WalletCards, X, XCircle, Zap,
+  Upload, Users, WalletCards, X, XCircle, Zap, Package, UserCog,
 } from 'lucide-react';
 import { NexusProvider, useNexus, inspectUpload } from '../context/NexusContext';
 import { CURRENT_USERS, REQUEST_TYPES, REQUEST_OUTCOMES } from '../data/mockData';
@@ -28,21 +28,19 @@ import type { Vendor } from '../types/vendor';
 import Dashboard from './admin/Dashboard/Dashboard';
 import VendorList from './admin/Vendor/VendorList';
 import VendorDetailView from './admin/Vendor/VendorDetailView';
-import AIComplianceAssistant from './admin/AI/AIComplianceAssistant';
+import AIAssistantChatbot from './admin/AIAssistantChatbot';
 import ApprovalToast from './admin/Shared/ApprovalToast';
-import DocumentsView from './admin/DocumentReview/DocumentsView';
+import SettingsView from './admin/SettingsView';
 import ProductCatalog from './admin/Product/ProductCatalog';
-import AnalyticsView from './admin/Analytics/AnalyticsView';
+import DocumentsView from './admin/DocumentReview/DocumentsView';
+import TeamView from './admin/Team/TeamView';
 
 const adminNav: [string, string, any][] = [
   ['overview', 'Dashboard', LayoutDashboard],
   ['vendors', 'Vendors', Users],
-  ['review-queue', 'Review Queue', Inbox],
-  ['compliance', 'Compliance', ShieldCheck],
-  ['products', 'Product Catalog', FolderKanban],
-  ['ai-assistant', 'AI Assistant', Bot],
+  ['team', 'Teams', UserCog],
+  ['products', 'Product Catalog', Package],
   ['activity', 'Activity', Activity],
-  ['analytics', 'Analytics', Gauge],
   ['settings', 'Settings', Settings],
 ];
 
@@ -57,14 +55,9 @@ const pageNamesByPersona: Record<string, Record<string, string>> = {
   admin: {
     overview: 'Dashboard',
     vendors: 'Vendors',
-    'review-queue': 'Review Queue',
-    compliance: 'Compliance',
+    team: 'Teams',
     products: 'Product Catalog',
-    onboarding: 'Product Catalog',
-    'ai-assistant': 'AI Assistant',
-    agents: 'AI Assistant',
     activity: 'Activity',
-    analytics: 'Analytics',
     settings: 'Settings',
     'ai-review': 'Vendor Details',
     'vendor-details': 'Vendor Details',
@@ -78,7 +71,7 @@ const pageNamesByPersona: Record<string, Record<string, string>> = {
 };
 
 const ROLE_PAGES: Record<string, string[]> = {
-  admin: ['overview', 'vendors', 'review-queue', 'compliance', 'products', 'onboarding', 'ai-assistant', 'agents', 'activity', 'analytics', 'settings', 'ai-review', 'vendor-details'],
+  admin: ['overview', 'vendors', 'team', 'products', 'activity', 'settings', 'ai-review', 'vendor-details'],
   vendor: ['overview', 'onboarding', 'actions', 'documents'],
 };
 
@@ -297,15 +290,13 @@ function NexusShell() {
         </button>
       )}
 
-      {/* Global AI Compliance Assistant slide-out panel */}
+      {/* Global AI Assistant chatbot drawer */}
       {persona !== 'vendor' && (
-        <AIComplianceAssistant
+        <AIAssistantChatbot
           isOpen={aiAssistantOpen}
           onClose={() => setAiAssistantOpen(false)}
           vendors={vendors}
           onOpenVendor={openVendor}
-          currentVendorId={selectedVendorId}
-          currentPage={safePage}
         />
       )}
 
@@ -400,9 +391,11 @@ function Page({ persona, page, query, selectedVendorId, onNavigate, onModal, onO
     return <VendorDocuments onModal={onModal} />;
   }
 
-  // Admin Portal (unified — includes former Vendor Executive capabilities)
+  // Admin Portal
   if (page === 'overview') return <Dashboard onNavigate={onNavigate} onModal={onModal} onOpenVendor={onOpenVendor} />;
   if (page === 'vendors') return <VendorList onOpenVendor={onOpenVendor} onModal={onModal} />;
+  if (page === 'team') return <TeamView />;
+  if (page === 'products') return <ProductCatalog />;
   if (page === 'vendor-details' || page === 'ai-review') {
     return (
       <VendorDetailView
@@ -412,11 +405,7 @@ function Page({ persona, page, query, selectedVendorId, onNavigate, onModal, onO
       />
     );
   }
-  if (page === 'review-queue') return <SupervisorRequests onOpenVendor={onOpenVendor} onOpenAsAdmin={onOpenAsAdmin} />;
-  if (page === 'products' || page === 'onboarding') return <ProductCatalog />;
-  if (page === 'compliance') return <CompliancePage onNavigate={onNavigate} onOpenVendor={onOpenVendor} />;
-  if (page === 'ai-assistant' || page === 'agents') return <AgentConsole persona="admin" />;
-  if (page === 'analytics') return <AnalyticsView onNavigate={onNavigate} />;
+  if (page === 'settings') return <SettingsView onModal={onModal} />;
   return <ActivityView onOpenVendor={onOpenVendor} />;
 }
 

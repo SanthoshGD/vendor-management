@@ -6,27 +6,27 @@ import {
 } from 'recharts';
 
 const WEEKLY = [
-  { week: 'W1', approvals: 5 },
-  { week: 'W2', approvals: 6 },
-  { week: 'W3', approvals: 5 },
-  { week: 'W4', approvals: 8 },
-  { week: 'W5', approvals: 7 },
-  { week: 'W6', approvals: 9 },
-  { week: 'W7', approvals: 9 },
-  { week: 'W8', approvals: 12 },
+  { week: 'W1', submitted: 14, approved: 9, rejected: 2, inReview: 3 },
+  { week: 'W2', submitted: 17, approved: 12, rejected: 1, inReview: 4 },
+  { week: 'W3', submitted: 19, approved: 14, rejected: 2, inReview: 3 },
+  { week: 'W4', submitted: 21, approved: 16, rejected: 1, inReview: 4 },
+  { week: 'W5', submitted: 24, approved: 18, rejected: 2, inReview: 4 },
+  { week: 'W6', submitted: 26, approved: 20, rejected: 1, inReview: 5 },
+  { week: 'W7', submitted: 28, approved: 22, rejected: 2, inReview: 4 },
+  { week: 'W8', submitted: 31, approved: 25, rejected: 1, inReview: 5 },
 ];
 
 const WEEKLY_30 = [
-  { week: 'Wk 1', approvals: 22 },
-  { week: 'Wk 2', approvals: 27 },
-  { week: 'Wk 3', approvals: 31 },
-  { week: 'Wk 4', approvals: 38 },
+  { week: 'Wk 1', submitted: 54, approved: 38, rejected: 4, inReview: 12 },
+  { week: 'Wk 2', submitted: 62, approved: 45, rejected: 5, inReview: 12 },
+  { week: 'Wk 3', submitted: 71, approved: 52, rejected: 4, inReview: 15 },
+  { week: 'Wk 4', submitted: 83, approved: 61, rejected: 6, inReview: 16 },
 ];
 
 const WEEKLY_90 = [
-  { week: 'M1', approvals: 64 },
-  { week: 'M2', approvals: 79 },
-  { week: 'M3', approvals: 96 },
+  { week: 'Month 1', submitted: 160, approved: 118, rejected: 12, inReview: 30 },
+  { week: 'Month 2', submitted: 195, approved: 146, rejected: 14, inReview: 35 },
+  { week: 'Month 3', submitted: 240, approved: 182, rejected: 16, inReview: 42 },
 ];
 
 interface TrendChartProps {
@@ -102,15 +102,40 @@ export default function TrendChart({ onDrill }: TrendChartProps) {
                 width={28} 
               />
               <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }} />
-              <Legend verticalAlign="top" height={24} formatter={() => <span style={{ fontSize: 11, color: '#64748B' }}>Vendor approvals</span>} />
+              <Legend verticalAlign="top" height={30} wrapperStyle={{ fontSize: 11 }} />
               <Line 
                 type="monotone" 
-                dataKey="approvals" 
-                name="Approvals" 
+                dataKey="approved" 
+                name="Approved" 
                 stroke="#059669" 
                 strokeWidth={2.5} 
-                dot={{ r: 4, fill: '#059669' }} 
-                activeDot={{ r: 6 }} 
+                dot={{ r: 3, fill: '#059669' }} 
+                activeDot={{ r: 5 }} 
+              />
+              <Line 
+                type="monotone" 
+                dataKey="submitted" 
+                name="Submitted" 
+                stroke="#3B82F6" 
+                strokeWidth={2} 
+                dot={{ r: 3, fill: '#3B82F6' }} 
+              />
+              <Line 
+                type="monotone" 
+                dataKey="inReview" 
+                name="In Review" 
+                stroke="#F59E0B" 
+                strokeWidth={2} 
+                dot={{ r: 3, fill: '#F59E0B' }} 
+              />
+              <Line 
+                type="monotone" 
+                dataKey="rejected" 
+                name="Rejected" 
+                stroke="#EF4444" 
+                strokeWidth={1.5} 
+                strokeDasharray="3 3"
+                dot={{ r: 2, fill: '#EF4444' }} 
               />
             </LineChart>
           </ResponsiveContainer>

@@ -202,6 +202,9 @@ function DocumentMock({ doc }: { doc: typeof DOCUMENTS[0] }) {
 export default function DocumentsView({ onOpenVendor }: { onOpenVendor?: (id: string) => void }) {
   const [activeId, setActiveId] = useState(DOCUMENTS[0].id);
   const [decided, setDecided] = useState<Record<string, 'approve' | 'reject'>>({});
+  const [rejections, setRejections] = useState<Record<string, string>>({});
+  const [rejectingDocId, setRejectingDocId] = useState<string | null>(null);
+  const [reasonInput, setReasonInput] = useState('');
   const [docPriority, setDocPriority] = useState(true);
 
   const ordered = useMemo(() => {
@@ -214,8 +217,15 @@ export default function DocumentsView({ onOpenVendor }: { onOpenVendor?: (id: st
   }, [docPriority]);
 
   const active = DOCUMENTS.find((d) => d.id === activeId) || ordered[0];
+  const rejectingDoc = DOCUMENTS.find((d) => d.id === rejectingDocId);
 
   const decide = (id: string, action: 'approve' | 'reject') => {
+    if (action === 'reject') {
+      setRejectingDocId(id);
+      setReasonInput('');
+      return;
+    }
+
     setDecided((prev) => ({ ...prev, [id]: action }));
     const currentIndex = ordered.findIndex((d) => d.id === id);
     const nextDoc = ordered.slice(currentIndex + 1).find((d) => !decided[d.id]);
@@ -306,6 +316,11 @@ export default function DocumentsView({ onOpenVendor }: { onOpenVendor?: (id: st
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', flexShrink: 0 }}>
                       <ConfidenceBadge confidence={d.confidence} risk={d.risk} />
                       {decision && <StatusBadge status={decision === 'approve' ? 'Approved' : 'Rejected'} />}
+                      {decision === 'reject' && rejections[d.id] && (
+                        <span style={{ fontSize: '10px', color: '#E11D48', maxWidth: '130px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', backgroundColor: '#FFF1F2', padding: '1px 5px', borderRadius: '4px', border: '1px solid #FECDD3' }} title={rejections[d.id]}>
+                          {rejections[d.id]}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </button>
@@ -330,38 +345,42 @@ export default function DocumentsView({ onOpenVendor }: { onOpenVendor?: (id: st
                     onClick={() => decide(active.id, 'reject')}
                     title="Reject (R)"
                     style={{
-                      width: '36px',
-                      height: '36px',
+                      height: '34px',
+                      padding: '0 12px',
                       borderRadius: '8px',
                       border: '1px solid #FECDD3',
                       backgroundColor: '#FFF1F2',
                       color: '#E11D48',
+                      fontSize: '12px',
+                      fontWeight: 600,
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center',
+                      gap: '4px',
                       cursor: 'pointer',
                     }}
                   >
-                    <X size={16} />
+                    <X size={15} /> Reject Document
                   </button>
                   <button
                     type="button"
                     onClick={() => decide(active.id, 'approve')}
                     title="Approve (A)"
                     style={{
-                      width: '36px',
-                      height: '36px',
+                      height: '34px',
+                      padding: '0 12px',
                       borderRadius: '8px',
                       border: 0,
                       backgroundColor: '#059669',
                       color: '#FFFFFF',
+                      fontSize: '12px',
+                      fontWeight: 600,
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center',
+                      gap: '4px',
                       cursor: 'pointer',
                     }}
                   >
-                    <Check size={16} />
+                    <Check size={15} /> Approve Document
                   </button>
                 </div>
               </div>
@@ -399,6 +418,13 @@ export default function DocumentsView({ onOpenVendor }: { onOpenVendor?: (id: st
                       </p>
                     </div>
 
+                    {decided[active.id] === 'reject' && rejections[active.id] && (
+                      <div style={{ backgroundColor: '#FFF1F2', border: '1px solid #FECDD3', borderRadius: '8px', padding: '12px', fontSize: '12px', color: '#BE123C' }}>
+                        <strong>Rejection Reason Recorded:</strong>
+                        <p style={{ margin: '4px 0 0 0' }}>{rejections[active.id]}</p>
+                      </div>
+                    )}
+
                     <div>
                       <div style={{ fontSize: '11px', fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>CHECKLIST</div>
                       <ul style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: 0, margin: 0, listStyle: 'none', fontSize: '12px', color: '#475569' }}>
@@ -425,6 +451,163 @@ export default function DocumentsView({ onOpenVendor }: { onOpenVendor?: (id: st
           )}
         </div>
       </div>
+
+      {/* Rejection Reason Modal */}
+      {rejectingDoc && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 60,
+            backgroundColor: 'rgba(15, 23, 42, 0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '24px',
+            backdropFilter: 'blur(4px)',
+          }}
+          onClick={() => setRejectingDocId(null)}
+        >
+          <div
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '16px',
+              border: '1px solid #E2E8F0',
+              width: '100%',
+              maxWidth: '520px',
+              overflow: 'hidden',
+              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid #E2E8F0', backgroundColor: '#FFF1F2' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <AlertTriangle size={18} style={{ color: '#E11D48' }} />
+                <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#9F1239', margin: 0 }}>
+                  Reject Document — {rejectingDoc.title}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setRejectingDocId(null)}
+                style={{ background: 'none', border: 0, cursor: 'pointer', color: '#9F1239' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div style={{ fontSize: '13px', color: '#475569', lineHeight: '1.5' }}>
+                Specify why <strong>{rejectingDoc.title}</strong> submitted by <strong>{rejectingDoc.company}</strong> is being rejected so the vendor receives clear feedback to re-submit.
+              </div>
+
+              {/* Preset Reason Pills */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '11px', fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase' }}>
+                  Quick Preset Reasons:
+                </label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                  {[
+                    'Low contrast / unreadable image',
+                    'Entity legal name mismatch',
+                    'Registration ID unverified',
+                    'Expired document certificate',
+                  ].map((preset) => (
+                    <button
+                      key={preset}
+                      type="button"
+                      onClick={() => setReasonInput(preset)}
+                      style={{
+                        fontSize: '11px',
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        border: '1px solid #FDA4AF',
+                        backgroundColor: reasonInput === preset ? '#E11D48' : '#FFFFFF',
+                        color: reasonInput === preset ? '#FFFFFF' : '#BE123C',
+                        cursor: 'pointer',
+                        fontWeight: 500,
+                      }}
+                    >
+                      {preset}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Textarea Input */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '12px', fontWeight: 600, color: '#334155' }}>
+                  Detailed Comments for Vendor:
+                </label>
+                <textarea
+                  value={reasonInput}
+                  onChange={(e) => setReasonInput(e.target.value)}
+                  placeholder="Specify feedback for the vendor (e.g. Tax number is unreadable, please re-upload clear copy)..."
+                  style={{
+                    width: '100%',
+                    height: '80px',
+                    borderRadius: '8px',
+                    border: '1px solid #CBD5E1',
+                    padding: '10px',
+                    fontSize: '12px',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+            </div>
+
+            <div style={{ padding: '14px 20px', borderTop: '1px solid #E2E8F0', backgroundColor: '#F8FAFC', display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <button
+                type="button"
+                onClick={() => setRejectingDocId(null)}
+                style={{
+                  height: '34px',
+                  padding: '0 16px',
+                  borderRadius: '8px',
+                  border: '1px solid #CBD5E1',
+                  backgroundColor: '#FFFFFF',
+                  color: '#475569',
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const finalReason = reasonInput.trim() || 'Document rejected — update required';
+                  setDecided((prev) => ({ ...prev, [rejectingDoc.id]: 'reject' }));
+                  setRejections((prev) => ({ ...prev, [rejectingDoc.id]: finalReason }));
+                  setRejectingDocId(null);
+                  setReasonInput('');
+
+                  // Advance to next document
+                  const currentIndex = ordered.findIndex((d) => d.id === rejectingDoc.id);
+                  const nextDoc = ordered.slice(currentIndex + 1).find((d) => !decided[d.id]);
+                  if (nextDoc) {
+                    setActiveId(nextDoc.id);
+                  }
+                }}
+                style={{
+                  height: '34px',
+                  padding: '0 16px',
+                  borderRadius: '8px',
+                  border: 0,
+                  backgroundColor: '#E11D48',
+                  color: '#FFFFFF',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Confirm Rejection & Send Reason
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
