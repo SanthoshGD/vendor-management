@@ -488,34 +488,36 @@ function VendorDashboard({ onNavigate, onModal }: any) {
         ].map(([Icon, tone, value, label]: any) => <article key={label}><span className={cx('metric-icon', tone)}><Icon size={18} /></span><span><strong>{value}</strong><small>{label}</small></span></article>)}
       </section>
       <section className="vendor-grid">
-        <article className={cx('panel next-action', !actionRequired && 'calm')}>
-          <span className="section-kicker">Your next action</span>
-          {actionRequired ? (
-            <div>
-              <span className="attention-icon red"><AlertCircle size={18} /></span>
-              <span><strong>{correctionDoc ? `Replace ${correctionDoc.title}` : `Upload ${missingDoc?.title || 'the outstanding document'}`}</strong>
-                <p>{correctionDoc ? correctionDoc.rejection.detail : `Upload ${missingDoc?.title} so compliance review can continue.`}</p>
-                <small><Clock3 size={13} /> {vendor.sla} SLA remaining &nbsp;|&nbsp; PDF, up to 10 MB</small></span>
-              <button className="button primary" onClick={() => onModal({ type: 'upload' })}>Upload file <ArrowRight size={14} /></button>
-            </div>
-          ) : (
-            <div><span className="attention-icon green"><CheckCircle2 size={18} /></span><span><strong>Nothing needed from you right now</strong><p>{reviewRunning ? 'Your submitted pack is still being reviewed.' : 'We will notify you if your reviewer needs anything else.'}</p></span></div>
-          )}
-          {actionRequired && <button className="link-row" onClick={() => onNavigate('actions')}>See what is outstanding <span><ChevronRight size={14} /></span></button>}
-        </article>
+        <div className="vendor-grid-col">
+          <article className={cx('panel next-action', !actionRequired && 'calm')}>
+            <span className="section-kicker">Your next action</span>
+            {actionRequired ? (
+              <div>
+                <span className="attention-icon red"><AlertCircle size={18} /></span>
+                <span><strong>{correctionDoc ? `Replace ${correctionDoc.title}` : `Upload ${missingDoc?.title || 'the outstanding document'}`}</strong>
+                  <p>{correctionDoc ? correctionDoc.rejection.detail : `Upload ${missingDoc?.title} so compliance review can continue.`}</p>
+                  <small><Clock3 size={13} /> {vendor.sla} SLA remaining &nbsp;|&nbsp; PDF, up to 10 MB</small></span>
+                <button className="button primary" onClick={() => onModal({ type: 'upload' })}>Upload file <ArrowRight size={14} /></button>
+              </div>
+            ) : (
+              <div><span className="attention-icon green"><CheckCircle2 size={18} /></span><span><strong>Nothing needed from you right now</strong><p>{reviewRunning ? 'Your submitted pack is still being reviewed.' : 'We will notify you if your reviewer needs anything else.'}</p></span></div>
+            )}
+            {actionRequired && <button className="link-row" onClick={() => onNavigate('actions')}>See what is outstanding <span><ChevronRight size={14} /></span></button>}
+          </article>
+          <article className="panel journey-card"><PanelHeading eyebrow="Application" title="Review progress" action="View details" onAction={() => onNavigate('onboarding')} /><Journey vendor={vendor} /></article>
+        </div>
         
-        <article className="panel contact-card">
-          <span className="section-kicker">Onboarding contact</span>
-          <div><span className="user-avatar">ER</span><span><strong>Elena Rostova</strong><small>Vendor onboarding executive</small></span><i /></div>
-          <p>Usually replies within 2 business hours by email or WhatsApp.</p>
-          <div className="contact-actions">
-            <button className="button secondary" onClick={() => onModal({ type: 'contact' })}><Send size={14} /> Email Elena</button>
-            <button className="button primary" onClick={() => onModal({ type: 'assistant' })}><Sparkles size={14} /> Ask a question</button>
-          </div>
-          
-        </article>
-        <article className="panel journey-card"><PanelHeading eyebrow="Application" title="Review progress" action="View details" onAction={() => onNavigate('onboarding')} /><Journey vendor={vendor} /></article>
-        {/* <article className="panel ai-explainer"><span className="ai-orb"><Sparkles size={22} /></span><div><span className="section-kicker">Review method</span><h3>AI checks; a person decides</h3><p>AI checks dates and mismatches. A compliance reviewer makes the decision.</p><button onClick={() => onNavigate('onboarding')}>View review status <ArrowRight size={13} /></button></div></article> */}
+        <div className="vendor-grid-col">
+          <article className="panel contact-card">
+            <span className="section-kicker">Onboarding contact</span>
+            <div><span className="user-avatar">ER</span><span><strong>Elena Rostova</strong><small>Vendor onboarding executive</small></span><i /></div>
+            <p>Usually replies within 2 business hours by email or WhatsApp.</p>
+            <div className="contact-actions">
+              <button className="button secondary" onClick={() => onModal({ type: 'contact' })}><Send size={14} /> Email Elena</button>
+              <button className="button primary" onClick={() => onModal({ type: 'assistant' })}><Sparkles size={14} /> Ask a question</button>
+            </div>
+          </article>
+        </div>
       </section>
     </div>
   );

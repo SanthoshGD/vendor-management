@@ -186,6 +186,19 @@ export default function VendorDetailView({
     };
   }, [rawVendor, decisionState, overrideStage]);
 
+  const currentStep = useMemo(() => {
+    const stageMap: Record<string, number> = {
+      "Invited": 1,
+      "Profile Submitted": 2,
+      "Compliance review": 2,
+      "Doc Review": 3,
+      "Profile Approved": 4,
+      "Products Pending": 5,
+      "Verified": 6,
+    };
+    return vendor ? (stageMap[vendor.stage] || 2) : 2;
+  }, [vendor]);
+
   const handleStageSelect = (newStage: string) => {
     setOverrideStage(newStage);
     notify(`Stage switched to: ${newStage}`, 'blue');
@@ -228,10 +241,10 @@ export default function VendorDetailView({
     );
   }
 
-  const baseDocsDone = parseInt(String(vendor.docs)) || (rawVendor.documents || []).filter((d: any) => d.status === 'Verified').length || 0;
+  const baseDocsDone = currentStep <= 2 ? 0 : (parseInt(String(vendor.docs)) || (rawVendor.documents || []).filter((d: any) => d.status === 'Verified').length || 0);
   const verifiedCount = DOC_TEMPLATE.filter((docName, i) => {
     if (docDecisions[docName]) return docDecisions[docName].status === 'Verified';
-    return i < baseDocsDone;
+    return currentStep >= 4 || (currentStep === 3 && i < baseDocsDone);
   }).length;
   const pct = Math.round((verifiedCount / 6) * 100);
   const canDecide = !readOnly && !decisionState && (vendor.status === 'In Review' || vendor.status === 'Pending' || vendor.status === 'Doc Review');
@@ -253,6 +266,8 @@ export default function VendorDetailView({
   };
 
   const isInvited = vendor.stage === 'Invited' || vendor.hasSubmittedApplication === false;
+
+
 
   const tabs: { id: 'overview' | 'products' | 'communication' | 'activity'; label: string }[] = isInvited ? [
     { id: 'overview', label: 'Overview' },
@@ -515,8 +530,8 @@ export default function VendorDetailView({
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {DOC_TEMPLATE.map((docName, i) => {
                       const decision = docDecisions[docName];
-                      const isProfileSubmittedStage = vendor.stage === 'Profile Submitted' || vendor.stage === 'Invited';
-                      const isApprovedStage = vendor.stage === 'Profile Approved' || vendor.stage === 'Products Pending' || vendor.stage === 'Verified';
+                      const isProfileSubmittedStage = currentStep <= 2;
+                      const isApprovedStage = currentStep >= 4;
 
                       let isVerified = false;
                       let isPendingReview = false;
@@ -614,7 +629,7 @@ export default function VendorDetailView({
                         type="button"
                         onClick={() => {
                           if (productScrollRef.current) {
-                            productScrollRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+                            productScrollRef.current.scrollBy({ left: -360, behavior: 'smooth' });
                           }
                         }}
                         style={{
@@ -658,7 +673,7 @@ export default function VendorDetailView({
                           <div
                             key={p.id}
                             style={{
-                              flex: '0 0 110px', // width of each card
+                              flex: '0 0 180px', // width of each card increased to 180px
                               borderRadius: '8px',
                               overflow: 'hidden',
                               backgroundColor: '#F1F5F9',
@@ -677,7 +692,7 @@ export default function VendorDetailView({
                         type="button"
                         onClick={() => {
                           if (productScrollRef.current) {
-                            productScrollRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+                            productScrollRef.current.scrollBy({ left: 360, behavior: 'smooth' });
                           }
                         }}
                         style={{
