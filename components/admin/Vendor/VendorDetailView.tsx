@@ -1,17 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { useNexus } from '../../../context/NexusContext';
 import { 
   ArrowLeft, Sparkles, Check, X, ShieldCheck, Clock, Package, MapPin, 
-  UserCog, FileText, CheckCircle2, AlertTriangle, CircleDot
+  UserCog, FileText, CheckCircle2, AlertTriangle, CircleDot,
+  ChevronLeft, ChevronRight
 } from 'lucide-react';
 import VendorDocuments from './VendorDocuments';
 import ProductCatalog, { MOCK_PRODUCTS } from '../Product/ProductCatalog';
 import VendorActivity from './VendorActivity';
 import VendorCommunication from './VendorCommunication';
-import VendorApprovalHistory from './VendorApprovalHistory';
 import VendorRiskCard from './VendorRiskCard';
 import DocumentsView from '../DocumentReview/DocumentsView';
 
@@ -154,13 +154,14 @@ export default function VendorDetailView({
   readOnly = false 
 }: VendorDetailViewProps) {
   const { getVendor, auditLogs, submitDecision, notify } = useNexus();
-  const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'communication' | 'activity' | 'history'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'communication' | 'activity'>('overview');
   const [decisionState, setDecisionState] = useState<'Approved' | 'Rejected' | null>(null);
   const [previewDoc, setPreviewDoc] = useState<string | null>(null);
   const [docDecisions, setDocDecisions] = useState<Record<string, { status: 'Verified' | 'Rejected'; comment?: string }>>({});
   const [showRejectForm, setShowRejectForm] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const [overrideStage, setOverrideStage] = useState<string | null>(null);
+  const productScrollRef = useRef<HTMLDivElement>(null);
 
   const rawVendor = getVendor(vendorId);
 
@@ -253,17 +254,15 @@ export default function VendorDetailView({
 
   const isInvited = vendor.stage === 'Invited' || vendor.hasSubmittedApplication === false;
 
-  const tabs: { id: 'overview' | 'products' | 'communication' | 'activity' | 'history'; label: string }[] = isInvited ? [
+  const tabs: { id: 'overview' | 'products' | 'communication' | 'activity'; label: string }[] = isInvited ? [
     { id: 'overview', label: 'Overview' },
     { id: 'communication', label: 'Communication' },
     { id: 'activity', label: 'Activity' },
-    { id: 'history', label: 'Approval History' },
   ] : [
     { id: 'overview', label: 'Overview' },
     { id: 'products', label: 'Product Catalog' },
     { id: 'communication', label: 'Communication' },
     { id: 'activity', label: 'Activity' },
-    { id: 'history', label: 'Approval History' },
   ];
 
   return (
@@ -409,7 +408,8 @@ export default function VendorDetailView({
             </div>
           )}
 
-          {/* Two Column Grid */}
+          {/* Two Column Grid — hidden during Stage 3 Doc Review (admin focuses on document workspace) */}
+          {vendor.stage !== 'Doc Review' && (
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', alignItems: 'start' }}>
             {/* Left Column: Vendor Info & Risk Engine */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -515,13 +515,29 @@ export default function VendorDetailView({
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {DOC_TEMPLATE.map((docName, i) => {
                       const decision = docDecisions[docName];
-                      const isVerified = decision ? decision.status === 'Verified' : i < baseDocsDone;
+                      const isProfileSubmittedStage = vendor.stage === 'Profile Submitted' || vendor.stage === 'Invited';
+                      const isApprovedStage = vendor.stage === 'Profile Approved' || vendor.stage === 'Products Pending' || vendor.stage === 'Verified';
+
+                      let isVerified = false;
+                      let isPendingReview = false;
+
+                      if (isApprovedStage) {
+                        isVerified = decision ? decision.status === 'Verified' : true;
+                      } else if (isProfileSubmittedStage) {
+                        isPendingReview = true;
+                        isVerified = false;
+                      } else {
+                        // Stage 3 Doc Review
+                        isVerified = decision ? decision.status === 'Verified' : i < baseDocsDone;
+                        isPendingReview = !isVerified;
+                      }
+
                       const isRejected = decision ? decision.status === 'Rejected' : false;
 
-                      const statusBg = isVerified ? '#ECFDF5' : isRejected ? '#FFF1F2' : '#F8FAFC';
-                      const statusBorder = isVerified ? '#A7F3D0' : isRejected ? '#FECDD3' : '#E2E8F0';
-                      const iconBg = isVerified ? '#D1FAE5' : isRejected ? '#FFE4E6' : '#E2E8F0';
-                      const iconColor = isVerified ? '#059669' : isRejected ? '#E11D48' : '#94A3B8';
+                      const statusBg = isVerified ? '#ECFDF5' : isRejected ? '#FFF1F2' : isPendingReview ? '#F8FAFC' : '#F8FAFC';
+                      const statusBorder = isVerified ? '#A7F3D0' : isRejected ? '#FECDD3' : isPendingReview ? '#CBD5E1' : '#E2E8F0';
+                      const iconBg = isVerified ? '#D1FAE5' : isRejected ? '#FFE4E6' : isPendingReview ? '#E2E8F0' : '#E2E8F0';
+                      const iconColor = isVerified ? '#059669' : isRejected ? '#E11D48' : isPendingReview ? '#475569' : '#94A3B8';
 
                       return (
                         <div
@@ -538,12 +554,18 @@ export default function VendorDetailView({
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
                             <span style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: iconBg, color: iconColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                              {isVerified ? <Check size={12} /> : isRejected ? <X size={12} /> : <Clock size={11} />}
+                              {isVerified ? <Check size={12} /> : isRejected ? <X size={12} /> : <FileText size={11} />}
                             </span>
                             <div style={{ minWidth: 0 }}>
                               <div style={{ fontSize: '13px', fontWeight: 500, color: '#1E293B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{docName}</div>
-                              <div style={{ fontSize: '11px', color: isRejected ? '#E11D48' : '#94A3B8' }}>
-                                {isRejected ? (decision?.comment ? `Rejected: ${decision.comment}` : 'Rejected · Needs correction') : isVerified ? 'Submitted · Verified' : 'Not yet submitted'}
+                              <div style={{ fontSize: '11px', color: isRejected ? '#E11D48' : isVerified ? '#059669' : '#64748B' }}>
+                                {isRejected
+                                  ? (decision?.comment ? `Rejected: ${decision.comment}` : 'Rejected · Needs correction')
+                                  : isVerified
+                                  ? 'Submitted · Verified'
+                                  : isPendingReview
+                                  ? 'Submitted · Pending Review'
+                                  : 'Not yet submitted'}
                               </div>
                             </div>
                           </div>
@@ -576,7 +598,7 @@ export default function VendorDetailView({
                 </div>
 
                 {/* Sample Products Card below Documents Summary */}
-                <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', position: 'relative' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
                     <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase' }}>
                       SAMPLE PRODUCTS
@@ -586,12 +608,102 @@ export default function VendorDetailView({
                     </span>
                   </div>
                   {sampleProducts.length > 0 ? (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                      {sampleProducts.map((p) => (
-                        <div key={p.id} style={{ borderRadius: '8px', overflow: 'hidden', backgroundColor: '#F1F5F9', aspectRatio: '1 / 1', border: '1px solid #E2E8F0' }}>
-                          <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
-                        </div>
-                      ))}
+                    <div style={{ position: 'relative', width: '100%' }}>
+                      {/* Left Scroll Button */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (productScrollRef.current) {
+                            productScrollRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+                          }
+                        }}
+                        style={{
+                          position: 'absolute',
+                          left: '-12px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          zIndex: 5,
+                          width: '28px',
+                          height: '28px',
+                          borderRadius: '50%',
+                          border: '1px solid #E2E8F0',
+                          backgroundColor: '#FFFFFF',
+                          color: '#475569',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#F8FAFC'; e.currentTarget.style.transform = 'translateY(-50%) scale(1.05)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#FFFFFF'; e.currentTarget.style.transform = 'translateY(-50%) scale(1)'; }}
+                      >
+                        <ChevronLeft size={14} />
+                      </button>
+
+                      {/* Horizontal scroll row */}
+                      <div
+                        ref={productScrollRef}
+                        style={{
+                          display: 'flex',
+                          gap: '10px',
+                          overflowX: 'auto',
+                          scrollBehavior: 'smooth',
+                          scrollbarWidth: 'none',
+                          padding: '2px 0'
+                        }}
+                      >
+                        {sampleProducts.map((p) => (
+                          <div
+                            key={p.id}
+                            style={{
+                              flex: '0 0 110px', // width of each card
+                              borderRadius: '8px',
+                              overflow: 'hidden',
+                              backgroundColor: '#F1F5F9',
+                              aspectRatio: '1 / 1',
+                              border: '1px solid #E2E8F0',
+                              position: 'relative'
+                            }}
+                          >
+                            <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Right Scroll Button */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (productScrollRef.current) {
+                            productScrollRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+                          }
+                        }}
+                        style={{
+                          position: 'absolute',
+                          right: '-12px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          zIndex: 5,
+                          width: '28px',
+                          height: '28px',
+                          borderRadius: '50%',
+                          border: '1px solid #E2E8F0',
+                          backgroundColor: '#FFFFFF',
+                          color: '#475569',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#F8FAFC'; e.currentTarget.style.transform = 'translateY(-50%) scale(1.05)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#FFFFFF'; e.currentTarget.style.transform = 'translateY(-50%) scale(1)'; }}
+                      >
+                        <ChevronRight size={14} />
+                      </button>
                     </div>
                   ) : (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#94A3B8', padding: '24px 0', justifyContent: 'center', border: '1px dashed #CBD5E1', borderRadius: '8px' }}>
@@ -602,6 +714,7 @@ export default function VendorDetailView({
               </div>
             )}
           </div>
+          )}
         </div>
       )}
 
@@ -609,7 +722,6 @@ export default function VendorDetailView({
       {activeTab === 'products' && <ProductCatalog vendorId={vendor.id} />}
       {activeTab === 'activity' && <VendorActivity vendor={rawVendor || vendor} auditLogs={auditLogs} />}
       {activeTab === 'communication' && <VendorCommunication vendor={rawVendor || vendor} />}
-      {activeTab === 'history' && <VendorApprovalHistory vendor={rawVendor || vendor} auditLogs={auditLogs} />}
 
       {/* Sticky Decision Bar */}
       {canDecide && (

@@ -28,7 +28,7 @@ import type { Vendor } from '../types/vendor';
 import Dashboard from './admin/Dashboard/Dashboard';
 import VendorList from './admin/Vendor/VendorList';
 import VendorDetailView from './admin/Vendor/VendorDetailView';
-import AIAssistantChatbot from './admin/AIAssistantChatbot';
+import AIAssistantPanel from './admin/AI/AIAssistantPanel';
 import ApprovalToast from './admin/Shared/ApprovalToast';
 import SettingsView from './admin/SettingsView';
 import ProductCatalog from './admin/Product/ProductCatalog';
@@ -292,10 +292,9 @@ function NexusShell() {
 
       {/* Global AI Assistant chatbot drawer */}
       {persona !== 'vendor' && (
-        <AIAssistantChatbot
+        <AIAssistantPanel
           isOpen={aiAssistantOpen}
           onClose={() => setAiAssistantOpen(false)}
-          vendors={vendors}
           onOpenVendor={openVendor}
         />
       )}
