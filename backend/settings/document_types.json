@@ -1,0 +1,14 @@
+{
+  "_comment": "Document checklist definitions. Adding a type must not require a deploy.",
+  "types": [
+    { "code": "TAX", "title": "Tax Registration Certificate", "mandatory": true },
+    { "code": "IEC", "title": "Import / Export Code Licence", "mandatory": true },
+    { "code": "BANK", "title": "Bank Account Verification Letter", "mandatory": true },
+    { "code": "COI", "title": "Certificate of Liability Insurance", "mandatory": true },
+    { "code": "REG", "title": "Company Registration Certificate", "mandatory": true },
+    { "code": "SCOC", "title": "Supplier Code of Conduct Sign-off", "mandatory": true },
+    { "code": "AUDIT", "title": "Factory Social Compliance Audit", "mandatory": false },
+    { "code": "ISO", "title": "Quality Management Certificate", "mandatory": false },
+    { "code": "REACH", "title": "REACH Chemical Compliance Certificate", "mandatory": false }
+  ]
+}

@@ -1,0 +1,17 @@
+# Runtime dependencies. Mirrors [project].dependencies in pyproject.toml.
+# Railway's nixpacks Python provider detects this file directly.
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+pydantic>=2.9.0
+pydantic-settings>=2.6.0
+supabase>=2.10.0
+httpx>=0.27.0
+python-json-logger>=2.0.7
+# Required by FastAPI for multipart/form-data — the document upload route.
+python-multipart>=0.0.12
+# JWT validation of Supabase sessions (spec §15) and AES-GCM encryption of
+# stored Gemini keys (spec §6.2).
+pyjwt>=2.9.0
+cryptography>=43.0.0
+# Gemini SDK. Imported ONLY by services/ai/gemini_provider.py (spec §6.2).
+google-genai>=0.3.0

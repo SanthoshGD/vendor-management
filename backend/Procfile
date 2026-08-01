@@ -1,0 +1,6 @@
+# Spec §19: two Railway services from this one directory.
+#   service #1 (backend) -> `web`
+#   service #2 (worker)  -> `worker`   [introduce per spec §14/§18 phase 5]
+# Set the Railway service's start command to the matching process.
+web: uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --no-server-header
+worker: python -m workers.runner

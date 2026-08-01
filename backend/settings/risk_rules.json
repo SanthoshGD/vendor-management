@@ -1,0 +1,18 @@
+{
+  "_comment": "Spec §12 driver point table. Tunable without a redeploy.",
+  "drivers": [
+    { "code": "INSURANCE_EXPIRED", "points": 25, "description": "Liability insurance has expired" },
+    { "code": "TAX_MISSING", "points": 20, "description": "Tax registration certificate not provided" },
+    { "code": "GST_MISMATCH", "points": 15, "description": "GST / tax number does not match across documents" },
+    { "code": "ADDRESS_MISMATCH", "points": 15, "description": "Registered address differs across documents" },
+    { "code": "BANK_PROOF_MISSING", "points": 10, "description": "Bank verification letter not provided" },
+    { "code": "LOW_AI_CONFIDENCE", "points": 10, "description": "Extraction confidence below threshold" },
+    { "code": "VENDOR_AGE_UNDER_6_MONTHS", "points": 5, "description": "Vendor entity registered less than 6 months ago" }
+  ],
+  "bands": {
+    "low": { "min": 0, "max": 34 },
+    "medium": { "min": 35, "max": 69 },
+    "high": { "min": 70, "max": 100 }
+  },
+  "low_confidence_threshold": 60
+}

@@ -1,0 +1,13 @@
+{
+  "_comment": "Sourcing countries. Drives filters and country-scoped RAG metadata.",
+  "countries": [
+    { "code": "CN", "name": "China" },
+    { "code": "IN", "name": "India" },
+    { "code": "VN", "name": "Vietnam" },
+    { "code": "BD", "name": "Bangladesh" },
+    { "code": "TR", "name": "Turkey" },
+    { "code": "CO", "name": "Colombia" },
+    { "code": "MA", "name": "Morocco" },
+    { "code": "DE", "name": "Germany" }
+  ]
+}
