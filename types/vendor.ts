@@ -37,11 +37,16 @@ export interface VendorDocument {
 
 export interface VendorProfile {
   legalName?: string;
+  tradingName?: string;
+  companyName?: string;
   country?: string;
   taxId?: string;
   address?: string;
+  phone?: string;
   contactName?: string;
   contactEmail?: string;
+  category?: string;
+  [key: string]: any;
 }
 
 export interface VendorSupervisorNote {

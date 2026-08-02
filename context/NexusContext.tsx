@@ -108,7 +108,7 @@ export function checklistForCategory(category?: string, presetId?: string) {
 
 export const REQUIRED_DOCUMENTS = DOCUMENT_PRESETS['leather-textiles'].documents;
 
-const initialsFor = (name: string) => name.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'NV';
+const initialsFor = (name: string = '') => name.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'NV';
 
 export function buildVendorRecord({ id, name, country, category, email, checklistId }: { id: string; name: string; country?: string; category?: string; email?: string; checklistId?: string }): Vendor {
   const checklist = checklistForCategory(category, checklistId);
@@ -1521,7 +1521,7 @@ export function NexusProvider({ children }: { children: React.ReactNode }) {
         profile,
         name: profile.legalName || v.name,
         shortName: profile.tradingName || profile.legalName,
-        initials: initialsFor(profile.tradingName || profile.legalName),
+        initials: initialsFor(profile.tradingName || profile.legalName || v.name),
         country: profile.country || v.country,
         category,
         contact: profile.contactName || v.contact,
