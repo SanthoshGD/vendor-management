@@ -15,15 +15,17 @@ from pydantic import Field
 from core.response import CamelModel
 
 
+from uuid import UUID
+
 class ActivityEntry(CamelModel):
-    id: str
-    vendor_id: str | None = None
+    id: UUID | str
+    vendor_id: UUID | str | None = None
     actor: str
     action: str
     before: dict[str, Any] | None = None
     after: dict[str, Any] | None = None
     reason: str | None = None
-    ip_address: str | None = None
+    ip_address: Any = None
     created_at: datetime
 
 

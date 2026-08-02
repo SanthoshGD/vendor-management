@@ -1,0 +1,10 @@
+ISO 17075 CHROMIUM VI LEATHER TEST CERTIFICATE
+Test Standard: ISO 17075-1:2017 (Quantitative Chemical Determination of Chromium VI)
+Report Number: LAB-ISO-17075-LK88
+Client: Leather Kings Co., Ltd., Guangzhou, China
+Contact Person: Anubhav Srivastav
+Sample Description: Premium Aniline Finished Tanned Leather
+Test Result: PASS
+Measured Value: Hexavalent Chromium (Cr VI) < 3.0 mg/kg (Below Detection Threshold)
+Status: Fully Compliant with EU & US Footwear/Garment Regulations
+Testing Body: Intertek Testing Services Guangzhou Ltd.

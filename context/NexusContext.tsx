@@ -20,9 +20,9 @@ import type { AgentConfig, AgentProposal, TriageAssessment } from '../types/agen
 
 const NexusContext = createContext<any>(null);
 
-const STORAGE_KEY = 'stylesphere-nexus-state-v7';
+const STORAGE_KEY = 'stylesphere-nexus-state-v8';
 const LEGACY_STORAGE_KEYS: string[] = [];
-const OBSOLETE_STORAGE_KEYS = ['stylesphere-nexus-state-v5', 'stylesphere-nexus-state-v6'];
+const OBSOLETE_STORAGE_KEYS = ['stylesphere-nexus-state-v5', 'stylesphere-nexus-state-v6', 'stylesphere-nexus-state-v7'];
 
 const RISK_ACCEPTED = 'risk_accepted';
 let runtimeIdSequence = 0;
@@ -168,8 +168,22 @@ const loadPersisted = () => {
     const parsed = JSON.parse(raw);
     if (!parsed?.vendors || !parsed?.requests || !parsed?.auditLogs) return null;
     if (!parsed?.agentConfig?.agents) return null;
+    const sanitizedVendors = (parsed.vendors || []).map((v: any) => {
+      if (v.id === 'VEN-3312' && (v.name?.includes('Guangzhou Artisan') || !v.profile?.legalName)) {
+        return {
+          ...v,
+          name: v.profile?.legalName || 'Leather Kings Co., Ltd.',
+          shortName: v.profile?.tradingName || 'Leather Kings',
+          initials: 'AS',
+          contact: v.profile?.contactName || 'Anubhav Srivastav',
+          email: v.profile?.contactEmail || 'anubhav@leatherkings.cn',
+        };
+      }
+      return v;
+    });
     return {
       ...parsed,
+      vendors: sanitizedVendors,
       settings: { ...DEFAULT_SETTINGS, ...(parsed.settings || {}) },
       agentApprovals: parsed.agentApprovals
         || (parsed.pendingApprovals || []).map((item: any) => ({ ...item, status: 'pending', decision: null })),
@@ -1535,14 +1549,25 @@ export function NexusProvider({ children }: { children: React.ReactNode }) {
     const supplied = vendor.documents.filter((d) => d.status !== 'Missing');
     if (supplied.length !== vendor.documents.length) return;
 
-    setRawVendors((current) => current.map((v) => (v.id === vendorId
-      ? {
+    setRawVendors((current) => current.map((v) => {
+      if (v.id !== vendorId) return v;
+      const profileName = v.profile?.legalName || v.name;
+      const profileShort = v.profile?.tradingName || profileName;
+      const profileContact = v.profile?.contactName || v.contact;
+      const profileEmail = v.profile?.contactEmail || v.email;
+      return {
         ...v,
+        name: profileName,
+        shortName: profileShort,
+        initials: initialsFor(profileShort || profileName),
+        contact: profileContact,
+        email: profileEmail,
         onboardingStep: STEP_SUBMITTED,
+        hasSubmittedApplication: true,
         submittedAt: new Date().toISOString(),
         aiSummary: 'Application submitted. AI verification is running across the evidence pack before compliance review continues.',
-      }
-      : v)));
+      };
+    }));
     appendAudit({
       vendorId, vendorName: vendor.name, actorName: vendor.profile?.contactName || CURRENT_USERS.vendor.name, actorId: vendorId,
       actionType: 'APPLICATION_SUBMITTED' as any, documentName: 'Full onboarding application', fieldLabel: 'Application submitted',

@@ -62,133 +62,91 @@ export interface AssistantChatResponse {
 
 export class NexusApiService {
   static async getDashboard(): Promise<ApiDashboardResponse> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/dashboard`);
-      if (!res.ok) throw new Error('API request failed');
-      return await res.json();
-    } catch {
-      // Fallback response for dev/mock mode
-      return {
-        metrics: { pendingVendors: 4, inReview: 3, approved: 12, rejected: 2 },
-        pipeline: {
-          weekly: [
-            { stage: 'Submitted', count: 18 },
-            { stage: 'AI Extraction', count: 15 },
-            { stage: 'AI Validation', count: 12 },
-            { stage: 'Human Review', count: 7 },
-            { stage: 'Approved', count: 5 },
-            { stage: 'Rejected', count: 2 },
-          ],
-          monthly: [
-            { stage: 'Submitted', count: 68 },
-            { stage: 'AI Extraction', count: 62 },
-            { stage: 'AI Validation', count: 54 },
-            { stage: 'Human Review', count: 28 },
-            { stage: 'Approved', count: 22 },
-            { stage: 'Rejected', count: 6 },
-          ],
-        },
-        approvalRate: { region: 'China', percentage: 93 },
-      };
-    }
+    const res = await fetch(`${API_BASE_URL}/dashboard`);
+    if (!res.ok) throw new Error(`Dashboard fetch failed: ${res.statusText}`);
+    const body = await res.json();
+    return body.data || body;
   }
 
   static async getVendors(params?: { status?: string; risk?: string }) {
-    try {
-      const url = new URL(`${API_BASE_URL}/vendors`);
-      if (params?.status) url.searchParams.append('status', params.status);
-      if (params?.risk) url.searchParams.append('risk', params.risk);
-      const res = await fetch(url.toString());
-      if (!res.ok) throw new Error('API request failed');
-      return await res.json();
-    } catch {
-      return null;
-    }
+    const url = new URL(`${API_BASE_URL}/vendors`);
+    if (params?.status) url.searchParams.append('status', params.status);
+    if (params?.risk) url.searchParams.append('risk', params.risk);
+    const res = await fetch(url.toString());
+    if (!res.ok) throw new Error(`Vendors fetch failed: ${res.statusText}`);
+    return await res.json();
   }
 
   static async getVendorById(id: string) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/vendors/${id}`);
-      if (!res.ok) throw new Error('API request failed');
-      return await res.json();
-    } catch {
-      return null;
-    }
+    const res = await fetch(`${API_BASE_URL}/vendors/${id}`);
+    if (!res.ok) throw new Error(`Vendor ${id} fetch failed: ${res.statusText}`);
+    return await res.json();
   }
 
   static async getVendorDocuments(id: string) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/vendors/${id}/documents`);
-      if (!res.ok) throw new Error('API request failed');
-      return await res.json();
-    } catch {
-      return null;
-    }
+    const res = await fetch(`${API_BASE_URL}/vendors/${id}/documents`);
+    if (!res.ok) throw new Error(`Vendor ${id} documents fetch failed: ${res.statusText}`);
+    return await res.json();
   }
 
   static async getVendorProducts(id: string) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/vendors/${id}/products`);
-      if (!res.ok) throw new Error('API request failed');
-      return await res.json();
-    } catch {
-      return null;
-    }
+    const res = await fetch(`${API_BASE_URL}/vendors/${id}/products`);
+    if (!res.ok) throw new Error(`Vendor ${id} products fetch failed: ${res.statusText}`);
+    return await res.json();
   }
 
   static async approveVendor(id: string, reason?: string) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/vendors/${id}/approve`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reason }),
-      });
-      return res.ok;
-    } catch {
-      return true;
+    const res = await fetch(`${API_BASE_URL}/vendors/${id}/approve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ comment: reason || 'Approved following compliance verification' }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || `Approve vendor failed (${res.status})`);
     }
+    return await res.json();
   }
 
   static async rejectVendor(id: string, reason: string) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/vendors/${id}/reject`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reason }),
-      });
-      return res.ok;
-    } catch {
-      return true;
+    const res = await fetch(`${API_BASE_URL}/vendors/${id}/reject`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ comment: reason }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || `Reject vendor failed (${res.status})`);
     }
+    return await res.json();
   }
 
-  static async requestVendorChanges(id: string, changes: string[]) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/vendors/${id}/request-changes`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ changes }),
-      });
-      return res.ok;
-    } catch {
-      return true;
+  static async requestVendorChanges(id: string, changes: string[], comment?: string) {
+    const res = await fetch(`${API_BASE_URL}/vendors/${id}/request-changes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ comment: comment || 'Please address required changes', changes }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || `Request changes failed (${res.status})`);
     }
+    return await res.json();
   }
 
   static async chatAssistant(
     req: AssistantChatRequest
-  ): Promise<AssistantChatResponse | null> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/assistant/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...req, stream: false }),
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return await res.json();
-    } catch {
-      return null;
+  ): Promise<AssistantChatResponse> {
+    const res = await fetch(`${API_BASE_URL}/assistant/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...req, stream: false }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || `Assistant chat failed (${res.status})`);
     }
+    return await res.json();
   }
 
   /**

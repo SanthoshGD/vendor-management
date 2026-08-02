@@ -10,6 +10,8 @@ from pydantic import Field
 from core.response import CamelModel
 
 
+from uuid import UUID
+
 class ProductApprovalStatus(str, Enum):
     draft = "Draft"
     pending_review = "Pending Review"
@@ -18,8 +20,8 @@ class ProductApprovalStatus(str, Enum):
 
 
 class ProductOut(CamelModel):
-    id: str
-    vendor_id: str
+    id: UUID | str
+    vendor_id: UUID | str
     vendor_name: str | None = None
     name: str
     country: str | None = None

@@ -272,7 +272,7 @@ function NexusShell() {
   );
 }
 
-function OnboardingExperience({ vendor, onSwitch, density, children }: { vendor: Vendor; onSwitch: (p: PersonaRole) => void; density: string; children: React.ReactNode }) {
+export function OnboardingExperience({ vendor, onSwitch, density, children }: { vendor: Vendor; onSwitch: (p: PersonaRole) => void; density: string; children: React.ReactNode }) {
   const [gate, setGate] = useState('invite');
   const { restartOnboarding } = useNexus();
   const step = allowedStep(vendor);

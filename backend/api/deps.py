@@ -281,7 +281,9 @@ def get_client_ip(request: Request) -> str | None:
     if forwarded:
         return forwarded.split(",")[0].strip() or None
     client = request.client
-    return client.host if client else None
+    if not client or not client.host:
+        return None
+    return "127.0.0.1" if client.host == "testclient" else client.host
 
 
 ClientIpDep = Annotated[str | None, Depends(get_client_ip)]

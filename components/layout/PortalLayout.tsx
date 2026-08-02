@@ -8,7 +8,7 @@ import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import AIAssistantPanel from '../admin/AI/AIAssistantPanel';
 import ApprovalToast from '../admin/Shared/ApprovalToast';
-import { Modal } from '../RedesignedApp';
+import { Modal, OnboardingExperience } from '../RedesignedApp';
 
 import { adminNav, vendorNav } from '../../constants/nav';
 
@@ -57,6 +57,8 @@ export default function PortalLayout({ persona, children }: PortalLayoutProps) {
   const [aiAssistantOpen, setAiAssistantOpen] = useState(false);
   const [approvedToastVendor, setApprovedToastVendor] = useState<{ vendorId: string; vendorName: string } | null>(null);
 
+  const activeVendor = useMemo(() => getVendor(activeVendorId), [activeVendorId, getVendor]);
+
   // Determine active page key from pathname
   const activePage = useMemo(() => {
     const segments = pathname.split('/');
@@ -74,8 +76,8 @@ export default function PortalLayout({ persona, children }: PortalLayoutProps) {
 
   const switchPersona = useCallback((nextPersona: string) => {
     if (nextPersona === 'vendor') {
-      const activeVendor = getVendor(activeVendorId);
-      const startPage = activeVendor?.hasSubmittedApplication ? 'dashboard' : 'onboarding';
+      const v = getVendor(activeVendorId);
+      const startPage = v?.hasSubmittedApplication ? 'dashboard' : 'onboarding';
       router.push(`/vendor/${startPage}`);
     } else {
       router.push('/admin/dashboard');
@@ -96,8 +98,8 @@ export default function PortalLayout({ persona, children }: PortalLayoutProps) {
 
   const viewAsVendor = useCallback((vendorId: string) => {
     setActiveVendorId(vendorId);
-    const activeVendor = getVendor(vendorId);
-    const startPage = activeVendor?.hasSubmittedApplication ? 'dashboard' : 'onboarding';
+    const v = getVendor(vendorId);
+    const startPage = v?.hasSubmittedApplication ? 'dashboard' : 'onboarding';
     router.push(`/vendor/${startPage}`);
     setModal(null);
     setMobileNav(false);
@@ -106,6 +108,41 @@ export default function PortalLayout({ persona, children }: PortalLayoutProps) {
   const handleApproveSuccess = useCallback((vId: string, vName: string) => {
     setApprovedToastVendor({ vendorId: vId, vendorName: vName });
   }, []);
+
+  if (persona === 'vendor' && activeVendor && !activeVendor.hasSubmittedApplication) {
+    return (
+      <OnboardingExperience
+        key={activeVendor.id}
+        vendor={activeVendor}
+        onSwitch={switchPersona}
+        density={settings.density || 'comfortable'}
+      >
+        {React.isValidElement(children)
+          ? React.cloneElement(children as React.ReactElement<any>, {
+              onNavigate: navigate,
+              onModal: setModal,
+              onOpenVendor: openVendor,
+              onViewAsVendor: viewAsVendor,
+              onApproveSuccess: handleApproveSuccess,
+            })
+          : children}
+        {modal && (
+          <Modal
+            modal={modal}
+            onClose={() => setModal(null)}
+            onOpenVendor={openVendor}
+            onViewAsVendor={viewAsVendor}
+          />
+        )}
+        {toast && (
+          <div className="nexus-toast" role="status">
+            <CheckCircle2 size={18} />
+            {toast}
+          </div>
+        )}
+      </OnboardingExperience>
+    );
+  }
 
   return (
     <div className={cx('nexus-shell', collapsed && 'is-collapsed')} data-density={settings.density || 'comfortable'}>

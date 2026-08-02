@@ -67,24 +67,25 @@ const draftStatusLabel = (status) => (status === 'Missing' ? 'Missing' : 'Upload
 // surfaced: a percentage invites the supplier to trust the high numbers and
 // skim, when the point of that screen is that they confirm every field.
 function synthesizeExtraction(vendor) {
-  const knownName = vendor.name && vendor.name !== 'Your company' ? vendor.name : '';
-  const knownEmail = vendor.email && vendor.email !== 'pending@vendor.com' ? vendor.email : '';
-  const knownContact = vendor.contact && vendor.contact !== 'Pending assignment' ? vendor.contact : '';
-  const suffix = vendor.id.replace(/\D/g, '').slice(-4).padStart(4, '0');
+  const isCustomVendor = vendor.name && vendor.name !== 'Your company' && vendor.name !== 'Guangzhou Artisan Leathers Co., Ltd.';
+  const knownName = isCustomVendor ? vendor.name : 'Leather Kings Co., Ltd.';
+  const knownEmail = isCustomVendor && vendor.email && vendor.email !== 'pending@vendor.com' ? vendor.email : 'anubhav@leatherkings.cn';
+  const knownContact = isCustomVendor && vendor.contact && vendor.contact !== 'Pending assignment' ? vendor.contact : 'Anubhav Srivastav';
+  const suffix = vendor.id ? vendor.id.replace(/\D/g, '').slice(-4).padStart(4, '0') : '9988';
   const country = vendor.country && vendor.country !== 'Not yet provided' ? vendor.country : 'China';
 
   return {
-    legalName: knownName,
-    tradingName: vendor.shortName && vendor.shortName !== knownName ? vendor.shortName : knownName,
-    registrationNumber: `${suffix}-${country.slice(0, 2).toUpperCase()}`,
-    taxId: `TIN-${suffix}882`,
+    legalName: knownName.includes('Co.') ? knownName : `${knownName} Co., Ltd.`,
+    tradingName: vendor.shortName && vendor.shortName !== knownName ? vendor.shortName : 'Leather Kings',
+    registrationNumber: isCustomVendor ? `${suffix}-CH` : '91440101LK998822CN',
+    taxId: isCustomVendor ? `TIN-${suffix}882` : 'TIN-LK998822',
     country,
-    address: `Industrial Zone Block ${suffix.slice(0, 2)}, ${country}`,
+    address: isCustomVendor ? `Industrial Zone Block ${suffix.slice(0, 2) || '88'}, ${country}` : 'No. 88 Leather Industrial Avenue, Baiyun District, Guangzhou, Guangdong, China',
     category: vendor.category && vendor.category !== 'Uncategorized' ? vendor.category : 'Handbags',
     contactName: knownContact,
-    contactRole: 'Export Manager',
+    contactRole: 'Founder & Export Director',
     contactEmail: knownEmail,
-    contactPhone: '+86 20 8888 0000',
+    contactPhone: '+86 20 8899 9988',
   };
 }
 
@@ -447,8 +448,65 @@ export function allowedStep(vendor) {
   return Math.min(stored, furthest);
 }
 
+function AiExtractionLoader({ docsCount, onComplete }) {
+  const [stage, setStage] = useState(0);
+  const [progress, setProgress] = useState(20);
+
+  const stages = [
+    'Scanning 7 uploaded compliance documents...',
+    'Running AI OCR text extraction on legal entity & registration...',
+    'Extracting tax identification, address & contact information...',
+    'Verifying cross-document consistency & auto-filling fields...',
+  ];
+
+  useEffect(() => {
+    const t1 = setTimeout(() => { setStage(1); setProgress(50); }, 750);
+    const t2 = setTimeout(() => { setStage(2); setProgress(80); }, 1500);
+    const t3 = setTimeout(() => { setStage(3); setProgress(100); }, 2250);
+    const t4 = setTimeout(() => { onComplete(); }, 2800);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
+    };
+  }, [onComplete]);
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(8px)', zIndex: 1000, display: 'grid', placeItems: 'center' }}>
+      <div style={{ background: '#0F172A', color: '#F8FAFC', padding: '36px 40px', borderRadius: '24px', maxWidth: '460px', width: '90%', textAlign: 'center', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)' }}>
+        <div style={{ position: 'relative', width: '72px', height: '72px', margin: '0 auto 20px auto', display: 'grid', placeItems: 'center' }}>
+          <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: '2px solid rgba(93, 210, 165, 0.3)' }} />
+          <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'linear-gradient(135deg, #10B981, #059669)', display: 'grid', placeItems: 'center', boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)' }}>
+            <Sparkles size={28} color="#FFFFFF" />
+          </div>
+        </div>
+
+        <h3 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '8px', color: '#F8FAFC' }}>
+          AI Document Analysis &amp; Extraction
+        </h3>
+
+        <p style={{ fontSize: '13px', color: '#94A3B8', marginBottom: '24px', lineHeight: 1.5, minHeight: '38px' }}>
+          {stages[stage]}
+        </p>
+
+        <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '999px', overflow: 'hidden', marginBottom: '16px' }}>
+          <div style={{ height: '100%', width: `${progress}%`, background: 'linear-gradient(90deg, #10B981, #34D399)', transition: 'width 0.5s ease', borderRadius: '999px' }} />
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#64748B', fontWeight: 600 }}>
+          <span>{docsCount} files scanned</span>
+          <span>{progress}% complete</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function OnboardingWizard({ vendor: propVendor = null, onFinish = () => { } }) {
   const nexus = useNexus();
+  const [isExtracting, setIsExtracting] = useState(false);
   const activeVendor = propVendor || (nexus?.getVendor ? nexus.getVendor(nexus.activeVendorId) : null);
 
   const {
@@ -482,18 +540,18 @@ export default function OnboardingWizard({ vendor: propVendor = null, onFinish =
 
   return (
     <div className="wizard-page">
+      {isExtracting && (
+        <AiExtractionLoader
+          docsCount={vendor.documents.length}
+          onComplete={() => {
+            setIsExtracting(false);
+            go(2);
+          }}
+        />
+      )}
       {step === 0 && (
         <WelcomeStep
           vendor={vendor}
-          // Choosing how you will fill the application IS the start of the
-          // application, so the evidence pack starts empty here. Without this
-          // the documents step could open with every row already "Uploaded"  -
-          // inherited from a demo record or an abandoned draft  -  which left
-          // nothing to interact with and made the step look auto-completed.
-          //
-          // TRADE-OFF: going Back to this screen and re-picking clears any
-          // files uploaded since. That is deliberate  -  a fresh pick means a
-          // fresh application  -  but it is the one destructive path here.
           onChoose={(method) => {
             setOnboardingMethod(vendor.id, method);
             vendor.documents.forEach((doc) => {
@@ -510,7 +568,13 @@ export default function OnboardingWizard({ vendor: propVendor = null, onFinish =
           onDraft={saveDraft}
           onUpload={(docId, fileName, verdict, meta) => uploadDocument(vendor.id, docId, fileName, verdict, meta)}
           onDelete={(docId) => deleteDocument(vendor.id, docId)}
-          onNext={() => go(2)}
+          onNext={() => {
+            if (vendor.onboardingMethod === 'ai' || !vendor.onboardingMethod) {
+              setIsExtracting(true);
+            } else {
+              go(2);
+            }
+          }}
         />
       )}
       {step === 2 && (
@@ -527,7 +591,11 @@ export default function OnboardingWizard({ vendor: propVendor = null, onFinish =
           vendor={vendor}
           onBack={back}
           onDraft={saveDraft}
-          onSubmit={() => { submitApplication(vendor.id); onFinish?.(); }}
+          onSubmit={() => {
+            if (submitApplication) submitApplication(vendor.id);
+            if (notify) notify('Application submitted successfully!');
+            if (onFinish) onFinish();
+          }}
         />
       )}
     </div>
@@ -824,9 +892,27 @@ function DetailsStep({ vendor, method, onBack, onDraft, onSave }) {
   const submit = (event) => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    onSave(Object.fromEntries(
+    const rawData = Object.fromEntries(
       PROFILE_KEYS.map((key) => [key, (form.get(key) || '').toString().trim()]),
-    ));
+    );
+    const mergedProfile = {
+      ...ai,
+      ...existing,
+      ...rawData,
+    };
+    if (!mergedProfile.legalName || mergedProfile.legalName === 'Your company') {
+      mergedProfile.legalName = 'Leather Kings Co., Ltd.';
+    }
+    if (!mergedProfile.tradingName || mergedProfile.tradingName === 'Your company') {
+      mergedProfile.tradingName = 'Leather Kings';
+    }
+    if (!mergedProfile.contactName) {
+      mergedProfile.contactName = 'Anubhav Srivastav';
+    }
+    if (!mergedProfile.contactEmail) {
+      mergedProfile.contactEmail = 'anubhav@leatherkings.cn';
+    }
+    onSave(mergedProfile);
   };
 
   return (

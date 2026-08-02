@@ -5,7 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Query
 
 from api.deps import PaginationDep, ProductRepoDep
-from core.response import ApiResponse
+from core.response import ApiResponse, paginated
 from schemas.product import ProductApprovalStatus, ProductOut
 
 router = APIRouter(prefix="/products", tags=["products"])
@@ -25,4 +25,13 @@ async def list_products(
     country: str | None = Query(default=None),
     search: str | None = Query(default=None, max_length=200),
 ) -> ApiResponse[list[ProductOut]]:
-    raise NotImplementedError
+    items, total = await products.list_products(
+        vendor_id=vendor_id,
+        approval_status=approval_status.value if approval_status else None,
+        category=category,
+        country=country,
+        search=search,
+        limit=pagination.page_size,
+        offset=pagination.offset,
+    )
+    return paginated(items, page=pagination.page, page_size=pagination.page_size, total=total)

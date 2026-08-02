@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Package, Filter, Check, X, AlertCircle } from 'lucide-react';
 import ProductCard from './ProductCard';
 import { useNexus } from '../../../context/NexusContext';
+import { API_BASE_URL } from '../../../services/api';
 
 export const MOCK_PRODUCTS = [
   {
@@ -98,82 +99,49 @@ export const MOCK_PRODUCTS = [
     id: 'prod-9',
     name: 'Minimalist Steel Chronograph Watch',
     vendorId: 'v5',
-    vendorName: 'Liu Hao · Mingde Watch Trading Co.',
-    country: 'China',
-    category: 'Watches',
-    status: 'Pending Review',
-    lastUpdated: '1 day ago',
+    vendorName: 'Katsumi Tanaka · Tokyo Precision Watch Co.',
+    country: 'Japan',
+    category: 'Accessories',
+    status: 'Approved',
+    lastUpdated: '5 days ago',
     image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=80',
   },
   {
-    id: 'prod-15',
-    name: 'Aviation Automatic Pilot Watch',
-    vendorId: 'v5',
-    vendorName: 'Liu Hao · Mingde Watch Trading Co.',
-    country: 'China',
-    category: 'Watches',
-    status: 'Pending Review',
-    lastUpdated: 'Today',
-    image: 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=500&auto=format&fit=crop&q=80',
-  },
-  {
-    id: 'prod-16',
-    name: 'Classic Gold Mesh Dress Watch',
-    vendorId: 'v5',
-    vendorName: 'Liu Hao · Mingde Watch Trading Co.',
-    country: 'China',
-    category: 'Watches',
-    status: 'Approved',
-    lastUpdated: '3 days ago',
-    image: 'https://images.unsplash.com/photo-1547996160-81dfa63595aa?w=500&auto=format&fit=crop&q=80',
-  },
-  {
     id: 'prod-10',
-    name: 'Washed Denim Jacket with Brass Hardware',
+    name: 'Silk Blend Patterned Scarf',
     vendorId: 'v3',
     vendorName: 'Zhang Weilong · Hualong Garment Factory',
     country: 'China',
     category: 'Apparels',
     status: 'Pending Review',
     lastUpdated: 'Today',
-    image: 'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=500&auto=format&fit=crop&q=80',
+    image: 'https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=500&auto=format&fit=crop&q=80',
   },
   {
     id: 'prod-11',
-    name: 'Full-Grain Leather Wallet with Coin Pocket',
+    name: 'Handwoven Pashmina Shawl',
+    vendorId: 'v7',
+    vendorName: 'Priya Sharma · Delhi Craft Circle',
+    country: 'India',
+    category: 'Textiles',
+    status: 'Pending Review',
+    lastUpdated: 'Yesterday',
+    image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500&auto=format&fit=crop&q=80',
+  },
+  {
+    id: 'prod-12',
+    name: 'Waterproof Canvas Backpack',
     vendorId: 'v1',
     vendorName: 'Wei Mingzhi · Jinpeng Leather Goods Co.',
     country: 'China',
     category: 'Bags',
-    status: 'Pending Review',
-    lastUpdated: '12 hours ago',
-    image: 'https://images.unsplash.com/photo-1588436706487-9d55d73a39e3?w=500&auto=format&fit=crop&q=80',
-  },
-  {
-    id: 'prod-12',
-    name: 'Classic Running Shoes with Mesh Upper',
-    vendorId: 'v2',
-    vendorName: 'Chen Lihua · Dongfang Footwear Export',
-    country: 'China',
-    category: 'Shoes',
-    status: 'Pending Review',
-    lastUpdated: '2 hours ago',
-    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop&q=80',
+    status: 'Rejected',
+    lastUpdated: '1 day ago',
+    image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&auto=format&fit=crop&q=80',
   },
   {
     id: 'prod-13',
-    name: 'Premium Wool Knit Cardigan Sweater',
-    vendorId: 'v3',
-    vendorName: 'Zhang Weilong · Hualong Garment Factory',
-    country: 'China',
-    category: 'Apparels',
-    status: 'Pending Review',
-    lastUpdated: 'Yesterday',
-    image: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=500&auto=format&fit=crop&q=80',
-  },
-  {
-    id: 'prod-14',
-    name: 'Raw Denim Slim Fit Jeans',
+    name: 'Recycled Denim Utility Jacket',
     vendorId: 'v3',
     vendorName: 'Zhang Weilong · Hualong Garment Factory',
     country: 'China',
@@ -192,28 +160,62 @@ export default function ProductCatalog({ vendorId = null }: ProductCatalogProps)
   const { vendors, submitDecision, notify } = useNexus();
   const [statusFilter, setStatusFilter] = useState<'All' | 'Pending Review' | 'Approved' | 'Rejected'>('All');
   const [categoryFilter, setCategoryFilter] = useState<string>('All');
+  const [apiProducts, setApiProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    const fetchProducts = async () => {
+      try {
+        const url = vendorId
+          ? `${API_BASE_URL}/vendors/${vendorId}/products`
+          : `${API_BASE_URL}/products`;
+        const res = await fetch(url);
+        if (res.ok) {
+          const body = await res.json();
+          if (active && body.success && Array.isArray(body.data) && body.data.length > 0) {
+            const mapped = body.data.map((p: any) => ({
+              id: String(p.id),
+              name: p.name,
+              vendorId: String(p.vendorId || vendorId || 'v3'),
+              vendorName: p.vendorName || 'Hualong Garment Factory',
+              country: p.country || 'China',
+              category: p.category || 'Apparels',
+              status: p.approvalStatus || 'Approved',
+              lastUpdated: p.approvalDate ? new Date(p.approvalDate).toLocaleDateString() : 'Recently',
+              image: p.imageUrl || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&auto=format&fit=crop&q=80',
+            }));
+            setApiProducts(mapped);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load products from API:', err);
+      }
+    };
+    fetchProducts();
+    return () => { active = false; };
+  }, [vendorId]);
+
+  const rawProducts = useMemo(() => {
+    return apiProducts.length > 0 ? apiProducts : MOCK_PRODUCTS;
+  }, [apiProducts]);
 
   const filteredAndSortedProducts = useMemo(() => {
-    // 1. Initial vendor filter
-    let list = MOCK_PRODUCTS;
+    let list = rawProducts;
     if (vendorId) {
-      const matched = MOCK_PRODUCTS.filter(
+      const matched = rawProducts.filter(
         p => p.vendorId === vendorId || p.vendorName.toLowerCase().includes(vendorId.toLowerCase())
       );
-      list = matched.length > 0 ? matched : MOCK_PRODUCTS.slice(0, 4);
+      list = matched.length > 0 ? matched : rawProducts.slice(0, 4);
     }
 
-    // 2. Status filter
     if (statusFilter !== 'All') {
       list = list.filter(p => p.status === statusFilter);
     }
 
-    // 3. Category filter
     if (categoryFilter !== 'All') {
       list = list.filter(p => p.category === categoryFilter);
     }
 
-    // 4. Sort: Pending Review (1) -> Rejected (2) -> Approved (3)
     const statusWeight: Record<string, number> = {
       'Pending Review': 1,
       'Rejected': 2,
@@ -225,13 +227,12 @@ export default function ProductCatalog({ vendorId = null }: ProductCatalogProps)
       const wB = statusWeight[b.status] || 99;
       return wA - wB;
     });
-  }, [vendorId, statusFilter, categoryFilter]);
+  }, [rawProducts, vendorId, statusFilter, categoryFilter]);
 
-  // Extract unique categories from raw products for filter buttons
   const categories = useMemo(() => {
-    const set = new Set(MOCK_PRODUCTS.map(p => p.category));
+    const set = new Set(rawProducts.map(p => p.category));
     return ['All', ...Array.from(set)];
-  }, []);
+  }, [rawProducts]);
 
   const sortedVendorGroups = useMemo(() => {
     const groups: Record<string, typeof MOCK_PRODUCTS> = {};

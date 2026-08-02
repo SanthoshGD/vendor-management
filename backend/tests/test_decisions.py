@@ -59,13 +59,13 @@ def test_api_approve_vendor():
     app = create_app()
     with TestClient(app) as client:
         res = client.post(
-            "/api/v1/vendors/VND-100/approve",
+            "/api/v1/vendors/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11/approve",
             json={"comment": "Approved following automated compliance audit"},
         )
         assert res.status_code == 200
         body = res.json()
         assert body["success"] is True
-        assert body["data"]["vendorId"] == "VND-100"
+        assert body["data"]["vendorId"] == "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
         assert body["data"]["decision"] == "approved"
         assert body["data"]["status"] == "Approved"
 
@@ -74,13 +74,13 @@ def test_api_reject_vendor():
     app = create_app()
     with TestClient(app) as client:
         res = client.post(
-            "/api/v1/vendors/VND-101/reject",
+            "/api/v1/vendors/b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22/reject",
             json={"comment": "Expired Certificate of Insurance"},
         )
         assert res.status_code == 200
         body = res.json()
         assert body["success"] is True
-        assert body["data"]["vendorId"] == "VND-101"
+        assert body["data"]["vendorId"] == "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22"
         assert body["data"]["decision"] == "rejected"
         assert body["data"]["status"] == "Rejected"
 
@@ -89,7 +89,7 @@ def test_api_request_changes():
     app = create_app()
     with TestClient(app) as client:
         res = client.post(
-            "/api/v1/vendors/VND-102/request-changes",
+            "/api/v1/vendors/c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33/request-changes",
             json={
                 "comment": "Document verification incomplete",
                 "changes": ["Re-upload Bank Account Verification Letter"],
@@ -98,7 +98,7 @@ def test_api_request_changes():
         assert res.status_code == 200
         body = res.json()
         assert body["success"] is True
-        assert body["data"]["vendorId"] == "VND-102"
+        assert body["data"]["vendorId"] == "c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33"
         assert body["data"]["decision"] == "changes_requested"
         assert body["data"]["status"] == "Changes Requested"
 
@@ -113,12 +113,12 @@ def test_api_approve_vendor_role_gated():
         email="vendor@example.com",
         name="Vendor User",
         role=Role.vendor,
-        vendor_id="VND-100",
+        vendor_id="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
     )
 
     with TestClient(app) as client:
         res = client.post(
-            "/api/v1/vendors/VND-100/approve",
+            "/api/v1/vendors/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11/approve",
             json={"comment": "Attempting unauthorized approval"},
         )
         assert res.status_code == 403
@@ -137,12 +137,12 @@ def test_api_reject_vendor_role_gated():
         email="vendor@example.com",
         name="Vendor User",
         role=Role.vendor,
-        vendor_id="VND-101",
+        vendor_id="b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22",
     )
 
     with TestClient(app) as client:
         res = client.post(
-            "/api/v1/vendors/VND-101/reject",
+            "/api/v1/vendors/b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22/reject",
             json={"comment": "Attempting unauthorized rejection"},
         )
         assert res.status_code == 403

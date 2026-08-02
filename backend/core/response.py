@@ -45,8 +45,10 @@ class ErrorItem(CamelModel):
     field: str | None = None
 
 
+from core.logger import request_id_ctx
+
 class ResponseMeta(CamelModel):
-    request_id: str | None = None
+    request_id: str | None = Field(default_factory=lambda: request_id_ctx.get(None))
     page: int | None = None
     page_size: int | None = None
     total: int | None = None

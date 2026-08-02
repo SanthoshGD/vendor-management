@@ -15,10 +15,12 @@ from schemas.common import Priority, RiskLevel, VendorStatus
 from schemas.risk import RiskOut
 
 
+from uuid import UUID
+
 class VendorSummary(CamelModel):
     """List-row projection - the columns the Vendors table renders."""
 
-    id: str
+    id: UUID | str
     company_name: str
     country: str | None = None
     category: str | None = None

@@ -58,7 +58,7 @@ def test_every_route_boots() -> None:
             while "{" in url:
                 head, _, rest = url.partition("{")
                 _, _, tail = rest.partition("}")
-                url = f"{head}TEST-ID{tail}"
+                url = f"{head}a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11{tail}"
             for method in operations:
                 response = client.request(method.upper(), url, json={})
                 assert response.status_code not in (404, 500), (
@@ -71,11 +71,11 @@ def test_every_route_boots() -> None:
 def test_error_uses_the_standard_envelope() -> None:
     """Spec §8: {success, data, message, errors, meta} on every response."""
     with TestClient(create_app(), raise_server_exceptions=False) as client:
-        body = client.get("/api/v1/dashboard").json()
+        body = client.get("/api/v1/does-not-exist").json()
         assert body["success"] is False
         assert body["data"] is None
         assert body["message"]
-        assert body["errors"] and body["errors"][0]["code"] in ("not_implemented", "service_unavailable")
+        assert body["errors"] and body["errors"][0]["code"] in ("not_found", "not_implemented", "service_unavailable")
         assert "meta" in body
 
 

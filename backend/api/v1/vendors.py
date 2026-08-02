@@ -20,7 +20,7 @@ from api.deps import (
     RiskRepoDep,
     VendorRepoDep,
 )
-from core.response import ApiResponse
+from core.response import ApiResponse, ok, paginated
 from schemas.activity import ActivityEntry
 from schemas.common import Priority, RiskLevel, VendorStatus
 from schemas.document import DocumentOut
@@ -60,7 +60,19 @@ async def list_vendors(
     sort_by: str = Query(default="submission_date", alias="sortBy"),
     descending: bool = Query(default=True),
 ) -> ApiResponse[list[VendorSummary]]:
-    raise NotImplementedError
+    items, total = await vendors.list_vendors(
+        status=status_filter,
+        country=country,
+        risk_level=risk.value if risk else None,
+        priority=priority.value if priority else None,
+        assigned_executive=assigned_to,
+        search=search,
+        sort_by=sort_by,
+        descending=descending,
+        limit=pagination.page_size,
+        offset=pagination.offset,
+    )
+    return paginated(items, page=pagination.page, page_size=pagination.page_size, total=total)
 
 
 @router.get(
@@ -70,7 +82,8 @@ async def list_vendors(
     summary="Vendor detail including risk",
 )
 async def get_vendor(vendor_id: str, vendors: VendorRepoDep) -> ApiResponse[VendorDetail]:
-    raise NotImplementedError
+    v = await vendors.get_vendor(vendor_id)
+    return ok(v)
 
 
 @router.get(
@@ -81,7 +94,8 @@ async def get_vendor(vendor_id: str, vendors: VendorRepoDep) -> ApiResponse[Vend
 async def list_vendor_documents(
     vendor_id: str, documents: DocumentRepoDep
 ) -> ApiResponse[list[DocumentOut]]:
-    raise NotImplementedError
+    docs = await documents.list_for_vendor(vendor_id)
+    return ok(docs)
 
 
 @router.get(
@@ -96,7 +110,19 @@ async def list_vendor_documents(
 async def get_vendor_risk(
     vendor_id: str, risk: RiskRepoDep, vendors: VendorRepoDep
 ) -> ApiResponse[RiskOut]:
-    raise NotImplementedError
+    v = await vendors.get_vendor(vendor_id)
+    drivers = await risk.list_drivers(vendor_id)
+    payload = RiskOut(
+        score=v.risk_score or 0,
+        level=v.risk_level or RiskLevel.low,
+        drivers=[
+            {"code": d.driver_code, "points": d.points, "description": d.description}
+            for d in drivers
+        ],
+        recommendation="Standard onboarding path." if (v.risk_score or 0) < 40 else "Enhanced document review required.",
+        calculated_at=v.risk_calculated_at,
+    )
+    return ok(payload)
 
 
 @router.get(
@@ -107,7 +133,8 @@ async def get_vendor_risk(
 async def list_vendor_products(
     vendor_id: str, products: ProductRepoDep, pagination: PaginationDep
 ) -> ApiResponse[list[ProductOut]]:
-    raise NotImplementedError
+    items, total = await products.list_products(vendor_id=vendor_id, limit=pagination.page_size, offset=pagination.offset)
+    return paginated(items, page=pagination.page, page_size=pagination.page_size, total=total)
 
 
 @router.get(
@@ -118,7 +145,8 @@ async def list_vendor_products(
 async def list_vendor_activity(
     vendor_id: str, activity: ActivityRepoDep, pagination: PaginationDep
 ) -> ApiResponse[list[ActivityEntry]]:
-    raise NotImplementedError
+    items, total = await activity.list_entries(vendor_id=vendor_id, limit=pagination.page_size, offset=pagination.offset)
+    return paginated(items, page=pagination.page, page_size=pagination.page_size, total=total)
 
 
 # --- Decisions --------------------------------------------------------------
