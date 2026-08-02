@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { NexusProvider } from '../context/NexusContext';
 import '../styles/index.css';
 import '../styles/App.css';
 import '../styles/RedesignedApp.css';
@@ -16,7 +17,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
+        <NexusProvider>
+          {children}
+        </NexusProvider>
       </body>
     </html>
   );

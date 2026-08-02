@@ -189,12 +189,14 @@ function useDismiss(open: boolean, close: () => void) {
   }, [open, close]);
 }
 
+import { PersonaRole } from '../../constants/nav';
+
 interface TopbarProps {
-  persona: string;
+  persona: PersonaRole;
   page: string;
   query: string;
   setQuery: (q: string) => void;
-  onSwitch: (persona: string) => void;
+  onSwitch: (persona: PersonaRole) => void;
   onMobile: () => void;
   onHelp: () => void;
   onNavigate: (page: string) => void;
@@ -339,7 +341,7 @@ export function Topbar({ persona, page, query, setQuery, onSwitch, onMobile, onH
               </span>
             </header>
             <button onClick={() => { close(); onModal({ type: 'settings' }); }}><Settings size={15} /> Workspace settings</button>
-            {['admin', 'vendor'].filter((role) => role !== persona).map((role) => (
+            {(['admin', 'vendor'] as PersonaRole[]).filter((role) => role !== persona).map((role) => (
               <button key={role} onClick={() => { close(); onSwitch(role); }}>
                 {role === 'admin' ? <Building2 size={15} /> : <PackageCheck size={15} />}
                 Switch to {ROLE_LABEL[role].toLowerCase()}

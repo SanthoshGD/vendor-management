@@ -87,7 +87,7 @@ export default function MetricsRow({ vendors = [], onNavigate }: MetricsRowProps
     <section 
       style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
         gap: '16px',
         marginTop: '24px',
         marginBottom: '24px',

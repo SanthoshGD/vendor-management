@@ -35,56 +35,8 @@ import ProductCatalog from './admin/Product/ProductCatalog';
 import DocumentsView from './admin/DocumentReview/DocumentsView';
 import TeamView from './admin/Team/TeamView';
 
-const adminNav: [string, string, any][] = [
-  ['overview', 'Dashboard', LayoutDashboard],
-  ['vendors', 'Vendors', Users],
-  ['team', 'Teams', UserCog],
-  ['products', 'Product Catalog', Package],
-  ['activity', 'Activity', Activity],
-  ['settings', 'Settings', Settings],
-];
+import { adminNav, vendorNav, pageNamesByPersona, ROLE_PAGES, HOME_PAGE, ROLE_LABEL, BELL_FOOTER } from '../constants/nav';
 
-const vendorNav: [string, string, any][] = [
-  ['overview', 'My workspace', Home],
-  ['onboarding', 'Onboarding', FolderKanban],
-  ['actions', 'Action center', Inbox],
-  ['documents', 'Documents', FileCheck2],
-];
-
-const pageNamesByPersona: Record<string, Record<string, string>> = {
-  admin: {
-    overview: 'Dashboard',
-    vendors: 'Vendors',
-    team: 'Teams',
-    products: 'Product Catalog',
-    activity: 'Activity',
-    settings: 'Settings',
-    'ai-review': 'Vendor Details',
-    'vendor-details': 'Vendor Details',
-  },
-  vendor: {
-    overview: 'My workspace',
-    onboarding: 'Onboarding',
-    actions: 'Action center',
-    documents: 'Documents',
-  },
-};
-
-const ROLE_PAGES: Record<string, string[]> = {
-  admin: ['overview', 'vendors', 'team', 'products', 'activity', 'settings', 'ai-review', 'vendor-details'],
-  vendor: ['overview', 'onboarding', 'actions', 'documents'],
-};
-
-const HOME_PAGE: Record<string, string> = { admin: 'overview', vendor: 'overview' };
-
-const ROLE_LABEL: Record<string, string> = {
-  admin: 'Admin Portal', vendor: 'Vendor Portal',
-};
-
-const BELL_FOOTER: Record<string, { page: string; label: string }> = {
-  admin: { page: 'activity', label: 'Open activity log' },
-  vendor: { page: 'actions', label: 'Open action center' },
-};
 
 const ACTION_META: Record<string, [any, string]> = {
   FIELD_ACCEPT: [CheckCircle2, 'green'],
@@ -163,9 +115,11 @@ export default function RedesignedApp() {
   );
 }
 
+import { PersonaRole } from '../constants/nav';
+
 function NexusShell() {
   const { vendors, toast, settings, activeVendorId, setActiveVendorId, ensureVendorFromInvite, getVendor } = useNexus();
-  const [persona, setPersona] = useState('admin');
+  const [persona, setPersona] = useState<PersonaRole>('admin');
   const [page, setPage] = useState('overview');
   const [collapsed, setCollapsed] = useState(false);
   const [mobileNav, setMobileNav] = useState(false);
@@ -193,7 +147,7 @@ function NexusShell() {
     setPage('onboarding');
   }, [ensureVendorFromInvite, setActiveVendorId]);
 
-  const switchPersona = (next: string) => {
+  const switchPersona = (next: PersonaRole) => {
     setPersona(next);
     setMobileNav(false);
     if (next === 'vendor') {
@@ -318,7 +272,7 @@ function NexusShell() {
   );
 }
 
-function OnboardingExperience({ vendor, onSwitch, density, children }: { vendor: Vendor; onSwitch: (p: string) => void; density: string; children: React.ReactNode }) {
+function OnboardingExperience({ vendor, onSwitch, density, children }: { vendor: Vendor; onSwitch: (p: PersonaRole) => void; density: string; children: React.ReactNode }) {
   const [gate, setGate] = useState('invite');
   const { restartOnboarding } = useNexus();
   const step = allowedStep(vendor);
@@ -412,7 +366,7 @@ function CustomerDashboard({ onNavigate, onModal, onOpenVendor }: any) {
   return <Dashboard onNavigate={onNavigate} onModal={onModal} onOpenVendor={onOpenVendor} />;
 }
 
-function VendorDashboard({ onNavigate, onModal }: any) {
+export function VendorDashboard({ onNavigate, onModal }: any) {
   const { getVendor, activeVendorId } = useNexus();
   const vendor = getVendor(activeVendorId);
   const correctionDoc = vendor.documents.find((d: any) => d.rejection);
@@ -1388,7 +1342,7 @@ function CompliancePage({ onNavigate, onOpenVendor }: any) {
   </div>;
 }
 
-function VendorOnboarding({ onModal, onNavigate }: any) {
+export function VendorOnboarding({ onModal, onNavigate }: any) {
   const { getVendor, getAssessment, activeVendorId } = useNexus();
   const vendor = getVendor(activeVendorId);
   const assessment = getAssessment(activeVendorId);
@@ -1451,7 +1405,7 @@ function VendorOnboarding({ onModal, onNavigate }: any) {
   </div>;
 }
 
-function VendorActions({ onModal }: any) {
+export function VendorActions({ onModal }: any) {
   const { getVendor, getThreads, requests, activeVendorId } = useNexus();
   const vendor = getVendor(activeVendorId);
   const correctionDoc = vendor.documents.find((d: any) => d.rejection);
@@ -1483,7 +1437,7 @@ function VendorActions({ onModal }: any) {
   </div>;
 }
 
-function VendorDocuments({ onModal }: any) {
+export function VendorDocuments({ onModal }: any) {
   const { getVendor, activeVendorId } = useNexus();
   const vendor = getVendor(activeVendorId);
   return <div className="nexus-page"><PageHero eyebrow={`${vendor.verifiedCount}/${vendor.documents.length} reviewed`} title="Documents" description="Submitted files and replacement requests."><button className="button primary" onClick={() => onModal({ type: 'upload' })}><Upload size={15} /> Upload document</button></PageHero><section className="document-grid">
@@ -1597,7 +1551,7 @@ function Task({ icon: Icon, urgent, label, tone, badge, title, detail, note, chi
   return <article className={cx('panel task-card', urgent && 'urgent')}><span className="task-icon"><Icon size={18} /></span><section><header><span className="section-kicker">{label}</span><StatusPill tone={tone}>{badge}</StatusPill></header><h3>{title}</h3><p>{detail}</p><small><FileText size={13} />{note}</small></section>{children}</article>;
 }
 
-function Modal({ modal, onClose, onOpenVendor, onViewAsVendor }: any) {
+export function Modal({ modal, onClose, onOpenVendor, onViewAsVendor }: any) {
   const { addVendor, addRequest, uploadDocument, uploadNextActionable, respondToRequest, vendors, notify, settings, updateSettings, activeVendorId } = useNexus();
   const cardRef = useRef<HTMLDivElement>(null);
   useDialog(cardRef, onClose);

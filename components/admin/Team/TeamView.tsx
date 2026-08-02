@@ -185,61 +185,63 @@ export default function TeamView() {
         <div style={{ padding: '14px 20px', borderBottom: '1px solid #E2E8F0', fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase' }}>
           ADMIN MEMBERS & PERFORMANCE LIMITS (Click row to edit)
         </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid #E2E8F0', backgroundColor: '#F8FAFC', color: '#64748B', textAlign: 'left' }}>
-              <th style={{ padding: '10px 16px', fontWeight: 600 }}>Admin Name</th>
-              <th style={{ padding: '10px 16px', fontWeight: 600 }}>Region Scope</th>
-              <th style={{ padding: '10px 16px', fontWeight: 600 }}>Approval Limit</th>
-              <th style={{ padding: '10px 16px', fontWeight: 600 }}>Approved / Rejected</th>
-              <th style={{ padding: '10px 16px', fontWeight: 600, textAlign: 'right' }}>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {teamList.map((t) => (
-              <tr 
-                key={t.id} 
-                onClick={() => handleOpenEditAdmin(t)}
-                style={{ borderBottom: '1px solid #F1F5F9', cursor: 'pointer', transition: 'background-color 0.15s' }}
-                className="hover:bg-slate-50"
-              >
-                <td style={{ padding: '12px 16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#D1FAE5', color: '#059669', fontSize: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {t.name.split(' ').map((p) => p[0]).join('')}
-                    </div>
-                    <div>
-                      <div style={{ fontWeight: 600, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        {t.name}
-                        <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', backgroundColor: t.role === 'Super Admin' ? '#0F172A' : '#E2E8F0', color: t.role === 'Super Admin' ? '#FFFFFF' : '#475569' }}>
-                          {t.role}
-                        </span>
-                      </div>
-                      <div style={{ fontSize: '11px', color: '#94A3B8' }}>{t.email}</div>
-                    </div>
-                  </div>
-                </td>
-                <td style={{ padding: '12px 16px', color: '#475569' }}>{t.region}</td>
-                <td style={{ padding: '12px 16px', color: '#0369A1', fontWeight: 600 }}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', backgroundColor: '#F0F9FF', padding: '2px 8px', borderRadius: '4px', border: '1px solid #BAE6FD' }}>
-                    <Landmark size={12} /> {t.limit}
-                  </span>
-                </td>
-                <td style={{ padding: '12px 16px', color: '#64748B' }}>
-                  <span style={{ color: '#059669', fontWeight: 600 }}>{t.approved}</span> / <span style={{ color: '#E11D48', fontWeight: 600 }}>{t.rejected}</span>
-                </td>
-                <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                  <button 
-                    type="button"
-                    style={{ fontSize: '12px', fontWeight: 600, color: '#059669', border: 0, backgroundColor: 'transparent', cursor: 'pointer' }}
-                  >
-                    Edit Limit
-                  </button>
-                </td>
+        <div style={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
+          <table style={{ width: '100%', minWidth: '600px', borderCollapse: 'collapse', fontSize: '13px' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid #E2E8F0', backgroundColor: '#F8FAFC', color: '#64748B', textAlign: 'left' }}>
+                <th style={{ padding: '10px 16px', fontWeight: 600 }}>Admin Name</th>
+                <th style={{ padding: '10px 16px', fontWeight: 600 }}>Region Scope</th>
+                <th style={{ padding: '10px 16px', fontWeight: 600 }}>Approval Limit</th>
+                <th style={{ padding: '10px 16px', fontWeight: 600 }}>Approved / Rejected</th>
+                <th style={{ padding: '10px 16px', fontWeight: 600, textAlign: 'right' }}>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {teamList.map((t) => (
+                <tr 
+                  key={t.id} 
+                  onClick={() => handleOpenEditAdmin(t)}
+                  style={{ borderBottom: '1px solid #F1F5F9', cursor: 'pointer', transition: 'background-color 0.15s' }}
+                  className="hover:bg-slate-50"
+                >
+                  <td style={{ padding: '12px 16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#D1FAE5', color: '#059669', fontSize: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {t.name.split(' ').map((p) => p[0]).join('')}
+                      </div>
+                      <div>
+                        <div style={{ fontWeight: 600, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          {t.name}
+                          <span style={{ fontSize: '10px', padding: '2px 6px', borderRadius: '4px', backgroundColor: t.role === 'Super Admin' ? '#0F172A' : '#E2E8F0', color: t.role === 'Super Admin' ? '#FFFFFF' : '#475569' }}>
+                            {t.role}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '11px', color: '#94A3B8' }}>{t.email}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style={{ padding: '12px 16px', color: '#475569' }}>{t.region}</td>
+                  <td style={{ padding: '12px 16px', color: '#0369A1', fontWeight: 600 }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', backgroundColor: '#F0F9FF', padding: '2px 8px', borderRadius: '4px', border: '1px solid #BAE6FD' }}>
+                      <Landmark size={12} /> {t.limit}
+                    </span>
+                  </td>
+                  <td style={{ padding: '12px 16px', color: '#64748B' }}>
+                    <span style={{ color: '#059669', fontWeight: 600 }}>{t.approved}</span> / <span style={{ color: '#E11D48', fontWeight: 600 }}>{t.rejected}</span>
+                  </td>
+                  <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                    <button 
+                      type="button"
+                      style={{ fontSize: '12px', fontWeight: 600, color: '#059669', border: 0, backgroundColor: 'transparent', cursor: 'pointer' }}
+                    >
+                      Edit Limit
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Vendor Executives Directory */}

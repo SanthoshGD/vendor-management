@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNexus } from '../../../context/NexusContext';
-import { Plus, ShoppingBag } from 'lucide-react';
+import { Plus, ShoppingBag, Sparkles } from 'lucide-react';
 import MetricsRow from './MetricsRow';
 import PriorityQueue from './PriorityQueue';
 import ApprovalRate from './ApprovalRate';
@@ -11,13 +11,13 @@ import PipelineFunnel from './PipelineFunnel';
 import RecentActivity from './RecentActivity';
 import RiskDistributionChart from './RiskDistributionChart';
 
-interface DashboardProps {
+interface AdminDashboardNewProps {
   onNavigate?: (page: string) => void;
   onModal?: (modal: any) => void;
   onOpenVendor?: (vendorId: string, tab?: string) => void;
 }
 
-export default function Dashboard({ onNavigate, onModal, onOpenVendor }: DashboardProps) {
+export default function AdminDashboardNew({ onNavigate, onModal, onOpenVendor }: AdminDashboardNewProps) {
   const { vendors, auditLogs } = useNexus();
   const [todayLabel, setTodayLabel] = useState('');
 
@@ -27,6 +27,16 @@ export default function Dashboard({ onNavigate, onModal, onOpenVendor }: Dashboa
 
   return (
     <div className="nexus-page" style={{ padding: 'clamp(12px, 3vw, 24px)', backgroundColor: '#F8FAFC', minHeight: '100%', boxSizing: 'border-box' }}>
+      {/* Version Header Banner */}
+      <div style={{ backgroundColor: '#ECFDF5', border: '1px solid #A7F3D0', borderRadius: '12px', padding: '10px 16px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#047857', fontSize: '13px', fontWeight: 600 }}>
+          <Sparkles size={16} /> Admin Dashboard v2 (New Integration)
+        </div>
+        <span style={{ fontSize: '11px', color: '#065F46', backgroundColor: '#D1FAE5', padding: '2px 8px', borderRadius: '6px', fontWeight: 600 }}>
+          Mounted as /admin/dashboard-v2
+        </span>
+      </div>
+
       {/* Header Section */}
       <section style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
         <div>
@@ -34,10 +44,10 @@ export default function Dashboard({ onNavigate, onModal, onOpenVendor }: Dashboa
             {todayLabel}
           </span>
           <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#0F172A', margin: '2px 0 0 0' }}>
-            Admin Operational Dashboard
+            Enterprise Admin Control Center
           </h1>
           <p style={{ fontSize: '13px', color: '#64748B', margin: '2px 0 0 0' }}>
-            Central operational hub — what requires your attention today?
+            Central operational hub — live vendor metrics, approval trends, and priority queue
           </p>
         </div>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -94,7 +104,7 @@ export default function Dashboard({ onNavigate, onModal, onOpenVendor }: Dashboa
       {/* Row 1: Top Metrics Summary */}
       <MetricsRow vendors={vendors} onNavigate={onNavigate} />
 
-      {/* Sequence 1 & 2: 1. Approval Trend (2/3) + 2. Approval Rate (1/3) */}
+      {/* Sequence 1 & 2: 1. Approval Trend (2/3) + 2. Approval Rate China (1/3) */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '20px', marginBottom: '24px' }}>
         <TrendChart vendors={vendors} onDrill={() => onNavigate?.('vendors')} />
         <ApprovalRate />

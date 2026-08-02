@@ -92,57 +92,59 @@ function Stepper({ stage, onSelectStage }: { stage: string; onSelectStage?: (sta
   const currentStep = stageMap[stage] || 2;
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', padding: '8px 0' }}>
-      {STAGES.map((s) => {
-        const isDone = s.num < currentStep;
-        const isCurrent = s.num === currentStep;
+    <div style={{ width: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '6px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', padding: '8px 0', minWidth: '600px', boxSizing: 'border-box' }}>
+        {STAGES.map((s) => {
+          const isDone = s.num < currentStep;
+          const isCurrent = s.num === currentStep;
 
-        return (
-          <React.Fragment key={s.num}>
-            <div 
-              onClick={() => onSelectStage && onSelectStage(s.label)}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', zIndex: 2, cursor: 'pointer' }}
-              title={`Click to switch stage to: ${s.label}`}
-            >
-              <div
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  backgroundColor: isDone ? '#10B981' : isCurrent ? '#0F172A' : '#F1F5F9',
-                  color: isDone || isCurrent ? '#FFFFFF' : '#94A3B8',
-                  border: isDone ? 'none' : isCurrent ? 'none' : '1px solid #E2E8F0',
-                  boxShadow: isCurrent ? '0 0 0 4px rgba(15,23,42,0.1)' : 'none',
-                  transition: 'all 0.2s ease',
-                }}
+          return (
+            <React.Fragment key={s.num}>
+              <div 
+                onClick={() => onSelectStage && onSelectStage(s.label)}
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', zIndex: 2, cursor: 'pointer' }}
+                title={`Click to switch stage to: ${s.label}`}
               >
-                {isDone ? <Check size={14} /> : s.num}
+                <div
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    backgroundColor: isDone ? '#10B981' : isCurrent ? '#0F172A' : '#F1F5F9',
+                    color: isDone || isCurrent ? '#FFFFFF' : '#94A3B8',
+                    border: isDone ? 'none' : isCurrent ? 'none' : '1px solid #E2E8F0',
+                    boxShadow: isCurrent ? '0 0 0 4px rgba(15,23,42,0.1)' : 'none',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  {isDone ? <Check size={14} /> : s.num}
+                </div>
+                <span style={{ fontSize: '11px', fontWeight: isCurrent ? 600 : 400, color: isCurrent ? '#0F172A' : '#64748B', whiteSpace: 'nowrap' }}>
+                  {s.label}
+                </span>
               </div>
-              <span style={{ fontSize: '11px', fontWeight: isCurrent ? 600 : 400, color: isCurrent ? '#0F172A' : '#64748B', whiteSpace: 'nowrap' }}>
-                {s.label}
-              </span>
-            </div>
-            {s.num < STAGES.length && (
-              <div
-                style={{
-                  flex: 1,
-                  height: '2px',
-                  backgroundColor: s.num < currentStep ? '#10B981' : '#E2E8F0',
-                  margin: '0 8px',
-                  marginTop: '-18px',
-                  zIndex: 1,
-                  transition: 'background-color 0.3s ease',
-                }}
-              />
-            )}
-          </React.Fragment>
-        );
-      })}
+              {s.num < STAGES.length && (
+                <div
+                  style={{
+                    flex: 1,
+                    height: '2px',
+                    backgroundColor: s.num < currentStep ? '#10B981' : '#E2E8F0',
+                    margin: '0 8px',
+                    marginTop: '-18px',
+                    zIndex: 1,
+                    transition: 'background-color 0.3s ease',
+                  }}
+                />
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -317,7 +319,7 @@ export default function VendorDetailView({
         <StatusBadge status={vendor.status} />
       </div>
       {/* Navigation Tabs */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', borderBottom: '1px solid #E2E8F0', paddingBottom: '8px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '4px', borderBottom: '1px solid #E2E8F0', paddingBottom: '8px' }}>
         {tabs.map((t) => (
           <button
             key={t.id}
@@ -425,7 +427,7 @@ export default function VendorDetailView({
 
           {/* Two Column Grid — hidden during Stage 3 Doc Review (admin focuses on document workspace) */}
           {vendor.stage !== 'Doc Review' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', alignItems: 'start' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '20px', alignItems: 'start' }}>
             {/* Left Column: Vendor Info & Risk Engine */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               {/* Vendor Information Card */}
