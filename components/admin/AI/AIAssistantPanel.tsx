@@ -78,10 +78,10 @@ export default function AIAssistantPanel({
     setIsTyping(true);
 
     // Try real backend first
-    const backendAvailable = await tryBackend(text, abortRef.current);
-    if (!backendAvailable) {
+    const success = await tryBackend(text, abortRef.current);
+    if (!success) {
       // Fallback: mock streaming
-      useMockFallback(text);
+      runMockFallback(text);
     }
   };
 
@@ -191,7 +191,7 @@ export default function AIAssistantPanel({
   };
 
   // ─── Mock fallback ────────────────────────────────────────────────────────────
-  const useMockFallback = (text: string) => {
+  const runMockFallback = (text: string) => {
     const tempAiId = `ai-stream-${Date.now()}`;
     let isFirstWord = true;
 

@@ -1,14 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React from 'react';
+import PortalLayout from '../../../components/layout/PortalLayout';
+import AdminDashboardNew from '../../../components/admin/Dashboard/AdminDashboardNew';
 
-export default function DashboardV2RedirectPage() {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.replace('/admin/dashboard');
-  }, [router]);
-
-  return null;
+export default function DashboardV2Page() {
+  return (
+    <PortalLayout persona="admin">
+      <AdminDashboardNew />
+    </PortalLayout>
+  );
 }

@@ -54,6 +54,16 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     app.state.supabase = supabase
     app.state.settings_pack = load_settings_pack()
 
+    # Register event listeners (spec §9)
+    from events import bus
+    from events.vendor_approved import EVENT_NAME as APPROVED_EVENT, on_embed_decision as on_app_embed, on_notify as on_app_notify
+    from events.vendor_rejected import EVENT_NAME as REJECTED_EVENT, on_embed_decision as on_rej_embed, on_notify as on_rej_notify
+
+    bus.subscribe(APPROVED_EVENT, on_app_notify)
+    bus.subscribe(APPROVED_EVENT, on_app_embed)
+    bus.subscribe(REJECTED_EVENT, on_rej_notify)
+    bus.subscribe(REJECTED_EVENT, on_rej_embed)
+
     logger.info(
         "application_started",
         extra={

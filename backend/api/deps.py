@@ -41,6 +41,7 @@ from services.ai.rag_pipeline import RagPipeline
 from services.analytics.analytics_service import AnalyticsService
 from services.notification.notification_service import NotificationService
 from services.storage.storage_service import StorageService
+from services.vendor.decision_service import DecisionService
 
 logger = get_logger(__name__)
 
@@ -184,6 +185,35 @@ def get_analytics_service(
 StorageDep = Annotated[StorageService, Depends(get_storage_service)]
 NotificationDep = Annotated[NotificationService, Depends(get_notification_service)]
 AnalyticsDep = Annotated[AnalyticsService, Depends(get_analytics_service)]
+
+
+async def get_optional_session(database: DatabaseDep) -> AsyncIterator[AsyncSession | None]:
+    if not database.is_connected:
+        yield None
+        return
+    factory = database.get_sessionmaker()
+    session = factory()
+    try:
+        yield session
+        await session.commit()
+    except Exception:
+        await session.rollback()
+        raise
+    finally:
+        await session.close()
+
+
+OptionalSessionDep = Annotated[AsyncSession | None, Depends(get_optional_session)]
+
+
+def get_decision_service(
+    session: OptionalSessionDep, supabase: SupabaseDep
+) -> DecisionService:
+    from services.vendor.decision_service import DecisionService
+    return DecisionService(session, supabase)
+
+
+DecisionServiceDep = Annotated[DecisionService, Depends(get_decision_service)]
 
 
 def get_key_rotation(database: DatabaseDep, settings: SettingsDep) -> KeyRotationPolicy:

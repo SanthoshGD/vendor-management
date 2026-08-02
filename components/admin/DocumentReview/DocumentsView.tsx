@@ -219,7 +219,7 @@ export default function DocumentsView({ onOpenVendor }: { onOpenVendor?: (id: st
   const active = DOCUMENTS.find((d) => d.id === activeId) || ordered[0];
   const rejectingDoc = DOCUMENTS.find((d) => d.id === rejectingDocId);
 
-  const decide = (id: string, action: 'approve' | 'reject') => {
+  const decide = React.useCallback((id: string, action: 'approve' | 'reject') => {
     if (action === 'reject') {
       setRejectingDocId(id);
       setReasonInput('');
@@ -232,7 +232,7 @@ export default function DocumentsView({ onOpenVendor }: { onOpenVendor?: (id: st
     if (nextDoc) {
       setActiveId(nextDoc.id);
     }
-  };
+  }, [ordered, decided]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -250,7 +250,7 @@ export default function DocumentsView({ onOpenVendor }: { onOpenVendor?: (id: st
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [active, ordered, decided]);
+  }, [active, ordered, decide]);
 
   const pendingCount = DOCUMENTS.filter((d) => !decided[d.id]).length;
 

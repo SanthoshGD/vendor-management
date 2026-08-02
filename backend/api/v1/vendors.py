@@ -10,7 +10,10 @@ from fastapi import APIRouter, Query
 
 from api.deps import (
     ActivityRepoDep,
+    AdminDep,
+    ClientIpDep,
     CurrentUserDep,
+    DecisionServiceDep,
     DocumentRepoDep,
     PaginationDep,
     ProductRepoDep,
@@ -133,11 +136,18 @@ async def list_vendor_activity(
 async def approve_vendor(
     vendor_id: str,
     payload: DecisionRequest,
-    vendors: VendorRepoDep,
-    activity: ActivityRepoDep,
-    user: CurrentUserDep,
+    decision_service: DecisionServiceDep,
+    user: AdminDep,
+    client_ip: ClientIpDep = None,
 ) -> ApiResponse[DecisionResult]:
-    raise NotImplementedError
+    result = await decision_service.approve(
+        vendor_id=vendor_id,
+        comment=payload.comment,
+        reviewer=user.name or user.email,
+        reviewer_id=user.id,
+        ip_address=client_ip,
+    )
+    return ApiResponse(data=result)
 
 
 @router.post(
@@ -150,11 +160,18 @@ async def approve_vendor(
 async def reject_vendor(
     vendor_id: str,
     payload: DecisionRequest,
-    vendors: VendorRepoDep,
-    activity: ActivityRepoDep,
-    user: CurrentUserDep,
+    decision_service: DecisionServiceDep,
+    user: AdminDep,
+    client_ip: ClientIpDep = None,
 ) -> ApiResponse[DecisionResult]:
-    raise NotImplementedError
+    result = await decision_service.reject(
+        vendor_id=vendor_id,
+        comment=payload.comment,
+        reviewer=user.name or user.email,
+        reviewer_id=user.id,
+        ip_address=client_ip,
+    )
+    return ApiResponse(data=result)
 
 
 @router.post(
@@ -170,8 +187,16 @@ async def reject_vendor(
 async def request_changes(
     vendor_id: str,
     payload: RequestChangesRequest,
-    vendors: VendorRepoDep,
-    activity: ActivityRepoDep,
-    user: CurrentUserDep,
+    decision_service: DecisionServiceDep,
+    user: AdminDep,
+    client_ip: ClientIpDep = None,
 ) -> ApiResponse[DecisionResult]:
-    raise NotImplementedError
+    result = await decision_service.request_changes(
+        vendor_id=vendor_id,
+        comment=payload.comment,
+        changes=payload.changes,
+        reviewer=user.name or user.email,
+        reviewer_id=user.id,
+        ip_address=client_ip,
+    )
+    return ApiResponse(data=result)

@@ -42,8 +42,8 @@ export default function TrendChart({ vendors = [], onDrill }: TrendChartProps) {
     setMounted(true);
   }, []);
 
-  const rawData = range === '7d' ? WEEKLY : range === '30d' ? WEEKLY_30 : WEEKLY_90;
   const data = useMemo(() => {
+    const rawData = range === '7d' ? WEEKLY : range === '30d' ? WEEKLY_30 : WEEKLY_90;
     if (!vendors || vendors.length === 0) return rawData;
     const liveApproved = vendors.filter(v => v.finalStatus === 'Approved' || v.finalStatus === 'Active' || v.status === 'Approved').length;
     const livePending = vendors.filter(v => v.status === 'Pending' || v.stage === 'Doc Review').length;
@@ -59,7 +59,7 @@ export default function TrendChart({ vendors = [], onDrill }: TrendChartProps) {
       rejected: Math.max(updated[lastIdx].rejected, liveRejected),
     };
     return updated;
-  }, [vendors, rawData, range]);
+  }, [vendors, range]);
 
   const deltaLabel = range === '7d' ? '+57% vs prev. 8 weeks' : range === '30d' ? '+18% vs prev. 30 days' : '+22% vs prev. 90 days';
 

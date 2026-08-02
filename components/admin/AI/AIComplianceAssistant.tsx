@@ -106,7 +106,7 @@ export default function AIComplianceAssistant({
     setIsTyping(true);
 
     const success = await tryBackend(text, abortRef.current);
-    if (!success) useMockFallback(text);
+    if (!success) runMockFallback(text);
   };
 
   // ─── Real backend (non-streaming JSON for sidebar panel) ──────────────────
@@ -149,7 +149,7 @@ export default function AIComplianceAssistant({
   };
 
   // ─── Mock fallback (client-side keyword matching) ─────────────────────────
-  const useMockFallback = (text: string) => {
+  const runMockFallback = (text: string) => {
     setTimeout(() => {
       const responseText = processQueryLocally(text);
       setMessages(prev => [...prev, {
