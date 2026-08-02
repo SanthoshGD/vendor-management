@@ -5,7 +5,7 @@ import { UserCog, KeyRound, Activity, TrendingUp, Users, Search, Mail, Phone, Ma
 import { useNexus } from '../../../context/NexusContext';
 
 const INITIAL_TEAM = [
-  { id: 't1', name: 'Sarah Chen', role: 'Super Admin', region: 'HQ — Shanghai', limit: 'Unlimited', approved: 18, rejected: 3, rate: 86, email: 'sarah.chen@stylesphere.com' },
+  { id: 't1', name: 'Sarah Chen', role: 'Super Admin', region: 'HQ - Shanghai', limit: 'Unlimited', approved: 18, rejected: 3, rate: 86, email: 'sarah.chen@stylesphere.com' },
   { id: 't2', name: 'James Okafor', role: 'Admin', region: 'West Africa', limit: '$250,000', approved: 11, rejected: 4, rate: 73, email: 'j.okafor@stylesphere.com' },
   { id: 't3', name: 'Aisha Patel', role: 'Admin', region: 'South Asia', limit: '$100,000', approved: 9, rejected: 2, rate: 81, email: 'a.patel@stylesphere.com' },
   { id: 't4', name: 'Thomas Müller', role: 'Admin', region: 'Europe', limit: '$250,000', approved: 14, rejected: 5, rate: 73, email: 't.mueller@stylesphere.com' },
@@ -117,7 +117,7 @@ export default function TeamView() {
 
   return (
     <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', backgroundColor: '#F8FAFC', minHeight: '100%', boxSizing: 'border-box' }}>
-      
+
       {/* Page Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
@@ -198,8 +198,8 @@ export default function TeamView() {
             </thead>
             <tbody>
               {teamList.map((t) => (
-                <tr 
-                  key={t.id} 
+                <tr
+                  key={t.id}
                   onClick={() => handleOpenEditAdmin(t)}
                   style={{ borderBottom: '1px solid #F1F5F9', cursor: 'pointer', transition: 'background-color 0.15s' }}
                   className="hover:bg-slate-50"
@@ -230,7 +230,7 @@ export default function TeamView() {
                     <span style={{ color: '#059669', fontWeight: 600 }}>{t.approved}</span> / <span style={{ color: '#E11D48', fontWeight: 600 }}>{t.rejected}</span>
                   </td>
                   <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                    <button 
+                    <button
                       type="button"
                       style={{ fontSize: '12px', fontWeight: 600, color: '#059669', border: 0, backgroundColor: 'transparent', cursor: 'pointer' }}
                     >
@@ -388,7 +388,7 @@ export default function TeamView() {
                   onChange={(e) => setAdminRegion(e.target.value)}
                   style={{ height: '38px', padding: '0 10px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '13px', backgroundColor: '#FFFFFF' }}
                 >
-                  <option value="HQ — Shanghai">HQ — Shanghai (All Regions)</option>
+                  <option value="HQ - Shanghai">HQ - Shanghai (All Regions)</option>
                   <option value="East Asia">East Asia</option>
                   <option value="South Asia">South Asia</option>
                   <option value="West Africa">West Africa</option>
@@ -499,7 +499,7 @@ export default function TeamView() {
             </header>
 
             <form onSubmit={handleAddExec} style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              
+
               {/* Executive Name */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <label style={{ fontSize: '12px', fontWeight: 600, color: '#475569' }}>Name *</label>

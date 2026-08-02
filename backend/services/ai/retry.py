@@ -2,9 +2,9 @@
 
 Two different backoffs live in this file and they are not the same thing:
 
-* **Retry delay** — how long the *request* waits before trying the next key.
+* **Retry delay** - how long the *request* waits before trying the next key.
   Sub-second and tightly capped, because a user is waiting on the other end.
-* **Cooldown** — how long a *key* is taken out of the pool after a rate limit.
+* **Cooldown** - how long a *key* is taken out of the pool after a rate limit.
   Minutes, exponential, capped at ~15 minutes per the plan.
 
 Conflating them produces either a request that hangs for minutes or a key that

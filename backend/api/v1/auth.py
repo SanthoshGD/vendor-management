@@ -32,7 +32,7 @@ async def create_session(
     response_model=ApiResponse[SessionResponse],
     summary="The current authenticated principal",
     description=(
-        "Two roles only — admin and vendor. 'Vendor Executive' is an "
+        "Two roles only - admin and vendor. 'Vendor Executive' is an "
         "assignment field, not a login (spec §15)."
     ),
 )

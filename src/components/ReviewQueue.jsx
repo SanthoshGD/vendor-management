@@ -7,7 +7,7 @@ import {
 const cx = (...v) => v.filter(Boolean).join(' ');
 
 // ---------------------------------------------------------------------------
-// The decision queue — the left spine of the Review Workspace.
+// The decision queue - the left spine of the Review Workspace.
 //
 // The previous layout put findings, the document pack and the chase threads in
 // three tabbed panels of equal weight, so the reviewer's first task on opening
@@ -17,11 +17,11 @@ const cx = (...v) => v.filter(Boolean).join(' ');
 // This is a single ordered list instead: blocking items first, numbered, then
 // items worth a glance, then outstanding documents, then everything already
 // cleared (collapsed). Reading top to bottom IS the order the work should be
-// done in — Miller's law for the chunking, serial-position for putting the
+// done in - Miller's law for the chunking, serial-position for putting the
 // unavoidable decisions at the top.
 //
 // Selecting a row drives the whole right-hand pane. One selection, one purpose,
-// one decision — rather than three panels competing for the same attention.
+// one decision - rather than three panels competing for the same attention.
 // ---------------------------------------------------------------------------
 
 const TIER_ICON = { red: AlertOctagon, amber: AlertTriangle, green: CheckCircle2 };

@@ -1,4 +1,4 @@
-"""Worker entrypoint — Railway service #2 (spec §10, §19).
+"""Worker entrypoint - Railway service #2 (spec §10, §19).
 
 Consumes the job queue so OCR, embedding, notification and risk-recalculation
 work never blocks API request latency.

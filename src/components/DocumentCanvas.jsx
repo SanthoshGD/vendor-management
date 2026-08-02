@@ -44,7 +44,7 @@ export default function DocumentCanvas({ doc, activeFieldKey, onSelectField, sho
     // language's geometry and visibly drifts off its row.
     const frame = window.requestAnimationFrame(measure);
 
-    // A ResizeObserver catches every other cause of reflow — panel resizing,
+    // A ResizeObserver catches every other cause of reflow - panel resizing,
     // a field being corrected to a longer value, the rail collapsing.
     const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
     if (observer && paperRef.current) observer.observe(paperRef.current);
@@ -113,7 +113,7 @@ export default function DocumentCanvas({ doc, activeFieldKey, onSelectField, sho
             </div>
           ) : doc.status === 'Processing' ? (
             <div className="doc-paper-empty doc-paper-scanning">
-              <p>Scanning document — AI checks are running…</p>
+              <p>Scanning document - AI checks are running…</p>
             </div>
           ) : (
             <div className="doc-paper-fields">

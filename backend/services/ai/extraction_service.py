@@ -1,6 +1,6 @@
 """Document OCR and field extraction (spec §5, §18 phase 3).
 
-Produces the *inputs* the deterministic risk engine consumes — extracted field
+Produces the *inputs* the deterministic risk engine consumes - extracted field
 values and per-field confidence. It never produces a risk score itself; that
 separation is what keeps scoring explainable (spec §12).
 

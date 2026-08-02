@@ -58,7 +58,7 @@ export default function AIAssistantChatbot({ isOpen, onClose, vendors, onOpenVen
 
   const processQuery = (query) => {
     const q = query.toLowerCase();
-    
+
     if (q.includes('pending') || q.includes('awaiting') || q.includes('approval') || q.includes('queue')) {
       const pendingList = vendors.filter(v => !v.finalStatus && v.hasSubmittedApplication);
       if (pendingList.length === 0) {
@@ -124,7 +124,7 @@ export default function AIAssistantChatbot({ isOpen, onClose, vendors, onOpenVen
       return {
         text: `Found 2 insurance certificates requiring renewal verification this month:`,
         actions: expiringIns.slice(0, 3).map(v => ({
-          label: `${v.name} — Liability Policy`,
+          label: `${v.name} - Liability Policy`,
           vendorId: v.id,
           detail: 'Policy Expiry: 15 Nov 2026 · Status: Renewal Needed'
         }))
@@ -161,13 +161,12 @@ export default function AIAssistantChatbot({ isOpen, onClose, vendors, onOpenVen
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg) => (
           <div key={msg.id} className={`flex flex-col ${msg.type === 'user' ? 'items-end' : 'items-start'}`}>
-            <div className={`max-w-[85%] rounded-2xl px-3 py-2.5 text-xs shadow-2xs leading-relaxed ${
-              msg.type === 'user'
+            <div className={`max-w-[85%] rounded-2xl px-3 py-2.5 text-xs shadow-2xs leading-relaxed ${msg.type === 'user'
                 ? 'bg-emerald-600 text-white rounded-br-xs'
                 : 'bg-slate-100 text-slate-800 rounded-bl-xs'
-            }`}>
+              }`}>
               {msg.text.split('\n').map((line, idx) => <p key={idx} className={idx > 0 ? 'mt-1' : ''}>{line}</p>)}
-              
+
               {/* Context Action Links */}
               {msg.actions && msg.actions.length > 0 && (
                 <div className="mt-3 space-y-1.5 border-t border-slate-200/50 pt-2.5">

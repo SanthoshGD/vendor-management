@@ -1,7 +1,7 @@
 """Base repository (spec §3).
 
 The repository layer is the only layer that touches the database. No query ever
-happens inside a router — that is what makes the layer worth having: adding
+happens inside a router - that is what makes the layer worth having: adding
 caching, or changing how a table is reached, touches one file per entity
 instead of every route.
 
@@ -11,8 +11,8 @@ free.
 
 **Transactions belong to the caller, not to the repository.** No method here
 commits. `api.deps.get_session` commits once, after the handler returns, so
-spec §11's requirement — that a status mutation, its `approval_history` row and
-its `activity_log` row all land together — holds by construction rather than by
+spec §11's requirement - that a status mutation, its `approval_history` row and
+its `activity_log` row all land together - holds by construction rather than by
 every route remembering to arrange it.
 """
 
@@ -36,7 +36,7 @@ ModelT = TypeVar("ModelT", bound=Base)
 def parse_uuid(value: str | UUID, *, field: str = "id") -> UUID:
     """Coerce a path parameter to a UUID.
 
-    A malformed id is a 422 — not a 500, and not a 404: the client sent
+    A malformed id is a 422 - not a 500, and not a 404: the client sent
     something that could never identify a row, and "not found" would imply it
     might have.
     """
@@ -94,7 +94,7 @@ class BaseRepository(Generic[ModelT]):
         """Stage an insert and populate server-generated columns.
 
         `flush`, not `commit`. The row becomes visible to the rest of this
-        transaction — so a follow-up audit write can reference its id — while
+        transaction - so a follow-up audit write can reference its id - while
         staying rollback-able if anything later in the handler fails.
         """
         self.session.add(entity)

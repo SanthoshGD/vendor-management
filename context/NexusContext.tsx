@@ -153,7 +153,7 @@ const buildSeededInvite = (): Vendor => ({
   owner: 'Elena Rostova',
   slaHours: 72,
   sla: '72h',
-  aiSummary: 'Invitation issued. The supplier has not opened their onboarding link yet — nothing to verify.',
+  aiSummary: 'Invitation issued. The supplier has not opened their onboarding link yet - nothing to verify.',
 } as any);
 
 const seedVendors = (): Vendor[] => [buildSeededInvite(), ...(clone(INITIAL_VENDORS) as Vendor[])];
@@ -183,7 +183,7 @@ const savePersisted = (payload: any) => {
   if (typeof window === 'undefined') return;
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-  } catch {}
+  } catch { }
 };
 
 const clearPersisted = () => {
@@ -191,7 +191,7 @@ const clearPersisted = () => {
   try {
     window.localStorage.removeItem(STORAGE_KEY);
     [...LEGACY_STORAGE_KEYS, ...OBSOLETE_STORAGE_KEYS].forEach((key) => window.localStorage.removeItem(key));
-  } catch {}
+  } catch { }
 };
 
 const MARKER = /SSX-CHECK:\s*(PASS|FAIL)([^\n\r]*)/i;
@@ -439,7 +439,7 @@ export function NexusProvider({ children }: { children: React.ReactNode }) {
     if (persisted.findingResolutions) setFindingResolutions(persisted.findingResolutions);
     if (persisted.chaseState) setChaseState(persisted.chaseState);
     if (persisted.supervisorRequests) setSupervisorRequests(persisted.supervisorRequests);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -490,14 +490,14 @@ export function NexusProvider({ children }: { children: React.ReactNode }) {
     };
     setSettings(next);
     appendAudit({
-      vendorId: '—', vendorName: 'StyleSphere workspace',
+      vendorId: '-', vendorName: 'StyleSphere workspace',
       actorName: CURRENT_USERS.admin.name, actorId: CURRENT_USERS.admin.id,
       actionType: 'SETTINGS_UPDATED' as any, documentName: 'Workspace preferences', fieldLabel: 'Density and notifications',
       originalValue: `${settings.density}; notifications ${settings.notifications ? 'on' : 'off'}`,
       humanValue: `${next.density}; notifications ${next.notifications ? 'on' : 'off'}`,
       reason: 'Workspace preferences updated',
     });
-    notify(`Settings saved — notifications ${next.notifications ? 'on' : 'off'}, ${next.density} density.`, 'critical');
+    notify(`Settings saved - notifications ${next.notifications ? 'on' : 'off'}, ${next.density} density.`, 'critical');
   }, [settings, appendAudit, notify]);
 
   const agentState = useMemo(() => {
@@ -534,7 +534,7 @@ export function NexusProvider({ children }: { children: React.ReactNode }) {
     const vendor = rawVendors.find((v) => v.id === vendorId);
     const verdict = canPerform(agentConfig, agentId, actionId, actorRole);
     const base = {
-      vendorId: vendorId || '—',
+      vendorId: vendorId || '-',
       vendorName: vendor?.name || 'Platform',
       actorName: definition?.name || agentId,
       actorId: `AGT-${agentId.toUpperCase()}@v${agentConfig.version}`,
@@ -633,7 +633,7 @@ export function NexusProvider({ children }: { children: React.ReactNode }) {
     }
     const vendor = rawVendors.find((candidate) => candidate.id === item.vendorId);
     appendAudit({
-      vendorId: item.vendorId || '—', vendorName: vendor?.name || item.vendorName || 'Platform',
+      vendorId: item.vendorId || '-', vendorName: vendor?.name || item.vendorName || 'Platform',
       actorName: CURRENT_USERS.customer.name, actorId: CURRENT_USERS.customer.id,
       actionType: 'AGENT_APPROVAL',
       documentName: item.summary, fieldLabel: (item as any).label,
@@ -803,10 +803,10 @@ export function NexusProvider({ children }: { children: React.ReactNode }) {
         appendAudit({
           vendorId, vendorName: vendor.name, actorName: 'StyleSphere AI', actorId: 'IDP-3.4',
           actionType: 'DOCUMENT_REJECTED' as any, documentName: doc.title, fieldLabel: 'Automated verification',
-          originalValue: reviewedFileName, humanValue: `Correction requested — ${outcome.reason}`,
+          originalValue: reviewedFileName, humanValue: `Correction requested - ${outcome.reason}`,
           reason: outcome.reason,
         });
-        if (!quiet) notify(`${doc.title} needs a corrected file — ${outcome.reason}.`, 'critical');
+        if (!quiet) notify(`${doc.title} needs a corrected file - ${outcome.reason}.`, 'critical');
         return;
       }
 
@@ -837,7 +837,7 @@ export function NexusProvider({ children }: { children: React.ReactNode }) {
       appendAudit({
         vendorId, vendorName: vendor.name, actorName: 'StyleSphere AI', actorId: 'IDP-3.4',
         actionType: 'DOCUMENT_VERIFIED', documentName: doc.title, fieldLabel: 'Automated verification',
-        originalValue: reviewedFileName, humanValue: 'Verified — 97% confidence',
+        originalValue: reviewedFileName, humanValue: 'Verified - 97% confidence',
         reason: 'Automated authenticity, expiry, and completeness checks',
       });
       if (!quiet && notifyOnPass) notify(`${doc.title} passed review and is back with compliance.`, 'critical');
@@ -1128,10 +1128,10 @@ export function NexusProvider({ children }: { children: React.ReactNode }) {
           vendorId, vendorName: vendor.name, actorName: CURRENT_USERS.admin.name, actorId: CURRENT_USERS.admin.id,
           actionType: 'AUTHORITY_LIMIT_BLOCKED' as any, documentName: 'Full compliance application', fieldLabel: 'Vendor approval',
           originalValue: `Residual risk ${(view as any).riskScore}/100`,
-          humanValue: `Refused — above the ${APPROVAL_CEILING} delegated limit`,
+          humanValue: `Refused - above the ${APPROVAL_CEILING} delegated limit`,
           reason: `${CURRENT_USERS.admin.role} may approve up to residual risk ${APPROVAL_CEILING}. This vendor scores ${(view as any).riskScore}.`,
         });
-        notify(`Residual risk ${(view as any).riskScore} is above your ${APPROVAL_CEILING} limit — send it for approval instead.`, 'critical');
+        notify(`Residual risk ${(view as any).riskScore} is above your ${APPROVAL_CEILING} limit - send it for approval instead.`, 'critical');
         return false;
       }
       const approvalBlockers = getApprovalBlockers(vendor);

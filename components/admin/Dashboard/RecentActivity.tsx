@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { 
+import {
   CheckCircle2, XCircle, FileText, Users, ChevronRight, Activity, CircleDot, ArrowRight
 } from 'lucide-react';
 
@@ -136,7 +136,7 @@ export default function RecentActivity({ auditLogs, onOpenVendor, onNavigate }: 
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: '13px', color: '#1E293B', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                   <span style={{ fontWeight: 600 }}>{a.actor}</span>
-                  <span style={{ color: '#94A3B8' }}>—</span>
+                  <span style={{ color: '#94A3B8' }}>-</span>
                   <span style={{ color: '#475569' }}>{a.target}</span>
                   <StatusBadge status={a.action} />
                 </div>

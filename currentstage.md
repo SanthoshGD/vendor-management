@@ -1,4 +1,4 @@
-# StyleSphere Nexus — Current Stage & Complete File Map
+# StyleSphere Nexus - Current Stage & Complete File Map
 
 > **File:** `currentstage.md`  
 > **Repository:** `vendor-management` (`SanthoshGD/vendor-management`)  

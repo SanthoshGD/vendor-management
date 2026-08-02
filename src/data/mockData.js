@@ -3,7 +3,7 @@
 // Design note: a field's on-canvas bounding box is DERIVED at render time in
 // DocumentCanvas.jsx from the field's position inside `fields` (see
 // `layoutFields` there). That keeps the highlight box and the rendered row
-// guaranteed to match — nothing here needs hand-tuned pixel coordinates.
+// guaranteed to match - nothing here needs hand-tuned pixel coordinates.
 
 export const CURRENT_USERS = {
   // `customer` is retained as an alias of `admin` so existing audit entries and
@@ -14,7 +14,7 @@ export const CURRENT_USERS = {
   vendor: { id: 'SUP-3312', name: 'Chen Wei', role: 'Export Manager', initials: 'CW' },
 };
 
-// AI never approves — it only extracts, scores, and flags. `resolved` tracks
+// AI never approves - it only extracts, scores, and flags. `resolved` tracks
 // whether a *human* has explicitly accepted or corrected a field.
 const field = (key, label, value, confidence, extra = {}) => ({
   key,
@@ -65,14 +65,14 @@ export const INITIAL_VENDORS = [
         fields: [
           field('legal_name', 'Legal entity name', 'SilkRoad Textiles Co., Ltd.', 96, {
             crossDocMismatch: true,
-            mismatchNote: 'The bank verification letter lists the entity as "SilkRoad Textiles Ltd." — missing "Co.,".',
+            mismatchNote: 'The bank verification letter lists the entity as "SilkRoad Textiles Ltd." - missing "Co.,".',
           }),
           field('tax_registration_number', 'Tax registration no.', '07AAAAA0000A1Z5', 96),
           field('expiration_date', 'Certificate expiry date', '31 Dec 2026', 68, {
             diagnostic: 'Source stamp is low-contrast; the year could read 2026 or 2027.',
           }),
           field('registered_address', 'Registered corporate address', 'No. 88 Binh Duong Blvd, Thuan An, Binh Duong, Vietnam', 72, {
-            diagnostic: 'Low OCR contrast on the street-number segment — verify against source.',
+            diagnostic: 'Low OCR contrast on the street-number segment - verify against source.',
           }),
         ],
       },
@@ -90,7 +90,7 @@ export const INITIAL_VENDORS = [
             mismatchNote: 'Differs from the tax registration record: "SilkRoad Textiles Co., Ltd."',
           }),
           field('iban_account_no', 'SWIFT / account number', 'BFTVVNVX-0041000889211', 84, {
-            diagnostic: 'Character 14 renders ambiguously — could be "8" or "B". Compare against the bank stamp.',
+            diagnostic: 'Character 14 renders ambiguously - could be "8" or "B". Compare against the bank stamp.',
           }),
         ],
       },
@@ -124,7 +124,7 @@ export const INITIAL_VENDORS = [
         fields: [
           field('legal_name', 'Legal entity name', 'Dhaka Apparel Crafts Ltd.', 91, {
             crossDocMismatch: true,
-            mismatchNote: 'Business Alliance Agreement lists "Dhaka Apparel Crafts Limited" — confirm which is authoritative.',
+            mismatchNote: 'Business Alliance Agreement lists "Dhaka Apparel Crafts Limited" - confirm which is authoritative.',
           }),
           field('tax_registration_number', 'Tax registration no.', 'BD-9911042', 82, {
             diagnostic: 'Faint secondary stamp overlaps the last two digits.',
@@ -179,11 +179,11 @@ export const INITIAL_VENDORS = [
           }),
           field('material_testing', 'Material testing / REACH', '合格', 85, {
             translatedValue: 'Passed',
-            diagnostic: 'Single-character result stamp with no test reference number — confirm it maps to the current REACH annex.',
+            diagnostic: 'Single-character result stamp with no test reference number - confirm it maps to the current REACH annex.',
           }),
           field('expiration_date', 'Licence expiry date', '2026年08月', 55, {
             translatedValue: 'Aug 2026',
-            diagnostic: 'The red company seal overprints the month digits — this could read 08 or 06, and no day is stated.',
+            diagnostic: 'The red company seal overprints the month digits - this could read 08 or 06, and no day is stated.',
           }),
         ],
       },
@@ -215,7 +215,7 @@ export const INITIAL_VENDORS = [
     slaHours: 12,
     sla: '12h',
     finalStatus: null,
-    aiSummary: 'New applicant from Guangdong. The tax registration on file already appears against another supplier record — resolve before review continues.',
+    aiSummary: 'New applicant from Guangdong. The tax registration on file already appears against another supplier record - resolve before review continues.',
     documents: [
       {
         id: 'doc-2208-tax', code: 'TAX', title: 'Tax Registration Certificate', fileName: 'PearlRiver_Tax_Certificate.pdf',
@@ -245,7 +245,7 @@ export const INITIAL_VENDORS = [
     slaHours: 18,
     sla: '18h',
     finalStatus: null,
-    aiSummary: 'Complete submission with one environmental certificate nearing expiry — not blocking, but worth confirming renewal timing.',
+    aiSummary: 'Complete submission with one environmental certificate nearing expiry - not blocking, but worth confirming renewal timing.',
     documents: [
       {
         id: 'doc-7041-reach', code: 'REACH', title: 'REACH Chemical Compliance Certificate', fileName: 'Anatolia_REACH_Cert.pdf',
@@ -253,7 +253,7 @@ export const INITIAL_VENDORS = [
         fields: [
           field('cert_number', 'Certificate number', 'REACH-TR-55021', 95),
           field('certificate_expiry', 'Certificate expiry date', '07 Aug 2026', 82, {
-            diagnostic: 'Expires in 12 days — confirm the renewal is already in progress with the vendor.',
+            diagnostic: 'Expires in 12 days - confirm the renewal is already in progress with the vendor.',
           }),
         ],
       },
@@ -275,7 +275,7 @@ export const INITIAL_VENDORS = [
     owner: 'Aarav Mehta',
     baseRiskScore: 9,
     slaHours: 999,
-    sla: '—',
+    sla: '-',
     finalStatus: 'Active',
     aiSummary: 'All mandatory checks passed. Approved and activated in the ERP supplier master.',
     documents: [
@@ -289,16 +289,16 @@ export const INITIAL_VENDORS = [
 ];
 
 export const INITIAL_REQUESTS = [
-  { id: 'PR-24018', title: 'Organic cotton jersey — 12,000 m', vendorId: 'VEN-8842', vendor: 'SilkRoad Textiles', amount: '$84,600', due: '29 Jul', status: 'Quote received', tone: 'violet' },
+  { id: 'PR-24018', title: 'Organic cotton jersey - 12,000 m', vendorId: 'VEN-8842', vendor: 'SilkRoad Textiles', amount: '$84,600', due: '29 Jul', status: 'Quote received', tone: 'violet' },
   { id: 'PR-24017', title: 'SS27 denim production run', vendorId: 'VEN-4491', vendor: 'Indus Garments', amount: '$126,400', due: '31 Jul', status: 'Vendor reviewing', tone: 'blue' },
-  { id: 'PR-24013', title: 'Cast brass handbag hardware — clasps & feet', vendorId: 'VEN-3312', vendor: 'Guangzhou Artisan Leathers', amount: '$46,800', due: '02 Aug', status: 'Approved', tone: 'green' },
+  { id: 'PR-24013', title: 'Cast brass handbag hardware - clasps & feet', vendorId: 'VEN-3312', vendor: 'Guangzhou Artisan Leathers', amount: '$46,800', due: '02 Aug', status: 'Approved', tone: 'green' },
   { id: 'PR-24009', title: 'Premium leather belt blanks', vendorId: 'VEN-7041', vendor: 'Anatolia Leatherworks', amount: '$31,250', due: '05 Aug', status: 'Draft', tone: 'neutral' },
 ];
 
 // ---------------------------------------------------------------------------
 // Supervisor request types.
 //
-// These are not invented UI states — each one is a decision that real
+// These are not invented UI states - each one is a decision that real
 // third-party risk programmes reserve for someone above the person doing the
 // review, and each carries the evidence that decision is supposed to be made
 // on. The four kinds, and why a supervisor rather than an admin owns them:
@@ -306,7 +306,7 @@ export const INITIAL_REQUESTS = [
 //   RISK_ACCEPTANCE  A control cannot be met, so the risk is formally accepted
 //                    instead of resolved. TPRM practice requires this to be
 //                    time-boxed, backed by a compensating control, and signed
-//                    by someone with risk authority — an exception that never
+//                    by someone with risk authority - an exception that never
 //                    expires is the classic audit finding, so `expiresAt` is
 //                    mandatory and the platform lapses it automatically.
 //
@@ -324,7 +324,7 @@ export const INITIAL_REQUESTS = [
 //                    (sanctions hit, adverse media, expiring certification,
 //                    financial deterioration). Onboarding is a point-in-time
 //                    check; this is the lifecycle catching up with it, and the
-//                    decision — re-run diligence, accept, or suspend — is a
+//                    decision - re-run diligence, accept, or suspend - is a
 //                    risk decision, not a queue task.
 //
 // A fifth kind, ESCALATION, is the admin manually asking for help. It is kept
@@ -372,11 +372,11 @@ export const REQUEST_TYPES = {
 
 // What each outcome does and how it is described. Kept in one table so the
 // dialog copy, the audit entry and the resulting vendor state can never drift
-// apart — they are all read from here.
+// apart - they are all read from here.
 export const REQUEST_OUTCOMES = {
   GRANT: {
     label: 'Grant the exception',
-    copy: 'The vendor proceeds with the risk formally accepted. You must set an expiry — the exception lapses on that date and the finding reopens.',
+    copy: 'The vendor proceeds with the risk formally accepted. You must set an expiry - the exception lapses on that date and the finding reopens.',
     audit: 'Risk acceptance granted',
     needsExpiry: true,
     tone: 'primary',
@@ -449,7 +449,7 @@ const daysAhead = (n) => {
   return d.toISOString();
 };
 
-// A supervisor's queue is never empty and never uniform — the point of seeding
+// A supervisor's queue is never empty and never uniform - the point of seeding
 // it is that the page has to be readable when four different kinds of decision
 // are sitting in it at once, one of them already past its SLA.
 export const INITIAL_REQUESTS_TO_SUPERVISOR = [
@@ -467,7 +467,7 @@ export const INITIAL_REQUESTS_TO_SUPERVISOR = [
     slaHours: 24,
     riskScore: 78,
     detail: {
-      control: 'PROC-4.2 — valid social compliance certification at approval',
+      control: 'PROC-4.2 - valid social compliance certification at approval',
       compensating: 'Pre-shipment inspection on every lot until the re-audit closes; no payment terms beyond 30 days.',
       proposedExpiry: daysAhead(60),
     },
@@ -489,7 +489,7 @@ export const INITIAL_REQUESTS_TO_SUPERVISOR = [
     detail: {
       threshold: 'Compliance Manager may approve up to residual risk 70',
       trigger: 'Residual risk 91 · Bangladesh · knitwear',
-      fourEyes: 'Reviewed by Priya Nair — she cannot also approve it.',
+      fourEyes: 'Reviewed by Priya Nair - she cannot also approve it.',
     },
     status: 'open', outcome: null, supervisorNote: '', resolvedAt: null, expiresAt: null,
   },
@@ -540,8 +540,8 @@ export const INITIAL_REQUESTS_TO_SUPERVISOR = [
 //
 // A queue design is only honest if you can see it under load, so the Requests
 // page can pull realistic work out of these. They are written as real cases
-// rather than lorem — "chromium VI test lapsed", "director appears on a PEP
-// list" — because a queue full of placeholder text tells you nothing about
+// rather than lorem - "chromium VI test lapsed", "director appears on a PEP
+// list" - because a queue full of placeholder text tells you nothing about
 // whether the page is readable when it is full.
 //
 // Each template says which vendors it can plausibly attach to, so a monitoring
@@ -553,7 +553,7 @@ export const REQUEST_TEMPLATES = [
     title: (v) => `Accept a lapsed chromium VI test for ${v.shortName}`,
     reason: () => 'The ISO 17075 certificate expired last month. New samples are with the lab and results are due in three weeks. Holding the vendor stops the autumn hardware run.',
     detail: (v, ahead) => ({
-      control: 'PROC-4.4 — valid restricted-substance testing on all leather',
+      control: 'PROC-4.4 - valid restricted-substance testing on all leather',
       compensating: 'Quarantine stock on arrival; release only against the lab result.',
       proposedExpiry: ahead(45),
     }),
@@ -563,7 +563,7 @@ export const REQUEST_TEMPLATES = [
     title: (v) => `Waive the insurance floor for ${v.shortName}`,
     reason: () => 'Their liability cover is $4m against our $5m minimum. The broker has confirmed the top-up binds at renewal on 1 October.',
     detail: (v, ahead) => ({
-      control: 'PROC-2.1 — $5m minimum liability cover',
+      control: 'PROC-2.1 - $5m minimum liability cover',
       compensating: 'Order value capped at $50k until the endorsement is on file.',
       proposedExpiry: ahead(70),
     }),
@@ -575,7 +575,7 @@ export const REQUEST_TEMPLATES = [
     detail: (v) => ({
       threshold: 'Compliance Manager may approve up to residual risk 70',
       trigger: `Residual risk ${v.riskScore} · ${v.country} · ${v.category}`,
-      fourEyes: 'Reviewed by Priya Nair — she cannot also approve it.',
+      fourEyes: 'Reviewed by Priya Nair - she cannot also approve it.',
     }),
   },
   {
@@ -585,7 +585,7 @@ export const REQUEST_TEMPLATES = [
     detail: (v) => ({
       threshold: 'Compliance Manager may commit up to $250,000 to a new supplier',
       trigger: `Opening commitment $310,000 · ${v.country}`,
-      fourEyes: 'Reviewed by Priya Nair — she cannot also approve it.',
+      fourEyes: 'Reviewed by Priya Nair - she cannot also approve it.',
     }),
   },
   {
@@ -649,7 +649,7 @@ export const INITIAL_AUDIT_LOGS = [
   // One complete case, seeded end to end.
   //
   // The Case files view is only worth opening if there is a case in it, and a
-  // freshly-loaded demo had two events total — so the most expressive screen in
+  // freshly-loaded demo had two events total - so the most expressive screen in
   // the product opened empty. This is Indus Garments' full arc: invited,
   // supplied, read by agents, corrected by a human, refused twice at a policy
   // boundary, sent up for four-eyes approval, then approved and activated.
@@ -658,7 +658,7 @@ export const INITIAL_AUDIT_LOGS = [
   // platform did, and never what it declined to do, is the kind that reads
   // beautifully right up until someone asks how the machine was stopped.
   //
-  // Newest first — the Event log renders in array order.
+  // Newest first - the Event log renders in array order.
   // -------------------------------------------------------------------------
   {
     id: 'AUD-10021', timestamp: iso(0, 10, 18), vendorId: 'VEN-4491', vendorName: 'Indus Garments Pvt. Ltd.',
@@ -681,13 +681,13 @@ export const INITIAL_AUDIT_LOGS = [
     documentName: 'Above approval authority', fieldLabel: 'REQ-4471  /  Indus Garments exceeds the delegated limit',
     originalValue: 'Raised by Priya Nair', humanValue: 'Approved by supervisor',
     reason: 'Evidence pack complete and every finding cleared. Country risk drives the score, not the file.',
-    clauseRef: 'PROC-5.1', notes: "Closed on the supervisor's authority. Four-eyes satisfied — the reviewer could not also approve it.",
+    clauseRef: 'PROC-5.1', notes: "Closed on the supervisor's authority. Four-eyes satisfied - the reviewer could not also approve it.",
   },
   {
     id: 'AUD-10018', timestamp: iso(0, 9, 41), vendorId: 'VEN-4491', vendorName: 'Indus Garments Pvt. Ltd.',
     actorName: 'Priya Nair', actorId: 'PN-014', actionType: 'AUTHORITY_LIMIT_BLOCKED',
     documentName: 'Full compliance application', fieldLabel: 'Vendor approval',
-    originalValue: 'Residual risk 74/100', humanValue: 'Refused — above the 70 delegated limit',
+    originalValue: 'Residual risk 74/100', humanValue: 'Refused - above the 70 delegated limit',
     reason: 'Compliance Manager may approve up to residual risk 70. This vendor scores 74.',
     clauseRef: 'PROC-5.1', notes: 'Sent to Arun Mehta for four-eyes approval instead.',
   },
@@ -697,7 +697,7 @@ export const INITIAL_AUDIT_LOGS = [
     actionType: 'AGENT_BLOCKED', documentName: 'approve_vendor', fieldLabel: 'Approve vendor',
     originalValue: 'Agent attempted action', humanValue: 'Refused by governance',
     reasoning: 'Every mandatory document was verified and no finding remained open, so the agent proposed closing the case itself.',
-    reason: 'This action is withheld from every agent by policy PROC-5.1 — human approval is mandatory.',
+    reason: 'This action is withheld from every agent by policy PROC-5.1 - human approval is mandatory.',
     clauseRef: 'PROC-5.1', notes: 'Blocked (forbidden). No autonomy level and no configuration change can grant this action.',
   },
   {
@@ -721,7 +721,7 @@ export const INITIAL_AUDIT_LOGS = [
     id: 'AUD-10014', timestamp: iso(1, 15, 12), vendorId: 'VEN-4491', vendorName: 'Indus Garments Pvt. Ltd.',
     actorName: 'StyleSphere AI', actorId: 'IDP-3.4', actionType: 'DOCUMENT_VERIFIED',
     documentName: 'Tax Registration Certificate', fieldLabel: 'Automated verification',
-    originalValue: 'indus_tax_registration.pdf', humanValue: 'Verified — 97% confidence',
+    originalValue: 'indus_tax_registration.pdf', humanValue: 'Verified - 97% confidence',
     reason: 'Automated authenticity, expiry, and completeness checks',
     clauseRef: 'GST-1.2', notes: 'Passed simulated AI verification.',
   },

@@ -19,7 +19,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.orm import ApprovalHistory, Vendor, VendorDocument
 
-# Statuses that mean "a human still has to look at this" — the pipeline funnel
+# Statuses that mean "a human still has to look at this" - the pipeline funnel
 # and the priority queue both key off this ordering.
 PIPELINE_STAGES = (
     "Invited",
@@ -235,7 +235,7 @@ class AnalyticsRepository:
     async def high_risk_ratio(self) -> float | None:
         """Percentage of scored vendors in the High band.
 
-        None when nothing has been scored yet — an unscored portfolio is not a
+        None when nothing has been scored yet - an unscored portfolio is not a
         0% high-risk portfolio, and reporting it as one would be a lie the
         dashboard cannot distinguish from good news.
         """

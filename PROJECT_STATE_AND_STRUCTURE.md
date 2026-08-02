@@ -1,4 +1,4 @@
-# StyleSphere Nexus — Comprehensive Project State & Architecture Reference
+# StyleSphere Nexus - Comprehensive Project State & Architecture Reference
 
 > **Generated Date:** August 1, 2026  
 > **Repository:** `vendor-management` (`SanthoshGD/vendor-management`)  

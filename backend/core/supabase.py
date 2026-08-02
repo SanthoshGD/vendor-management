@@ -5,7 +5,7 @@ auth-aware queries, storage and RLS-friendly access, so an ORM in between only
 duplicates it. Where a query genuinely needs raw SQL, call Postgres directly
 rather than reaching for an ORM.
 
-One client per process — `AsyncClient` wraps a long-lived `httpx.AsyncClient`,
+One client per process - `AsyncClient` wraps a long-lived `httpx.AsyncClient`,
 so creating one per request would leak connections and defeat pooling.
 
 Deliberately non-fatal when unconfigured: the API must still boot and serve

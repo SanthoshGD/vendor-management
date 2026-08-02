@@ -2,7 +2,7 @@
 
 Gemini is never hardcoded into services or routers. `chat_service`,
 `extraction_service` and `embedding_service` each depend on this Protocol, not
-on Gemini — swapping in Claude, OpenAI or Azure later means writing one new
+on Gemini - swapping in Claude, OpenAI or Azure later means writing one new
 class, not touching three services.
 
 The three AI concerns are kept separate on purpose: chat, extraction and

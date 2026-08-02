@@ -3,7 +3,7 @@
 pgvector-backed. `rag_chunks.embedding` is `vector(768)` with an HNSW cosine
 index (migration 0002).
 
-Retrieval is always filtered by collection plus metadata — never a flat
+Retrieval is always filtered by collection plus metadata - never a flat
 similarity search across everything (spec §7.1). That filtering is what makes
 retrieval quality better than one undifferentiated index, so the API makes
 `collections` a required argument rather than an optional one.

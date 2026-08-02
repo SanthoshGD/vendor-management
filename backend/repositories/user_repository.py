@@ -1,6 +1,6 @@
 """User persistence (spec §4 `users`, §15).
 
-Bridges Supabase Auth identities into this database. Two roles only — admin and
+Bridges Supabase Auth identities into this database. Two roles only - admin and
 vendor. "Vendor Executive" is an assignment field on `vendors`, not a login.
 """
 
@@ -35,7 +35,7 @@ class UserRepository(BaseRepository[User]):
 
         The id is Supabase's, not generated here, so the two systems agree on
         who a principal is. Role is taken from the verified JWT claims, never
-        from a request body — a self-declared role is not a role.
+        from a request body - a self-declared role is not a role.
         """
         uid = parse_uuid(user_id, field="user_id")
         user = await self.session.get(User, uid)

@@ -1,6 +1,6 @@
 """Risk contracts (spec §12).
 
-The response always carries the driver decomposition, never a bare number —
+The response always carries the driver decomposition, never a bare number -
 `GET /api/v1/vendors/{id}/risk` returns "score, level, drivers, recommendation"
 per spec §8.
 """

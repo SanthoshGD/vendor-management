@@ -17,7 +17,7 @@ from services.ai.embedding_service import EmbeddingService
 
 
 class RagCollection(str, Enum):
-    """Spec §7.1 — distinct collections, queried by scope."""
+    """Spec §7.1 - distinct collections, queried by scope."""
 
     compliance_policy = "compliance_policy"
     vendor_document = "vendor_document"

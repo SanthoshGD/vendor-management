@@ -3,15 +3,15 @@
 Supabase Auth owns identity. FastAPI validates the Supabase JWT on every
 request and enforces role-based access:
 
-* `admin` — portal-wide.
-* `vendor` — limited to its own vendor record.
+* `admin` - portal-wide.
+* `vendor` - limited to its own vendor record.
 
 There is no third "Vendor Executive" login; per spec it is an assignment field
 only. RLS in Supabase is defence in depth, not the primary gate, because the
 backend holds the service-role key.
 
 Supabase signs project JWTs with HS256 using the project's JWT secret. Both the
-signature and the `aud` claim are verified — checking the signature alone would
+signature and the `aud` claim are verified - checking the signature alone would
 accept a token minted for a different Supabase project that happens to share a
 leaked secret.
 """
@@ -39,7 +39,7 @@ class Role(str, Enum):
 class CurrentUser:
     """The authenticated principal.
 
-    Everything actor-related — audit attribution, role checks, vendor scoping —
+    Everything actor-related - audit attribution, role checks, vendor scoping -
     reads from here and never from a request body or a client-controlled
     header. That is what makes the audit trail non-forgeable.
     """
@@ -58,7 +58,7 @@ class CurrentUser:
     def display_name(self) -> str:
         """What lands in `activity_log.actor`.
 
-        Falls back through name, email, then id — an audit entry attributed to
+        Falls back through name, email, then id - an audit entry attributed to
         an empty string is worse than one attributed to a UUID.
         """
         return self.name or self.email or self.id
@@ -101,7 +101,7 @@ def user_from_claims(claims: dict[str, Any]) -> CurrentUser:
     """Map Supabase JWT claims onto `CurrentUser`.
 
     Supabase splits custom claims across `app_metadata` (server-controlled) and
-    `user_metadata` (user-writable). Role is read from `app_metadata` only —
+    `user_metadata` (user-writable). Role is read from `app_metadata` only -
     `user_metadata` can be edited by the account holder, so trusting it would
     let any vendor promote themselves to admin.
     """
@@ -117,7 +117,7 @@ def user_from_claims(claims: dict[str, Any]) -> CurrentUser:
         role = Role(str(raw_role).lower())
     except (ValueError, AttributeError):
         # Supabase issues `role: "authenticated"` by default. Anything not
-        # explicitly admin is a vendor — the lower privilege is the safe
+        # explicitly admin is a vendor - the lower privilege is the safe
         # default when a claim is missing or unrecognised.
         role = Role.vendor
 
@@ -138,7 +138,7 @@ def assert_can_access_vendor(user: CurrentUser, vendor_id: str) -> None:
     """Raise `ForbiddenError` if a vendor-role user reaches another vendor.
 
     Called by every vendor-scoped route. A plain function rather than a
-    decorator so the check stays visible at the call site — an authorisation
+    decorator so the check stays visible at the call site - an authorisation
     rule hidden in a decorator is one nobody notices is missing.
     """
     if user.is_admin:

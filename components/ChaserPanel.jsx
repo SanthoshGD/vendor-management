@@ -21,8 +21,8 @@ const KIND_LABEL = {
 // The Chaser Agent surface.
 //
 // This is the part of the product that actually moves the brief's 7-day → 2-day
-// metric. The reviewer's quote in the brief — "I spend more time finding
-// missing documents than actually reviewing suppliers" — describes the gap
+// metric. The reviewer's quote in the brief - "I spend more time finding
+// missing documents than actually reviewing suppliers" - describes the gap
 // between "document missing" and "document received", and that gap is not
 // closed in the Review Workspace. It is closed here.
 //

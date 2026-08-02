@@ -9,10 +9,10 @@ export interface PolicyClause {
 export const POLICY_SOURCES: Record<string, string> = {
   PROC: 'StyleSphere Company Procurement Policy v4.2',
   SCOC: 'Supplier Code of Conduct (2026 revision)',
-  IEC: 'Foreign Trade Policy — Importer-Exporter Code',
+  IEC: 'Foreign Trade Policy - Importer-Exporter Code',
   GST: 'GST / national tax registration rules',
   REG: 'StyleSphere Regulatory Standards Register',
-  FIN: 'Group Treasury — Supplier Payment Controls',
+  FIN: 'Group Treasury - Supplier Payment Controls',
 };
 
 const clause = (

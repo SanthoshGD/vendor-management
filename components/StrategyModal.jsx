@@ -48,7 +48,7 @@ export default function StrategyModal({ isOpen, onClose }) {
                 <span>Primary User Persona</span>
               </div>
               <p style={styles.cardBody}>
-                <strong>Vendor Onboarding Executive (Supply Chain)</strong> — Accountable for evaluating, verifying, and onboarding new international vendors as per company policies.
+                <strong>Vendor Onboarding Executive (Supply Chain)</strong> - Accountable for evaluating, verifying, and onboarding new international vendors as per company policies.
               </p>
               <div style={styles.tagGroup}>
                 <span style={styles.tag}>Reports to: Supply Chain Manager</span>
@@ -63,7 +63,7 @@ export default function StrategyModal({ isOpen, onClose }) {
                 <span>Secondary User Persona</span>
               </div>
               <p style={styles.cardBody}>
-                <strong>Supply Chain Compliance Manager</strong> — Approves/rejects vendors, overrides AI recommendations, escalates to Legal/Finance, defines onboarding policy rules.
+                <strong>Supply Chain Compliance Manager</strong> - Approves/rejects vendors, overrides AI recommendations, escalates to Legal/Finance, defines onboarding policy rules.
               </p>
             </div>
 

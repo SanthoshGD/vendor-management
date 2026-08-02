@@ -1,4 +1,4 @@
-# Reviewer–Supervisor–Vendor integration — audit checkpoint
+# Reviewer–Supervisor–Vendor integration - audit checkpoint
 
 **Status: AUDIT ONLY. No code was changed. No tests were run. No rebuild was done.**
 `StyleSphere-Nexus-fixed.html` is untouched and remains the source of truth.
@@ -10,14 +10,14 @@ Session ended on a usage limit part-way through task 1 of 5.
 - `Mini project/src/context/AppContext.jsx` (1,797 lines)
 - `Mini project/src/agents/agentEngine.js` (759)
 - `Mini project/src/components/ReviewWorkspace.jsx` (658)
-- `Mini project/src/data/mockData.js` — `CURRENT_USERS`, `REQUEST_TYPES`, `REQUEST_OUTCOMES`
+- `Mini project/src/data/mockData.js` - `CURRENT_USERS`, `REQUEST_TYPES`, `REQUEST_OUTCOMES`
 
-**Not yet read:** `RedesignedApp.jsx` (2,512 lines — vendor portal pages, supervisor
+**Not yet read:** `RedesignedApp.jsx` (2,512 lines - vendor portal pages, supervisor
 escalations page, notifications, `ROLE_PAGES`), `OnboardingWizard.jsx`, `VendorChat.jsx`,
 `ChaserPanel.jsx`, `FindingDetail.jsx`, `agentCatalog.js`, `policyPack.js`.
 Any gap list below is provisional until those are read.
 
-## Build provenance — confirmed
+## Build provenance - confirmed
 
 `StyleSphere-Nexus-fixed.html` (1,107,076 bytes) embeds, verbatim:
 - `Mini project/dist/assets/index-BU8P_5XP.js` (951,980 chars)
@@ -25,17 +25,17 @@ Any gap list below is provisional until those are read.
 
 Neither is present in the older `StyleSphere-Nexus.html`, so the JSX sources in
 `Mini project/src/` are the correct edit surface for regenerating the fixed build.
-Rebuild route from the Cowork sandbox (esbuild is dead — see memory
+Rebuild route from the Cowork sandbox (esbuild is dead - see memory
 `stylesphere_sandbox_build`): copy project to `/tmp`, install `sucrase`, run
 `scripts/sandbox/slim-lucide.mjs <root>` then `scripts/sandbox/minibundler.mjs <root>`,
 write `dist/index.html` pointing at `/assets/index.js` + `/assets/index.css`, then
 `scripts/build-standalone.mjs`.
 
-## Requirements already implemented — preserve, validate, do NOT rebuild
+## Requirements already implemented - preserve, validate, do NOT rebuild
 
 | Requirement | Where it lives |
 |---|---|
-| Reviewer→Vendor document requests | `submitDecision(id,'REQUEST_DOCS')` — sets `chaseState[docId].requested`, flags the doc with a `rejection`, writes a `DOCUMENT_REQUESTED` audit entry |
+| Reviewer→Vendor document requests | `submitDecision(id,'REQUEST_DOCS')` - sets `chaseState[docId].requested`, flags the doc with a `rejection`, writes a `DOCUMENT_REQUESTED` audit entry |
 | Vendor upload → verification → back to reviewer | `uploadDocument` → `runDocumentReview` (1500 ms hold in `Processing`) → `Verified`/`Flagged`, closes the chase thread, writes `DOCUMENT_VERIFIED`/`DOCUMENT_REJECTED` |
 | Reviewer authority limit | `APPROVAL_CEILING = 70` in `ReviewWorkspace.jsx`; `aboveAuthority` swaps the primary action to "Send for approval" → `raiseRequest('AUTHORITY')` |
 | Reviewer→Supervisor escalation | `submitDecision(id,'ESCALATE')` → `finalStatus='Escalated'` + `raiseRequest('ESCALATION')` |
@@ -45,19 +45,19 @@ write `dist/index.html` pointing at `/assets/index.js` + `/assets/index.css`, th
 | Shared record across personas | one `rawVendors` array + `activeVendorId` + `deriveVendorView`; both faces read the same record |
 | Supervisor cannot waive evidence | `getApprovalBlockers` is re-checked inside `resolveRequest` on `UPHOLD` |
 
-## Gaps found so far — the actual work
+## Gaps found so far - the actual work
 
 **A. Risk acceptance does not resolve the related exception.** This is the clearest
 miss against the prompt. `RaiseRequestDialog` puts the blocker into
-`detail.control` as a *display string* (`` `${blocker.clauseId} — ${blocker.title}` ``)
+`detail.control` as a *display string* (`` `${blocker.clauseId} - ${blocker.title}` ``)
 and never carries `blocker.id`. On `GRANT`, `resolveRequest` writes
 `vendor.riskAcceptance` but never writes into `findingResolutions`, and
-`evaluateVendor` has no awareness of `riskAcceptance` at all — so the blocking
+`evaluateVendor` has no awareness of `riskAcceptance` at all - so the blocking
 finding stays open and still blocks approval. Fix: carry `findingId` through
 `detail`, have `GRANT` write a `findingResolutions[findingId]` entry
 (outcome `risk_accepted`, carrying `expiresAt`), and make the existing derived
 `exceptions` lapse logic re-open that one finding when the date passes. It must
-resolve *only* that finding — never touch `finalStatus`.
+resolve *only* that finding - never touch `finalStatus`.
 
 **B. The authority ceiling is UI-only.** `APPROVAL_CEILING` lives in
 `ReviewWorkspace.jsx` and is enforced only by which button renders. `submitDecision`
@@ -76,12 +76,12 @@ second `APPROVE` on an already-Approved vendor, and `REQUEST_DOCS` can re-fire o
 document that already has an open request.
 
 **E. Unverified.** Whether the vendor persona surfaces reviewer-raised requests as a
-task, and whether the supervisor escalations page reflects all of the above —
+task, and whether the supervisor escalations page reflects all of the above -
 both live in the unread `RedesignedApp.jsx`.
 
 ## Test suites that must stay green
 
-`scripts/flow.test.mjs` (21) is the one that matters — it drives review → resolve →
+`scripts/flow.test.mjs` (21) is the one that matters - it drives review → resolve →
 chase → approve → activate entirely by clicking. Plus `layout.test.mjs` (27),
 `gates.test.mjs` (37), `gates-operations.test.mjs` (11), `smoke-agents.mjs` (45),
 and `scripts/tests/` (smoke 48, volume 34, modals 21, regress 16, onboarding 26).

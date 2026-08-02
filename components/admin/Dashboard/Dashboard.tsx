@@ -34,10 +34,10 @@ export default function Dashboard({ onNavigate, onModal, onOpenVendor }: Dashboa
             {todayLabel}
           </span>
           <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#0F172A', margin: '2px 0 0 0' }}>
-            Admin Operational Dashboard
+            Admin Operational Control Center
           </h1>
           <p style={{ fontSize: '13px', color: '#64748B', margin: '2px 0 0 0' }}>
-            Central operational hub — what requires your attention today?
+            Central operational hub - live vendor metrics, approval trends, and priority queue
           </p>
         </div>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -94,7 +94,7 @@ export default function Dashboard({ onNavigate, onModal, onOpenVendor }: Dashboa
       {/* Row 1: Top Metrics Summary */}
       <MetricsRow vendors={vendors} onNavigate={onNavigate} />
 
-      {/* Sequence 1 & 2: 1. Approval Trend (2/3) + 2. Approval Rate (1/3) */}
+      {/* Sequence 1 & 2: 1. Approval Trend (2/3) + 2. Approval Rate China (1/3) */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '20px', marginBottom: '24px' }}>
         <TrendChart vendors={vendors} onDrill={() => onNavigate?.('vendors')} />
         <ApprovalRate />

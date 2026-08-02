@@ -1,6 +1,6 @@
 """SQLAlchemy models for the spec §4 schema.
 
-Column names are snake_case and match Postgres exactly — these are database
+Column names are snake_case and match Postgres exactly - these are database
 rows. `schemas/` describes what goes over the wire. Keeping them separate means
 a column rename does not automatically become a breaking API change.
 
@@ -95,7 +95,7 @@ class Vendor(Base, TimestampMixin):
     tax_id: Mapped[str | None] = mapped_column(String(100))
 
     submission_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), index=True)
-    # Entity registration date, not row creation — the input to the
+    # Entity registration date, not row creation - the input to the
     # VENDOR_AGE_UNDER_6_MONTHS driver (spec §12).
     registered_on: Mapped[date | None] = mapped_column(Date)
 
@@ -291,7 +291,7 @@ class GeminiApiKey(Base, TimestampMixin):
     """Spec §6.2. `encrypted_key` is AES-GCM ciphertext.
 
     It is decrypted only inside `KeyRotationPolicy` and never serialised into
-    any API response — no response schema has a field that could carry it.
+    any API response - no response schema has a field that could carry it.
     """
 
     __tablename__ = "gemini_api_keys"

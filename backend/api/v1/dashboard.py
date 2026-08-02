@@ -17,7 +17,7 @@ router = APIRouter(prefix="/dashboard", tags=["dashboard"])
     summary="Admin dashboard aggregate",
     description=(
         "Metrics, approval trend, pipeline funnel, priority queue, recent "
-        "activity and approval rate by country — one round trip."
+        "activity and approval rate by country - one round trip."
     ),
 )
 async def get_dashboard(analytics: AnalyticsDep) -> ApiResponse[DashboardPayload]:

@@ -4,7 +4,7 @@ Mounted at the root, outside `/api/v1`: an orchestrator's probe target must not
 move when the API version changes.
 
 These are the only routes that return their payload outside the spec §8
-envelope — probes are consumed by Railway and load balancers, not by the
+envelope - probes are consumed by Railway and load balancers, not by the
 frontend, and they expect a flat body.
 """
 

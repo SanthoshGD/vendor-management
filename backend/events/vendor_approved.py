@@ -5,8 +5,8 @@ audit write have committed.
 
 Note the ordering rule: the activity log and approval history are written
 *transactionally with the mutation* (spec §11), not as event listeners. Only
-genuinely secondary effects — notification, metrics refresh, re-embedding the
-decision into the Historical Decisions collection — belong here. An audit entry
+genuinely secondary effects - notification, metrics refresh, re-embedding the
+decision into the Historical Decisions collection - belong here. An audit entry
 that could be lost when a listener fails would not be an audit trail.
 """
 

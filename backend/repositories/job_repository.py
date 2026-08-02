@@ -1,7 +1,7 @@
 """Job queue persistence (spec §10).
 
 A Postgres-backed job table, which the plan explicitly says is enough to start.
-The interface is narrow — enqueue / claim / complete / fail — so replacing it
+The interface is narrow - enqueue / claim / complete / fail - so replacing it
 with Redis or RQ later touches this file and the worker, nothing else.
 """
 
@@ -32,7 +32,7 @@ class JobRepository(BaseRepository[Job]):
         run_after: datetime | None = None,
         max_attempts: int = 3,
     ) -> Job:
-        """Queue work. No commit — the job lands with the mutation that caused it.
+        """Queue work. No commit - the job lands with the mutation that caused it.
 
         That ordering matters: a job enqueued in its own transaction can be
         picked up by a worker before the row it refers to is visible.
@@ -53,7 +53,7 @@ class JobRepository(BaseRepository[Job]):
 
         `FOR UPDATE SKIP LOCKED` inside a single `UPDATE ... RETURNING` is what
         stops two workers taking the same row. A read-then-update in Python
-        would race, and the failure mode — a document extracted twice — is
+        would race, and the failure mode - a document extracted twice - is
         silent.
         """
         type_filter = ""

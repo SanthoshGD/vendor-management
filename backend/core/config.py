@@ -5,8 +5,8 @@ environment (Railway service variables) falling back to a local `.env`.
 Nothing else in the codebase calls `os.getenv` directly, so `.env.example`
 stays a complete and accurate contract.
 
-Variable names follow spec §16 exactly — `SUPABASE_SERVICE_ROLE_KEY`,
-`MASTER_ENCRYPTION_KEY`, `FRONTEND_ORIGIN` — so Railway variables set from the
+Variable names follow spec §16 exactly - `SUPABASE_SERVICE_ROLE_KEY`,
+`MASTER_ENCRYPTION_KEY`, `FRONTEND_ORIGIN` - so Railway variables set from the
 plan work without translation.
 """
 
@@ -24,7 +24,7 @@ LogFormat = Literal["json", "console"]
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=("backend/.env", ".env"),
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
@@ -42,7 +42,7 @@ class Settings(BaseSettings):
 
     # --- Supabase (spec §16) ---
     # Retained for Storage and Auth. The relational layer goes through
-    # DATABASE_URL / SQLAlchemy — see the deviation note in `db/__init__.py`.
+    # DATABASE_URL / SQLAlchemy - see the deviation note in `db/__init__.py`.
     supabase_url: str | None = None
     supabase_service_role_key: str | None = None
     supabase_anon_key: str | None = None
@@ -87,7 +87,7 @@ class Settings(BaseSettings):
     # Development-only escape hatch: resolves a synthetic admin principal so the
     # API is explorable before Supabase Auth is wired to the frontend. Ignored
     # unless ENVIRONMENT=development, and `validate_runtime` rejects it
-    # anywhere else — an auth bypass that can be switched on in production by
+    # anywhere else - an auth bypass that can be switched on in production by
     # setting one variable is not a bypass, it is a vulnerability.
     dev_auth_bypass: bool = False
     dev_auth_email: str = "admin@stylesphere.local"

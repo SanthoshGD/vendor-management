@@ -9,7 +9,7 @@ import {
 const cx = (...v) => v.filter(Boolean).join(' ');
 
 // ---------------------------------------------------------------------------
-// Screen 3, upper half — outcomes.
+// Screen 3, upper half - outcomes.
 //
 // The brief sets exactly one success metric: reduce average vendor onboarding
 // from 7 days to 2. Zip puts "55% faster purchasing cycles" and a 386% ROI
@@ -26,7 +26,7 @@ export default function OutcomeDashboard() {
 
   const maxStage = Math.max(...m.stages.map((s) => s.before));
 
-  // Override clusters by field — the raw material behind the Config Agent's
+  // Override clusters by field - the raw material behind the Config Agent's
   // proposals, shown here so the dashboard explains itself.
   const overrideClusters = useMemo(() => {
     const map = {};
@@ -59,7 +59,7 @@ export default function OutcomeDashboard() {
             <b>{m.currentDays}</b> days<span>average onboarding</span>
           </h2>
           <p>
-            Down from a {m.baselineDays}-day baseline — a <strong>{m.reductionPct}% reduction</strong>, measured from
+            Down from a {m.baselineDays}-day baseline - a <strong>{m.reductionPct}% reduction</strong>, measured from
             this workspace&rsquo;s own event log rather than asserted. Target was 2 days.
           </p>
           <div className={cx('outcome-verdict', m.currentDays <= 2 ? 'good' : 'warn')}>
@@ -84,7 +84,7 @@ export default function OutcomeDashboard() {
           ))}
           <p className="outcome-legend">
             <i className="legend before" /> Before agents &nbsp;·&nbsp; <i className="legend after" /> Now.
-            The saving is overwhelmingly in collection, not review — which is the whole argument for the Chaser Agent.
+            The saving is overwhelmingly in collection, not review - which is the whole argument for the Chaser Agent.
           </p>
         </div>
       </section>
@@ -92,7 +92,7 @@ export default function OutcomeDashboard() {
       <section className="outcome-metrics">
         {[
           [Timer, 'blue', `${m.reductionPct}%`, 'Cycle-time reduction', `${m.baselineDays}d → ${m.currentDays}d`],
-          [Gauge, 'violet', m.agreementRate == null ? '—' : `${m.agreementRate}%`, 'Agent–human agreement', `${m.accepts} accepted · ${m.overrides} corrected`],
+          [Gauge, 'violet', m.agreementRate == null ? '-' : `${m.agreementRate}%`, 'Agent–human agreement', `${m.accepts} accepted · ${m.overrides} corrected`],
           [ShieldCheck, 'green', String(m.decisionsLogged), 'Human decisions recorded', 'Every one with a stated reason'],
           [Bot, 'amber', `v${agentConfig.version}`, 'Agent configuration', `${agentConfig.agents.filter((a) => a.enabled).length} of ${agentConfig.agents.length} agents live`],
         ].map(([Icon, tone, value, label, note]) => (
@@ -110,7 +110,7 @@ export default function OutcomeDashboard() {
           </div>
           <p className="outcome-note">
             A field corrected once is a reviewer&rsquo;s judgement. The same field corrected repeatedly is an
-            extraction defect — and this is the only place it becomes visible.
+            extraction defect - and this is the only place it becomes visible.
           </p>
           {overrideClusters.length === 0 && <p className="attention-empty">No corrections logged yet.</p>}
           {overrideClusters.map(([field, count]) => (
@@ -153,7 +153,7 @@ export default function OutcomeDashboard() {
                 <p>{insight.detail}</p>
                 <div className="insight-proposal">
                   <Bot size={12} /> {insight.proposal}
-                  <em>Proposal only — {AGENTS_BY_ID[insight.agentId]?.name} cannot change its own configuration.</em>
+                  <em>Proposal only - {AGENTS_BY_ID[insight.agentId]?.name} cannot change its own configuration.</em>
                 </div>
               </div>
               <span className="insight-metric">{insight.metric}</span>

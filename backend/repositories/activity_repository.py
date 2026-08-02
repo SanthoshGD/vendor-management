@@ -4,7 +4,7 @@ Append-only. There is deliberately no update and no delete method here, and the
 API's database role should have UPDATE and DELETE revoked on the table.
 Spec §11: "Never delete."
 
-Every entry captures actor, action, before, after, reason, timestamp and IP —
+Every entry captures actor, action, before, after, reason, timestamp and IP -
 that is what backs "Every action is logged" on the Activity tab, and it is
 exactly what enterprise buyers check for.
 """
@@ -38,7 +38,7 @@ class ActivityRepository(BaseRepository[ActivityLog]):
         """Insert one immutable entry.
 
         `actor` and the timestamp are resolved by the caller from the
-        authenticated session and the database clock — never from a request
+        authenticated session and the database clock - never from a request
         body. No commit: the entry lands in the same transaction as the
         mutation it records (spec §11).
         """

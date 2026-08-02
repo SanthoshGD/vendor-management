@@ -7,7 +7,7 @@ the database itself.
 
 AES-256-GCM: authenticated, so a tampered ciphertext fails to decrypt rather
 than yielding garbage that gets sent to Google as an API key. Every encryption
-uses a fresh random 96-bit nonce — reusing a nonce under GCM is catastrophic,
+uses a fresh random 96-bit nonce - reusing a nonce under GCM is catastrophic,
 which is why the nonce is generated here and never passed in by a caller.
 
 Stored form: ``v1.<base64url(nonce)>.<base64url(ciphertext||tag)>``. The version
@@ -33,7 +33,7 @@ class EncryptionError(RuntimeError):
     """Raised when a secret cannot be encrypted or decrypted.
 
     Deliberately carries no ciphertext, key material or plaintext in its
-    message — this string reaches the logs.
+    message - this string reaches the logs.
     """
 
 
@@ -73,7 +73,7 @@ def decrypt_secret(stored: str, master_key: str | None) -> str:
     """Decrypt a stored secret.
 
     Raises `EncryptionError` on a wrong master key, a tampered ciphertext, or a
-    malformed stored value — all indistinguishable to a caller on purpose.
+    malformed stored value - all indistinguishable to a caller on purpose.
     """
     try:
         scheme, nonce_b64, ciphertext_b64 = stored.split(".", 2)

@@ -232,4 +232,4 @@ def downgrade() -> None:
     op.drop_table("notification_events")
     op.drop_table("notifications")
     op.drop_table("gemini_api_keys")
-    # `vector` is left enabled deliberately — see the pgcrypto note in 0001.
+    # `vector` is left enabled deliberately - see the pgcrypto note in 0001.

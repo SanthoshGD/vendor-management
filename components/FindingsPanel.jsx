@@ -9,7 +9,7 @@ import {
 
 const cx = (...v) => v.filter(Boolean).join(' ');
 
-// Finding kinds whose existence is genuinely keyed to `field.resolved` — for
+// Finding kinds whose existence is genuinely keyed to `field.resolved` - for
 // these, accepting the extracted value really does close the finding.
 //
 // A threshold breach or a duplicate applicant is NOT one of them: accepting the
@@ -20,7 +20,7 @@ const cx = (...v) => v.filter(Boolean).join(' ');
 const FIELD_BACKED_KINDS = new Set(['extraction', 'cross_doc', 'recency']);
 
 const TIER_META = {
-  red: [AlertOctagon, 'Needs a decision', 'Blocking — review cannot conclude until this is resolved.'],
+  red: [AlertOctagon, 'Needs a decision', 'Blocking - review cannot conclude until this is resolved.'],
   amber: [AlertTriangle, 'Review needed', 'Non-blocking; review before approval.'],
   green: [CheckCircle2, 'Auto-cleared', 'Cleared automatically. Expanded only if you want to audit it.'],
 };
@@ -34,8 +34,8 @@ const TIER_META = {
 // Attention is the scarce resource in a 40–60 application day.
 //
 // So: red and amber open expanded, green collapses into a single line. And
-// every finding is click-through — finding → policy clause → the exact document
-// page — which is what turns "the AI thinks this is wrong" into an auditable
+// every finding is click-through - finding → policy clause → the exact document
+// page - which is what turns "the AI thinks this is wrong" into an auditable
 // recommendation a compliance manager can defend.
 // ---------------------------------------------------------------------------
 export default function FindingsPanel({ vendorId, onJumpToEvidence, activeFindingId, onSelectFinding }) {
@@ -46,7 +46,7 @@ export default function FindingsPanel({ vendorId, onJumpToEvidence, activeFindin
   const [showGreen, setShowGreen] = useState(false);
   const [clause, setClause] = useState(null);
   const [briefOpen, setBriefOpen] = useState(true);
-  // Resolving a finding requires a stated reason — the brief's override rule
+  // Resolving a finding requires a stated reason - the brief's override rule
   // logs the AI recommendation, the human decision AND the reason.
   const [resolving, setResolving] = useState(null);
   const [reason, setReason] = useState('');
@@ -93,7 +93,7 @@ export default function FindingsPanel({ vendorId, onJumpToEvidence, activeFindin
             {f.clause && (
               <button className="finding-clause" onClick={() => setClause(f.clause)}>
                 <ScrollText size={12} />
-                <span><strong>{f.clause.id}</strong> — {f.clause.title}</span>
+                <span><strong>{f.clause.id}</strong> - {f.clause.title}</span>
                 <ChevronRight size={13} />
               </button>
             )}
@@ -124,8 +124,8 @@ export default function FindingsPanel({ vendorId, onJumpToEvidence, activeFindin
 
             {/* Every finding must be closeable, or a red one blocks approval
                 forever. Field-backed findings accept straight into the
-                extracted value; the rest — cross-document conflicts, duplicate
-                applicants, threshold breaches — resolve with a stated reason.
+                extracted value; the rest - cross-document conflicts, duplicate
+                applicants, threshold breaches - resolve with a stated reason.
                 Missing documents hand off to the Chaser instead. */}
             {!f.resolved && (
               <div className="finding-actions">
@@ -155,7 +155,7 @@ export default function FindingsPanel({ vendorId, onJumpToEvidence, activeFindin
                     <Check size={13} /> Accept &amp; clear
                   </button>
                 )}
-                {/* A missing document is a fact, not a judgement — there is no
+                {/* A missing document is a fact, not a judgement - there is no
                     honest "false positive" for it. It clears when the file
                     arrives, or when a human records that it was settled
                     off-platform. */}
@@ -175,7 +175,7 @@ export default function FindingsPanel({ vendorId, onJumpToEvidence, activeFindin
             {f.resolved && f.resolution && (
               <div className="finding-resolved">
                 <span><Check size={12} /> {f.resolution.label}</span>
-                <p>&ldquo;{f.resolution.reason}&rdquo; — {f.resolution.by}</p>
+                <p>&ldquo;{f.resolution.reason}&rdquo; - {f.resolution.by}</p>
                 <button onClick={() => reopenFinding(vendor.id, f)}>
                   <RotateCcw size={11} /> Reopen
                 </button>
@@ -272,7 +272,7 @@ export default function FindingsPanel({ vendorId, onJumpToEvidence, activeFindin
                 <p>{resolving.finding.recommendation}</p>
               </div>
               <label className="form-field">
-                <span>Your reason (required — written to the audit trail)</span>
+                <span>Your reason (required - written to the audit trail)</span>
                 <textarea
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
@@ -299,7 +299,7 @@ export default function FindingsPanel({ vendorId, onJumpToEvidence, activeFindin
             <header>
               <div>
                 <span className="section-kicker">{clause.source}</span>
-                <h2>{clause.id} — {clause.title}</h2>
+                <h2>{clause.id} - {clause.title}</h2>
               </div>
               <button onClick={() => setClause(null)} aria-label="Close"><X size={18} /></button>
             </header>

@@ -1,8 +1,8 @@
-"""Admin routes — Gemini key pool management (spec §6.3, §8).
+"""Admin routes - Gemini key pool management (spec §6.3, §8).
 
 Admin-only. Lets keys be added or disabled without a redeploy.
 
-No response model here can carry a key value — only `keyLabel` and a masked
+No response model here can carry a key value - only `keyLabel` and a masked
 suffix. Spec §6.3 forbids logging full keys; returning one over the API would
 be strictly worse.
 """
@@ -26,7 +26,7 @@ router = APIRouter(prefix="/admin", tags=["admin"])
     "/gemini-keys",
     response_model=ApiResponse[list[GeminiKeyOut]],
     summary="List the Gemini key pool",
-    description="Masked values only — label plus last 4 characters.",
+    description="Masked values only - label plus last 4 characters.",
 )
 async def list_gemini_keys(
     supabase: SupabaseDep, admin: AdminDep

@@ -52,7 +52,7 @@ export default function VendorActivity({ vendor, auditLogs }: VendorActivityProp
         id: 'e2',
         actionType: 'DOCUMENT_VERIFIED',
         actorName: 'AI Inspector Engine',
-        title: 'Document Verified — Supplier Code of Conduct',
+        title: 'Document Verified - Supplier Code of Conduct',
         description: 'Automatic OCR signature verification passed with 99% confidence.',
         reason: null,
         timestamp: new Date(Date.now() - 3600000 * 5).toISOString(),
@@ -203,7 +203,7 @@ export default function VendorActivity({ vendor, auditLogs }: VendorActivityProp
                   </div>
 
                   <div style={{ fontSize: '12px', color: '#475569', lineHeight: '1.5' }}>
-                    Executed by <strong>{log.actorName}</strong> — {log.description}
+                    Executed by <strong>{log.actorName}</strong> - {log.description}
                   </div>
 
                   {log.reason && (

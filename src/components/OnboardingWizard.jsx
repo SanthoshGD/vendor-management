@@ -118,7 +118,7 @@ export function WizardStepper({ step, method }) {
             {/* The pill lives on this inner span, not on the <li>. The
                 connector is a pseudo-element of the <li>, so a background on
                 the <li> painted the dash as part of the highlight  -  the
-                current step read as "— Documents" rather than "Documents". */}
+                current step read as "- Documents" rather than "Documents". */}
             <span className="wizard-stepper-pill">
               <span className="wizard-stepper-dot">
                 <b className="wizard-stepper-num">{index + 1}</b>

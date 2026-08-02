@@ -195,9 +195,16 @@ export default function ProductCard({ product, showVendorName = true }: ProductC
             {product.name}
           </h4>
           {showVendorName && (
-            <div style={{ fontSize: '12px', color: '#64748B', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <Building2 size={13} style={{ color: '#94A3B8' }} />
-              <span>{product.vendorName}</span>
+            <div style={{ fontSize: '12px', color: '#64748B', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <Building2 size={13} style={{ color: '#94A3B8' }} />
+                <span>{product.vendorName}</span>
+              </span>
+              {isApproved && (
+                <span style={{ fontSize: '10px', fontWeight: 600, color: '#059669', backgroundColor: '#ECFDF5', border: '1px solid #A7F3D0', padding: '1px 6px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                  <Check size={10} strokeWidth={3} /> Verified Vendor
+                </span>
+              )}
             </div>
           )}
         </div>

@@ -2,7 +2,7 @@
 // Sandbox-only bundler for the shareable standalone HTML.
 //
 // Why this exists: the repo's own `pnpm build:share` (vite 8 / rolldown) cannot
-// run in this Linux sandbox — the installed native binaries are Windows builds,
+// run in this Linux sandbox - the installed native binaries are Windows builds,
 // and the sandbox network truncates any download over ~4.7 MB, so esbuild and
 // esbuild-wasm cannot be fetched intact either. Sucrase (pure JS, 3 MB) can be,
 // so JSX transformation is solved; module graph resolution is done here.
@@ -11,7 +11,7 @@
 // `scripts/build-standalone.mjs`: `dist/assets/index.js` and
 // `dist/assets/index.css`. Nothing downstream needs to know it was built here.
 //
-// Design: every module — the app's own ESM files and the vendor CJS bundles —
+// Design: every module - the app's own ESM files and the vendor CJS bundles -
 // is compiled to a CommonJS factory and registered in one tiny runtime. Going
 // through CJS for everything means one resolution path and one interop rule,
 // instead of two half-working ones that disagree at the boundary.
@@ -34,7 +34,7 @@ const BARE = {
   'react-dom': `${NM}/react-dom/index.js`,
   'react-dom/client': `${NM}/react-dom/client.js`,
   scheduler: `${NM}/scheduler/index.js`,
-  // Produced by slim-lucide.mjs — the same helpers plus only the icons this
+  // Produced by slim-lucide.mjs - the same helpers plus only the icons this
   // app imports. See that script for why the full CJS bundle can't be shaken.
   'lucide-react': `${NM}/lucide-slim/index.js`,
 };

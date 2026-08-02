@@ -6,7 +6,7 @@ Each PDF carries a machine-readable marker in its text layer:
     SSX-CHECK: FAIL | <short reason> | <what the supplier must do>
 
 The app reads the head of the uploaded file as text and looks for that marker,
-which is why `pageCompression=0` matters — a compressed content stream is not
+which is why `pageCompression=0` matters - a compressed content stream is not
 greppable and every document would silently pass.
 
 The pack tells one story deliberately: six required documents sail through, the bank
@@ -95,14 +95,14 @@ PASS = "SSX-CHECK: PASS"
 # --- the five that sail through ---------------------------------------------
 draw(OUT / "01 Tax Registration Certificate (PASS).pdf",
      "Certificate of Tax Registration",
-     "Government of India — Goods and Services Tax",
+     "Government of India - Goods and Services Tax",
      [("Registered legal name", LEGAL_NAME),
       ("GSTIN / Tax identification number", TAX_ID),
       ("Principal place of business", ADDRESS),
       ("Valid from", "01 April 2024"),
       ("Status", "Active")],
      PASS, note="Issued under Section 25 of the CGST Act, 2017.",
-     stamp="VERIFIED ELECTRONICALLY — no signature required")
+     stamp="VERIFIED ELECTRONICALLY - no signature required")
 
 draw(OUT / "02 Import Export Code Licence (PASS).pdf",
      "Importer-Exporter Code Certificate",
@@ -112,7 +112,7 @@ draw(OUT / "02 Import Export Code Licence (PASS).pdf",
       ("Company registration number", REG_NO),
       ("Registered address", ADDRESS),
       ("Date of issue", "12 June 2016")],
-     PASS, stamp="ACTIVE — no restrictions on record")
+     PASS, stamp="ACTIVE - no restrictions on record")
 
 draw(OUT / "03 Certificate of Liability Insurance (PASS).pdf",
      "Certificate of Liability Insurance",
@@ -122,27 +122,27 @@ draw(OUT / "03 Certificate of Liability Insurance (PASS).pdf",
       ("Limit of indemnity", "USD 5,000,000 each and every claim"),
       ("Period of cover", "01 January 2026 to 31 December 2026"),
       ("Coverage", "Public and products liability")],
-     PASS, stamp="IN FORCE — premium paid to 31 December 2026")
+     PASS, stamp="IN FORCE - premium paid to 31 December 2026")
 
 draw(OUT / "04 REACH Chemical Compliance (PASS).pdf",
      "REACH Compliance Declaration",
-     "Intertek Testing Services — Bengaluru Laboratory",
+     "Intertek Testing Services - Bengaluru Laboratory",
      [("Manufacturer", LEGAL_NAME),
       ("Report reference", "ITS-REACH-2026-40219"),
       ("Substances screened", "SVHC candidate list, 241 substances"),
       ("Result", "No substance detected above 0.1% w/w"),
       ("Date of test", "18 February 2026")],
-     PASS, stamp="PASS — compliant with EC 1907/2006")
+     PASS, stamp="PASS - compliant with EC 1907/2006")
 
 draw(OUT / "05 ISO 17075 Chromium VI Test (PASS).pdf",
      "ISO 17075-1 Chromium (VI) Test Report",
-     "SGS India Private Limited — Leather Testing Division",
+     "SGS India Private Limited - Leather Testing Division",
      [("Manufacturer", LEGAL_NAME),
       ("Report reference", "SGS-LTH-2026-77310"),
       ("Method", "ISO 17075-1:2017 photometric determination"),
-      ("Result", "Not detected — below 3 mg/kg limit of quantification"),
+      ("Result", "Not detected - below 3 mg/kg limit of quantification"),
       ("Date of test", "02 March 2026")],
-     PASS, stamp="PASS — within EU REACH Annex XVII limit")
+     PASS, stamp="PASS - within EU REACH Annex XVII limit")
 
 # --- the one that is rejected, and its fix -----------------------------------
 FAIL = ("SSX-CHECK: FAIL | The account name does not match your registered legal name "
@@ -152,7 +152,7 @@ FAIL = ("SSX-CHECK: FAIL | The account name does not match your registered legal
 
 draw(OUT / "06 Bank Verification Letter (FAILS - try this one).pdf",
      "Bank Account Verification Letter",
-     "Canara Bank — Residency Road Branch, Bengaluru",
+     "Canara Bank - Residency Road Branch, Bengaluru",
      [("Account holder name", "Kalyani Silk Exports"),
       ("Account number", "0913 2010 044 781"),
       ("IFSC / SWIFT", "CNRB0000913 / CNRBINBBBGL"),
@@ -163,7 +163,7 @@ draw(OUT / "06 Bank Verification Letter (FAILS - try this one).pdf",
 
 draw(OUT / "07 Bank Verification Letter CORRECTED (PASS).pdf",
      "Bank Account Verification Letter",
-     "Canara Bank — Residency Road Branch, Bengaluru",
+     "Canara Bank - Residency Road Branch, Bengaluru",
      [("Account holder name", LEGAL_NAME),
       ("Account number", "0913 2010 044 781"),
       ("IFSC / SWIFT", "CNRB0000913 / CNRBINBBBGL"),

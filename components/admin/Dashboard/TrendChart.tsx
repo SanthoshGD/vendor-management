@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { 
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend 
+import React, { useState, useEffect, useMemo } from 'react';
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 
 const WEEKLY = [
@@ -34,7 +34,7 @@ interface TrendChartProps {
   onDrill?: () => void;
 }
 
-export default function TrendChart({ onDrill }: TrendChartProps) {
+export default function TrendChart({ vendors = [], onDrill }: TrendChartProps) {
   const [range, setRange] = useState<'7d' | '30d' | '90d'>('7d');
   const [mounted, setMounted] = useState(false);
 
@@ -42,7 +42,25 @@ export default function TrendChart({ onDrill }: TrendChartProps) {
     setMounted(true);
   }, []);
 
-  const data = range === '7d' ? WEEKLY : range === '30d' ? WEEKLY_30 : WEEKLY_90;
+  const rawData = range === '7d' ? WEEKLY : range === '30d' ? WEEKLY_30 : WEEKLY_90;
+  const data = useMemo(() => {
+    if (!vendors || vendors.length === 0) return rawData;
+    const liveApproved = vendors.filter(v => v.finalStatus === 'Approved' || v.finalStatus === 'Active' || v.status === 'Approved').length;
+    const livePending = vendors.filter(v => v.status === 'Pending' || v.stage === 'Doc Review').length;
+    const liveRejected = vendors.filter(v => v.finalStatus === 'Rejected' || v.status === 'Rejected').length;
+
+    const updated = [...rawData];
+    const lastIdx = updated.length - 1;
+    updated[lastIdx] = {
+      ...updated[lastIdx],
+      submitted: Math.max(updated[lastIdx].submitted, vendors.length),
+      approved: Math.max(updated[lastIdx].approved, liveApproved),
+      inReview: Math.max(updated[lastIdx].inReview, livePending),
+      rejected: Math.max(updated[lastIdx].rejected, liveRejected),
+    };
+    return updated;
+  }, [vendors, rawData, range]);
+
   const deltaLabel = range === '7d' ? '+57% vs prev. 8 weeks' : range === '30d' ? '+18% vs prev. 30 days' : '+22% vs prev. 90 days';
 
   return (
@@ -51,7 +69,7 @@ export default function TrendChart({ onDrill }: TrendChartProps) {
         <div>
           <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase' }}>APPROVAL TREND</div>
           <div style={{ fontSize: '14px', fontWeight: 600, color: '#0F172A', marginTop: '2px' }}>
-            Weekly approvals — last {range === '7d' ? '8 weeks' : range === '30d' ? '30 days' : '90 days'}
+            Weekly approvals - last {range === '7d' ? '8 weeks' : range === '30d' ? '30 days' : '90 days'}
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -89,53 +107,53 @@ export default function TrendChart({ onDrill }: TrendChartProps) {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data} margin={{ top: 12, right: 12, left: -16, bottom: 4 }}>
               <CartesianGrid stroke="#F1F5F9" vertical={false} />
-              <XAxis 
-                dataKey="week" 
-                tick={{ fontSize: 11, fill: '#94A3B8' }} 
-                axisLine={{ stroke: '#E2E8F0' }} 
-                tickLine={false} 
+              <XAxis
+                dataKey="week"
+                tick={{ fontSize: 11, fill: '#94A3B8' }}
+                axisLine={{ stroke: '#E2E8F0' }}
+                tickLine={false}
               />
-              <YAxis 
-                tick={{ fontSize: 11, fill: '#94A3B8' }} 
-                axisLine={false} 
-                tickLine={false} 
-                width={28} 
+              <YAxis
+                tick={{ fontSize: 11, fill: '#94A3B8' }}
+                axisLine={false}
+                tickLine={false}
+                width={28}
               />
               <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }} />
               <Legend verticalAlign="top" height={30} wrapperStyle={{ fontSize: 11 }} />
-              <Line 
-                type="monotone" 
-                dataKey="approved" 
-                name="Approved" 
-                stroke="#059669" 
-                strokeWidth={2.5} 
-                dot={{ r: 3, fill: '#059669' }} 
-                activeDot={{ r: 5 }} 
+              <Line
+                type="monotone"
+                dataKey="approved"
+                name="Approved"
+                stroke="#059669"
+                strokeWidth={2.5}
+                dot={{ r: 3, fill: '#059669' }}
+                activeDot={{ r: 5 }}
               />
-              <Line 
-                type="monotone" 
-                dataKey="submitted" 
-                name="Submitted" 
-                stroke="#3B82F6" 
-                strokeWidth={2} 
-                dot={{ r: 3, fill: '#3B82F6' }} 
+              <Line
+                type="monotone"
+                dataKey="submitted"
+                name="Submitted"
+                stroke="#3B82F6"
+                strokeWidth={2}
+                dot={{ r: 3, fill: '#3B82F6' }}
               />
-              <Line 
-                type="monotone" 
-                dataKey="inReview" 
-                name="In Review" 
-                stroke="#F59E0B" 
-                strokeWidth={2} 
-                dot={{ r: 3, fill: '#F59E0B' }} 
+              <Line
+                type="monotone"
+                dataKey="inReview"
+                name="In Review"
+                stroke="#F59E0B"
+                strokeWidth={2}
+                dot={{ r: 3, fill: '#F59E0B' }}
               />
-              <Line 
-                type="monotone" 
-                dataKey="rejected" 
-                name="Rejected" 
-                stroke="#EF4444" 
-                strokeWidth={1.5} 
+              <Line
+                type="monotone"
+                dataKey="rejected"
+                name="Rejected"
+                stroke="#EF4444"
+                strokeWidth={1.5}
                 strokeDasharray="3 3"
-                dot={{ r: 2, fill: '#EF4444' }} 
+                dot={{ r: 2, fill: '#EF4444' }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -144,7 +162,7 @@ export default function TrendChart({ onDrill }: TrendChartProps) {
         )}
       </div>
 
-      <div 
+      <div
         style={{ fontSize: '12px', color: '#94A3B8', marginTop: '8px', cursor: 'pointer', fontWeight: 500 }}
         onClick={onDrill}
       >

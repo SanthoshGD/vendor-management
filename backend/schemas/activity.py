@@ -1,4 +1,4 @@
-"""Audit trail contracts — mirrors `types/audit.ts` (spec §4, §11).
+"""Audit trail contracts - mirrors `types/audit.ts` (spec §4, §11).
 
 Note what is absent from any *request* model: actor and timestamp. Both are
 derived server-side from the session and the server clock, never accepted from

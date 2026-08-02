@@ -4,7 +4,7 @@
 // Everything here is driven by clicking, in one live app instance, exactly the
 // way a person would: raise a request as the reviewer, decide it as the
 // supervisor, then go back and look at what the reviewer now sees. Nothing is
-// asserted against internal state — if a control stops performing the state
+// asserted against internal state - if a control stops performing the state
 // change behind it, this fails.
 //
 // Usage: node scripts/tests/integration.test.mjs <standalone.html>
@@ -49,9 +49,9 @@ const dialogButton = (label) => [...d.querySelectorAll('.modal-card footer butto
 await tick(1200);
 
 // ---------------------------------------------------------------------------
-// 0. The trimmed surface — every nav item must go somewhere real
+// 0. The trimmed surface - every nav item must go somewhere real
 // ---------------------------------------------------------------------------
-// Scope to the nav element — `.sidebar-link` is also used by the footer
+// Scope to the nav element - `.sidebar-link` is also used by the footer
 // (Help centre, Settings, Reset demo data, Collapse sidebar).
 const navLabels = () => [...d.querySelectorAll('.nexus-sidebar nav .sidebar-link')]
   .map((b) => (b.textContent || '').trim()).filter(Boolean);
@@ -70,7 +70,7 @@ check('the supplier has no message centre', !vendorNav.some((l) => /Messages/i.t
 check('the supplier keeps the action centre', vendorNav.some((l) => /Action center/i.test(l)));
 
 // Nothing on the supplier's landing page may point at a page that no longer
-// exists — a dead link is worse than the page it replaced.
+// exists - a dead link is worse than the page it replaced.
 const deadLink = [...d.querySelectorAll('button')]
   .find((b) => /Ask a question|Message Elena|Procurement requests/i.test(b.textContent || ''));
 check('no control still points at a removed page', !deadLink);
@@ -78,7 +78,7 @@ check('no control still points at a removed page', !deadLink);
 await click(exact('Admin'), 700);
 
 // ---------------------------------------------------------------------------
-// 1. Reviewer authority limit — structural, not cosmetic
+// 1. Reviewer authority limit - structural, not cosmetic
 // ---------------------------------------------------------------------------
 await click(byText('Vendor queue'));
 const highRisk = [...d.querySelectorAll('.worklist-row')]
@@ -105,7 +105,7 @@ if (highRisk) {
 // 2. Reviewer raises a risk acceptance about ONE blocking finding
 // ---------------------------------------------------------------------------
 // Find a supplier that actually has a blocking finding, rather than assuming
-// the first row does — the queue is priority-ordered, but which vendor leads it
+// the first row does - the queue is priority-ordered, but which vendor leads it
 // depends on the seeded data.
 let acceptanceVendorIndex = -1;
 let acceptanceVendorName = '';
@@ -135,7 +135,7 @@ if (askAcceptance) {
   const date = d.querySelector('.modal-card input[type="date"]');
   check('the request asks why the control cannot be met', boxes.length >= 1);
   check('the request asks what mitigates it meanwhile', boxes.length >= 2);
-  check('the request asks for an expiry — exceptions are time-boxed', Boolean(date));
+  check('the request asks for an expiry - exceptions are time-boxed', Boolean(date));
 
   if (boxes.length >= 2 && date) {
     const send = [...d.querySelectorAll('.modal-card footer button')]
@@ -160,7 +160,7 @@ check('a risk acceptance does NOT take the case away from the reviewer',
 check('the same request cannot be raised twice', !byText('Request risk acceptance'));
 
 // ---------------------------------------------------------------------------
-// 3. Supervisor grants it — and that must clear ONE finding, not the vendor
+// 3. Supervisor grants it - and that must clear ONE finding, not the vendor
 // ---------------------------------------------------------------------------
 await click(exact('Supervisor'), 600);
 await click(byText('Requests'), 600);
@@ -191,7 +191,7 @@ check('the granted exception is on the supervisor’s book',
 await click(exact('Admin'), 600);
 await click(byText('Vendor queue'), 600);
 // Re-find the vendor by name. Clearing a blocking finding re-orders the
-// priority queue, so the row index it occupied before is no longer reliable —
+// priority queue, so the row index it occupied before is no longer reliable -
 // and opening whichever vendor happens to sit there now would be testing
 // nothing.
 const sameRow = [...d.querySelectorAll('.worklist-row')]
@@ -222,7 +222,7 @@ check('the supervisor’s decision is recorded and surfaced to the reviewer',
 check('the decision is attributed to the supervisor', text().includes('Arun Mehta'));
 
 // ---------------------------------------------------------------------------
-// 6. Case files — the audit trail as a story, in authority lanes
+// 6. Case files - the audit trail as a story, in authority lanes
 // ---------------------------------------------------------------------------
 await click(byText('Vendor queue'), 500);
 await click(byText('Activity & audit'), 700);
@@ -230,7 +230,7 @@ check('the audit page offers a case-file view', Boolean(byText('Case files')));
 await click(byText('Case files'), 700);
 
 check('cases are listed', d.querySelectorAll('.case-row').length >= 1);
-check('a case file opens by default — never an empty pane',
+check('a case file opens by default - never an empty pane',
   Boolean(d.querySelector('.case-file')));
 
 const events = [...d.querySelectorAll('.case-event')];
@@ -245,7 +245,7 @@ check('the reviewer lane is populated', lane('reviewer') >= 1);
 check('the supervisor lane is populated', lane('supervisor') >= 1);
 check('all four lanes are keyed for the reader', d.querySelectorAll('.lane-key-item').length === 4);
 
-// Refusals are the load-bearing entries — what the platform declined to do.
+// Refusals are the load-bearing entries - what the platform declined to do.
 check('refusals are recorded and marked', d.querySelectorAll('.case-event.is-refused').length >= 2);
 check('the case header counts the refusals',
   (d.querySelector('.case-head-note') || {}).textContent?.includes('refused at a boundary'));

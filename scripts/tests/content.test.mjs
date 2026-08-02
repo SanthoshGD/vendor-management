@@ -3,7 +3,7 @@
 //
 // The content strategy is only worth writing down if something enforces it.
 // This walks every page in every persona and checks the rules that can be
-// checked mechanically — headline shape, banned marketing voice, subhead
+// checked mechanically - headline shape, banned marketing voice, subhead
 // length, button wording, and reading measure.
 //
 // It is deliberately narrow: it cannot tell you whether a sentence is good, but
@@ -21,7 +21,7 @@ let passed = 0;
 const failures = [];
 const check = (label, condition, detail) => {
   if (condition) passed += 1;
-  else failures.push(detail ? `${label} — ${detail}` : label);
+  else failures.push(detail ? `${label} - ${detail}` : label);
 };
 
 const dom = new JSDOM(html, {

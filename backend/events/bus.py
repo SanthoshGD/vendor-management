@@ -1,7 +1,7 @@
 """Minimal in-process event bus (spec §9).
 
 Approving a vendor implies a status update, an activity entry, a timeline
-update, a notification, a metrics refresh, a toast — and eventually email,
+update, a notification, a metrics refresh, a toast - and eventually email,
 Slack, analytics. Calling all of that inline from `approve()` does not scale as
 listeners are added.
 

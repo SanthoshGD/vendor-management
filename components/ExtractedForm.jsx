@@ -8,7 +8,7 @@ const TierIcon = { red: AlertCircle, amber: AlertTriangle, green: CheckCircle2 }
 
 // The right-hand "extracted data" panel: traffic-light confidence per field,
 // diagnostic / cross-document-mismatch call-outs, and the two required
-// actions — Accept Source and Correct & Log — both of which write an
+// actions - Accept Source and Correct & Log - both of which write an
 // immutable audit entry.
 // `readOnly` lets an oversight role read the same extraction the reviewer works
 // from, without the accept/correct affordances that would imply they can act.
@@ -44,7 +44,7 @@ export default function ExtractedForm({ doc, activeFieldKey, onSelectField, show
       <div className="field-panel-scroll">
         {doc.fields.length === 0 ? (
           <div className="field-panel-empty-state">
-            {doc.status === 'Missing' ? 'This document has not been submitted yet.' : 'Document received — extraction in progress.'}
+            {doc.status === 'Missing' ? 'This document has not been submitted yet.' : 'Document received - extraction in progress.'}
           </div>
         ) : doc.fields.map((f) => {
           const tier = tierOf(f);
@@ -73,12 +73,12 @@ export default function ExtractedForm({ doc, activeFieldKey, onSelectField, show
 
               {/* Actions appear only on the field you are actually looking at.
                   Rendering a solid primary button on every field meant six
-                  equally loud calls to action on one screen — the auto-cleared
+                  equally loud calls to action on one screen - the auto-cleared
                   99%-confidence rows shouted exactly as loudly as the 55% one
                   obscured by a company seal, which is the opposite of what
                   confidence tiering is for. */}
               {f.resolved ? (
-                <div className="field-resolved-tag"><CheckCircle2 size={14} /> Reviewed — human verified</div>
+                <div className="field-resolved-tag"><CheckCircle2 size={14} /> Reviewed - human verified</div>
               ) : readOnly ? (
                 <div className="field-hint">Awaiting the reviewer</div>
               ) : isActive ? (

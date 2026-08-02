@@ -7,7 +7,7 @@ allowed to import it.
 **Deviation from plan §2, recorded deliberately.** The plan argues for
 `supabase-py` over an ORM. This backend uses both, split by responsibility:
 
-* **SQLAlchemy + Alembic** own the relational layer — typed models, versioned
+* **SQLAlchemy + Alembic** own the relational layer - typed models, versioned
   migrations, real transactions. Spec §11 requires the status mutation, the
   `approval_history` row and the `activity_log` row to commit *in the same
   transaction*; PostgREST has no transaction spanning multiple requests, so

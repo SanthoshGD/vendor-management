@@ -1,4 +1,4 @@
-"""Document contracts — mirrors `types/vendor.ts` document shapes."""
+"""Document contracts - mirrors `types/vendor.ts` document shapes."""
 
 from __future__ import annotations
 

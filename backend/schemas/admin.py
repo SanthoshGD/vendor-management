@@ -1,4 +1,4 @@
-"""Admin contracts — Gemini key pool management (spec §6.3).
+"""Admin contracts - Gemini key pool management (spec §6.3).
 
 Keys can be added or disabled without a redeploy, surfaced later in Admin
 Settings.
@@ -51,7 +51,7 @@ class UpdateGeminiKeyRequest(CamelModel):
 
 
 class SessionRequest(CamelModel):
-    """Spec §8 `POST /api/v1/auth/session` — bridges a Supabase Auth session."""
+    """Spec §8 `POST /api/v1/auth/session` - bridges a Supabase Auth session."""
 
     access_token: str = Field(min_length=10)
 

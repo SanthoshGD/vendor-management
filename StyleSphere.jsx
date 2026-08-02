@@ -28,8 +28,8 @@ const VENDORS = [
   { id: "v6", name: "Meera Nair", company: "Nair Global Exports Pvt. Ltd.", category: "Bags", stage: "Doc Review", status: "In Review", docs: "5/6", supervisor: "Elena R.", submitted: "Today, 8:00 AM", region: "South Asia", daysInStage: 6, risk: "medium" },
   { id: "v7", name: "Priya Sharma", company: "Delhi Craft Circle", category: "Jewelry", stage: "Products Pending", status: "Approved", docs: "6/6", supervisor: "Priya N.", submitted: "3 days ago", region: "South Asia", daysInStage: 3, risk: "low" },
   { id: "v8", name: "Mehmet Yilmaz", company: "Anatolian Leather Works", category: "Bags", stage: "Profile Approved", status: "Approved", docs: "6/6", supervisor: "Marco B.", submitted: "5 days ago", region: "West Africa", daysInStage: 5, risk: "low" },
-  { id: "v9", name: "Fatima Zahra", company: "Casa Textile SARL", category: "Apparels", stage: "Invited", status: "Invited", docs: "0/6", supervisor: "Elena R.", submitted: "—", region: "West Africa", daysInStage: 0, risk: "low" },
-  { id: "v10", name: "Nguyen Thi Lan", company: "Hanoi Fashion Studio", category: "Apparels", stage: "Invited", status: "Invited", docs: "0/6", supervisor: "Marco B.", submitted: "—", region: "East Asia", daysInStage: 0, risk: "low" },
+  { id: "v9", name: "Fatima Zahra", company: "Casa Textile SARL", category: "Apparels", stage: "Invited", status: "Invited", docs: "0/6", supervisor: "Elena R.", submitted: "-", region: "West Africa", daysInStage: 0, risk: "low" },
+  { id: "v10", name: "Nguyen Thi Lan", company: "Hanoi Fashion Studio", category: "Apparels", stage: "Invited", status: "Invited", docs: "0/6", supervisor: "Marco B.", submitted: "-", region: "East Asia", daysInStage: 0, risk: "low" },
   { id: "v11", name: "Arjun Mehta", company: "Mumbai Garment House", category: "Apparels", stage: "Profile Submitted", status: "Pending", docs: "0/6", supervisor: "Priya N.", submitted: "1 day ago", region: "South Asia", daysInStage: 1, risk: "low" },
   { id: "v12", name: "Carlos Reyes", company: "Bogotá Shoes Factory", category: "Shoes", stage: "Verified", status: "Verified", docs: "6/6", supervisor: "Marco B.", submitted: "10 days ago", region: "Americas", daysInStage: 0, risk: "low" },
 ];
@@ -43,30 +43,38 @@ const DOCUMENTS = [
 ];
 
 const PRODUCTS = [
-  { id: "p1", name: "Handcrafted Silver Necklace Set", vendor: "Priya Sharma", company: "Delhi Craft Circle", category: "Jewelry", submitted: "2 days ago", photos: 3, flag: "Two images appear reused from a prior listing (98% visual match).", risk: "medium", images: [
-    "https://images.unsplash.com/photo-1620135104013-1abdff4b1ca7",
-    "https://images.unsplash.com/photo-1589128777073-263566ae5e4d",
-    "https://images.unsplash.com/photo-1635767798638-3e25273a8236",
-  ] },
-  { id: "p2", name: "Gold-plated Bangles (Set of 6)", vendor: "Priya Sharma", company: "Delhi Craft Circle", category: "Jewelry", submitted: "2 days ago", photos: 3, flag: null, risk: "low", images: [
-    "https://images.unsplash.com/photo-1741071520895-47d81779c11e",
-    "https://images.unsplash.com/photo-1679156271456-d6068c543ee7",
-    "https://images.unsplash.com/photo-1690175867343-2af70ea57537",
-  ] },
-  { id: "p3", name: "Woven Leather Loafers", vendor: "Mehmet Yilmaz", company: "Anatolian Leather Works", category: "Bags", submitted: "3 days ago", photos: 3, flag: null, risk: "low", images: [
-    "https://images.unsplash.com/photo-1616406432452-07bc5938759d",
-    "https://images.unsplash.com/photo-1662541089338-c7d53b88be70",
-    "https://images.unsplash.com/photo-1615979474401-8a6a344de5bd",
-  ] },
-  { id: "p4", name: "Canvas Slip-on Sneakers", vendor: "Mehmet Yilmaz", company: "Anatolian Leather Works", category: "Bags", submitted: "3 days ago", photos: 3, flag: "Listed material doesn't match category norms for 'Bags' — possible miscategorization.", risk: "low", images: [
-    "https://images.unsplash.com/photo-1676379827610-c380c52db0c6",
-    "https://images.unsplash.com/photo-1641997465126-c73cc4070337",
-    "https://images.unsplash.com/photo-1650320079970-b4ee8f0dae33",
-  ] },
+  {
+    id: "p1", name: "Handcrafted Silver Necklace Set", vendor: "Priya Sharma", company: "Delhi Craft Circle", category: "Jewelry", submitted: "2 days ago", photos: 3, flag: "Two images appear reused from a prior listing (98% visual match).", risk: "medium", images: [
+      "https://images.unsplash.com/photo-1620135104013-1abdff4b1ca7",
+      "https://images.unsplash.com/photo-1589128777073-263566ae5e4d",
+      "https://images.unsplash.com/photo-1635767798638-3e25273a8236",
+    ]
+  },
+  {
+    id: "p2", name: "Gold-plated Bangles (Set of 6)", vendor: "Priya Sharma", company: "Delhi Craft Circle", category: "Jewelry", submitted: "2 days ago", photos: 3, flag: null, risk: "low", images: [
+      "https://images.unsplash.com/photo-1741071520895-47d81779c11e",
+      "https://images.unsplash.com/photo-1679156271456-d6068c543ee7",
+      "https://images.unsplash.com/photo-1690175867343-2af70ea57537",
+    ]
+  },
+  {
+    id: "p3", name: "Woven Leather Loafers", vendor: "Mehmet Yilmaz", company: "Anatolian Leather Works", category: "Bags", submitted: "3 days ago", photos: 3, flag: null, risk: "low", images: [
+      "https://images.unsplash.com/photo-1616406432452-07bc5938759d",
+      "https://images.unsplash.com/photo-1662541089338-c7d53b88be70",
+      "https://images.unsplash.com/photo-1615979474401-8a6a344de5bd",
+    ]
+  },
+  {
+    id: "p4", name: "Canvas Slip-on Sneakers", vendor: "Mehmet Yilmaz", company: "Anatolian Leather Works", category: "Bags", submitted: "3 days ago", photos: 3, flag: "Listed material doesn't match category norms for 'Bags' - possible miscategorization.", risk: "low", images: [
+      "https://images.unsplash.com/photo-1676379827610-c380c52db0c6",
+      "https://images.unsplash.com/photo-1641997465126-c73cc4070337",
+      "https://images.unsplash.com/photo-1650320079970-b4ee8f0dae33",
+    ]
+  },
 ];
 
 const TEAM = [
-  { id: "t1", name: "Sarah Chen", role: "Super Admin", region: "HQ — Shanghai", approved: 18, rejected: 3, rate: 86 },
+  { id: "t1", name: "Sarah Chen", role: "Super Admin", region: "HQ - Shanghai", approved: 18, rejected: 3, rate: 86 },
   { id: "t2", name: "James Okafor", role: "Admin", region: "West Africa", approved: 11, rejected: 4, rate: 73 },
   { id: "t3", name: "Aisha Patel", role: "Admin", region: "South Asia", approved: 9, rejected: 2, rate: 81 },
   { id: "t4", name: "Thomas Müller", role: "Admin", region: "Europe", approved: 14, rejected: 5, rate: 73 },
@@ -115,7 +123,7 @@ const FUNNEL = [
 ];
 
 /* ------------------------------------------------------------------ */
-/* THEME HELPERS — muted, enterprise-toned status/category colors      */
+/* THEME HELPERS - muted, enterprise-toned status/category colors      */
 /* ------------------------------------------------------------------ */
 
 const STATUS_STYLE = {
@@ -394,7 +402,7 @@ function KpiCard({ icon: Icon, value, label, sub, trend, trendDir = "up", tone =
 }
 
 /* ------------------------------------------------------------------ */
-/* DASHBOARD — chart card w/ filter                                    */
+/* DASHBOARD - chart card w/ filter                                    */
 /* ------------------------------------------------------------------ */
 
 function ChartCard({ title, eyebrow, range, setRange, children, right }) {
@@ -434,10 +442,10 @@ function ApprovalTrendChart({ onDrill }) {
   return (
     <ChartCard
       eyebrow="Approval trend"
-      title={`Weekly approvals — last ${range === "7d" ? "8 weeks" : range === "30d" ? "30 days" : "90 days"}`}
+      title={`Weekly approvals - last ${range === "7d" ? "8 weeks" : range === "30d" ? "30 days" : "90 days"}`}
       range={range}
       setRange={setRange}
-      right={<span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full whitespace-nowrap">↑ {deltaLabel.replace("+"," ").trim()}</span>}
+      right={<span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full whitespace-nowrap">↑ {deltaLabel.replace("+", " ").trim()}</span>}
     >
       <div className="h-52 mt-2 -ml-2" onClick={onDrill}>
         <ResponsiveContainer width="100%" height="100%">
@@ -607,7 +615,7 @@ function NLSearchPanel({ onOpenVendor }) {
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Ask in plain English — e.g. vendors stuck in document review over 5 days"
+          placeholder="Ask in plain English - e.g. vendors stuck in document review over 5 days"
           className="w-full h-11 pl-10 pr-24 rounded-lg border border-slate-200 text-sm outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-300 placeholder:text-slate-400"
         />
         <button
@@ -657,7 +665,7 @@ function NLSearchPanel({ onOpenVendor }) {
                 <button key={v.id} onClick={() => onOpenVendor(v)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-left transition-colors">
                   <span className="w-7 h-7 rounded-full bg-violet-100 text-violet-700 text-xs font-semibold flex items-center justify-center shrink-0">{v.name.split(" ").map(p => p[0]).slice(0, 2).join("")}</span>
                   <div className="min-w-0 flex-1">
-                    <div className="text-xs font-medium text-slate-800 truncate">{v.name} <span className="text-slate-400 font-normal">— {v.company}</span></div>
+                    <div className="text-xs font-medium text-slate-800 truncate">{v.name} <span className="text-slate-400 font-normal">- {v.company}</span></div>
                     <div className="text-xs text-slate-400 mt-0.5">{v.stage} · {v.region}</div>
                   </div>
                   <span className="text-xs text-slate-500 bg-white border border-slate-200 rounded-full px-2 py-0.5 shrink-0">{v.daysInStage}d</span>
@@ -667,7 +675,7 @@ function NLSearchPanel({ onOpenVendor }) {
             </div>
           ) : (
             <div className="text-center py-6 px-4 rounded-lg bg-slate-50">
-              <div className="text-xs text-slate-500">No vendors match that combination — try broadening the region or timeframe.</div>
+              <div className="text-xs text-slate-500">No vendors match that combination - try broadening the region or timeframe.</div>
             </div>
           )}
         </div>
@@ -691,7 +699,7 @@ function AnomalyPanel({ onOpenVendor }) {
             <div className="min-w-0 flex-1">
               <div className="text-xs font-medium text-slate-800 truncate">{v.name} · {v.company}</div>
               <div className="text-xs text-slate-500 mt-0.5">
-                {v.risk === "high" ? "Multiple risk signals detected — recommend priority review." : "Minor inconsistency flagged for review."}
+                {v.risk === "high" ? "Multiple risk signals detected - recommend priority review." : "Minor inconsistency flagged for review."}
               </div>
             </div>
             <span className={`text-xs font-semibold px-1.5 py-0.5 rounded shrink-0 ${v.risk === "high" ? "bg-rose-50 text-rose-600" : "bg-amber-50 text-amber-600"}`}>{v.risk}</span>
@@ -712,7 +720,7 @@ function SmartQueueWidget({ setView, setDocPriority }) {
       <div className="flex items-center justify-between mb-1">
         <div>
           <div className="text-xs font-semibold tracking-wide text-slate-400 uppercase">Smart queue</div>
-          <div className="text-sm font-semibold text-slate-900 mt-0.5">Today's review queue — prioritized by AI risk &amp; SLA, not FIFO</div>
+          <div className="text-sm font-semibold text-slate-900 mt-0.5">Today's review queue - prioritized by AI risk &amp; SLA, not FIFO</div>
         </div>
         <button
           onClick={() => { setDocPriority(true); setView("documents"); }}
@@ -927,7 +935,7 @@ function VendorsListView({ openVendor }) {
                 <td className="pl-4 py-2.5"><input type="checkbox" checked={selected.has(v.id)} onChange={() => toggleOne(v.id)} className="rounded border-slate-300" /></td>
                 <td className="px-2 py-2.5">
                   <button onClick={() => openVendor(v)} className="flex items-center gap-2 text-left">
-                    <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold flex items-center justify-center shrink-0">{v.name.split(" ").map(p=>p[0]).slice(0,2).join("")}</span>
+                    <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold flex items-center justify-center shrink-0">{v.name.split(" ").map(p => p[0]).slice(0, 2).join("")}</span>
                     <span className="font-medium text-slate-800 group-hover:text-emerald-700">{v.name}</span>
                     {v.risk !== "low" && <AlertTriangle size={12} className={v.risk === "high" ? "text-rose-500" : "text-amber-500"} />}
                   </button>
@@ -958,7 +966,7 @@ function VendorsListView({ openVendor }) {
                       </button>
                     </div>
                   ) : (
-                    <span className="text-xs text-slate-300">—</span>
+                    <span className="text-xs text-slate-300">-</span>
                   )}
                 </td>
                 <td className="pr-3 text-right">
@@ -1010,7 +1018,7 @@ function VendorsKanbanView({ openVendor }) {
               {items.map((v) => (
                 <button key={v.id} onClick={() => openVendor(v)} className="w-full text-left bg-white rounded-lg border border-slate-200 p-3 hover:border-slate-300 hover:shadow-sm transition-all">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold flex items-center justify-center">{v.name.split(" ").map(p=>p[0]).slice(0,2).join("")}</span>
+                    <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold flex items-center justify-center">{v.name.split(" ").map(p => p[0]).slice(0, 2).join("")}</span>
                     <div className="min-w-0">
                       <div className="text-xs font-medium text-slate-800 truncate">{v.name}</div>
                       <div className="text-xs text-slate-400 truncate">{v.company}</div>
@@ -1054,7 +1062,7 @@ function VendorsView({ openVendor }) {
 }
 
 /* ------------------------------------------------------------------ */
-/* DOCUMENTS VIEW — AI confidence, smart priority, split-pane review    */
+/* DOCUMENTS VIEW - AI confidence, smart priority, split-pane review    */
 /* ------------------------------------------------------------------ */
 
 function DocumentMock({ doc }) {
@@ -1202,7 +1210,7 @@ function DocumentsView({ docPriority, setDocPriority }) {
                 <div className="p-5 overflow-y-auto space-y-4">
                   <div className={`rounded-lg p-3.5 ${active.flag ? RISK_STYLE[active.risk] : "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200"}`}>
                     <div className="flex items-center gap-1.5 text-xs font-semibold mb-1.5">
-                      <Sparkles size={13} /> AI verification — {active.confidence}% confidence
+                      <Sparkles size={13} /> AI verification - {active.confidence}% confidence
                     </div>
                     <p className="text-xs leading-relaxed">
                       {active.flag ? active.flag : "No inconsistencies detected. Document format, issuer details, and metadata are consistent with prior verified submissions from this region."}
@@ -1252,7 +1260,7 @@ function ImageCarousel({ images, alt }) {
           >
             <img
               src={`${src}?w=500&h=500&fit=crop&auto=format&q=80`}
-              alt={`${alt} — photo ${i + 1}`}
+              alt={`${alt} - photo ${i + 1}`}
               className="w-full h-full object-cover"
               loading="lazy"
             />
@@ -1288,7 +1296,7 @@ function ProductsView() {
       <style>{`.no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none;}`}</style>
       <div>
         <h2 className="text-lg font-semibold text-slate-900">Product verification</h2>
-        <p className="text-sm text-slate-500">{PRODUCTS.filter(p=>!decided[p.id]).length} products submitted for review</p>
+        <p className="text-sm text-slate-500">{PRODUCTS.filter(p => !decided[p.id]).length} products submitted for review</p>
       </div>
       <div className="grid grid-cols-2 gap-4">
         {PRODUCTS.map((p) => (
@@ -1371,7 +1379,7 @@ function TeamView() {
               <tr key={t.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/70">
                 <td className="py-3 pl-4">
                   <div className="flex items-center gap-3">
-                    <span className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold flex items-center justify-center">{t.name.split(" ").map(p=>p[0]).join("")}</span>
+                    <span className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold flex items-center justify-center">{t.name.split(" ").map(p => p[0]).join("")}</span>
                     <div>
                       <div className="font-medium text-slate-800 flex items-center gap-2">{t.name} <span className={`text-xs px-1.5 py-0.5 rounded ${t.role === "Super Admin" ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600"}`}>{t.role}</span></div>
                       <div className="text-xs text-slate-400">{t.region}</div>
@@ -1479,7 +1487,7 @@ function ActivityView() {
               <div key={a.id} className="flex items-center gap-3 px-5 py-3.5">
                 <span className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${tone}`}><Icon size={15} /></span>
                 <div className="min-w-0 flex-1">
-                  <div className="text-sm text-slate-800"><span className="font-medium">{a.actor}</span> <span className="text-slate-400">—</span> {a.target} <StatusBadge status={a.action} /></div>
+                  <div className="text-sm text-slate-800"><span className="font-medium">{a.actor}</span> <span className="text-slate-400">-</span> {a.target} <StatusBadge status={a.action} /></div>
                   {a.reason && <div className="text-xs text-slate-400 mt-0.5">Reason: {a.reason}</div>}
                 </div>
                 <div className="text-right shrink-0">
@@ -1496,17 +1504,17 @@ function ActivityView() {
 }
 
 /* ------------------------------------------------------------------ */
-/* VENDOR DETAIL SLIDE-OVER — AI summary                                */
+/* VENDOR DETAIL SLIDE-OVER - AI summary                                */
 /* ------------------------------------------------------------------ */
 
 function aiSummaryFor(v) {
   const docsDone = parseInt(v.docs);
   const bits = [];
   bits.push(`${v.company} is currently in the ${v.stage} stage with ${v.docs} required documents submitted.`);
-  if (v.risk === "high") bits.push("AI risk scoring flags this vendor as high priority — multiple inconsistencies were detected across submitted documents and should be reviewed before further approvals.");
+  if (v.risk === "high") bits.push("AI risk scoring flags this vendor as high priority - multiple inconsistencies were detected across submitted documents and should be reviewed before further approvals.");
   else if (v.risk === "medium") bits.push("A minor inconsistency was flagged during automated review; recommend a manual check before proceeding.");
   else bits.push("No anomalies were detected in this vendor's submissions.");
-  if (v.daysInStage >= 5) bits.push(`This vendor has been in its current stage for ${v.daysInStage} days, approaching the review SLA — consider prioritizing.`);
+  if (v.daysInStage >= 5) bits.push(`This vendor has been in its current stage for ${v.daysInStage} days, approaching the review SLA - consider prioritizing.`);
   if (docsDone < 6 && v.stage !== "Invited") bits.push(`${6 - docsDone} document${6 - docsDone !== 1 ? "s" : ""} still required to complete profile approval.`);
   return bits.join(" ");
 }
@@ -1516,15 +1524,15 @@ const DOC_TEMPLATE = ["Company Registration Certificate", "IEC Import / Export C
 const MESSAGE_SEEDS = {
   v2: [
     { from: "admin", text: "Hi Chen, could you upload the remaining 2 documents (GST/VAT Certificate and Bank Verification Letter) so we can move your review forward?", time: "Yesterday, 4:10 PM" },
-    { from: "vendor", text: "Sure, apologies for the delay — I'll have both uploaded by tomorrow morning.", time: "Yesterday, 5:32 PM" },
+    { from: "vendor", text: "Sure, apologies for the delay - I'll have both uploaded by tomorrow morning.", time: "Yesterday, 5:32 PM" },
     { from: "admin", text: "No problem, thanks for the update. We'll keep an eye out.", time: "Yesterday, 5:40 PM" },
   ],
   v6: [
     { from: "admin", text: "We noticed the business name on your GST certificate doesn't quite match your registered profile name. Could you clarify or share an updated certificate?", time: "Today, 8:20 AM" },
-    { from: "vendor", text: "Thanks for flagging that — we're mid-way through a legal entity name change. I'll send the updated certificate this week.", time: "Today, 9:05 AM" },
+    { from: "vendor", text: "Thanks for flagging that - we're mid-way through a legal entity name change. I'll send the updated certificate this week.", time: "Today, 9:05 AM" },
   ],
   v4: [
-    { from: "admin", text: "Your product submission was rejected due to incomplete image sets — a few listings were missing required angles.", time: "2 hrs ago" },
+    { from: "admin", text: "Your product submission was rejected due to incomplete image sets - a few listings were missing required angles.", time: "2 hrs ago" },
     { from: "vendor", text: "Understood, I'll resubmit with the complete photo set by Friday.", time: "1 hr ago" },
   ],
 };
@@ -1532,8 +1540,8 @@ const MESSAGE_SEEDS = {
 function quickReplyFor(vendor, kind) {
   const first = vendor.name.split(" ")[0];
   if (kind === "docs") return `Hi ${first}, could you please upload the remaining documents at your earliest convenience so we can continue the review?`;
-  if (kind === "clarify") return `Hi ${first}, we need a bit of clarification on one of your submitted documents — could you confirm the details when you get a chance?`;
-  return `Hi ${first}, great news — your profile has been approved! Welcome aboard.`;
+  if (kind === "clarify") return `Hi ${first}, we need a bit of clarification on one of your submitted documents - could you confirm the details when you get a chance?`;
+  return `Hi ${first}, great news - your profile has been approved! Welcome aboard.`;
 }
 
 function CommunicationPanel({ vendor, tall }) {
@@ -1558,7 +1566,7 @@ function CommunicationPanel({ vendor, tall }) {
     setTyping(true);
     setTimeout(() => {
       setTyping(false);
-      setMessages((m) => [...m, { from: "vendor", text: "Thanks, noted — I'll follow up shortly.", time: "Just now" }]);
+      setMessages((m) => [...m, { from: "vendor", text: "Thanks, noted - I'll follow up shortly.", time: "Just now" }]);
     }, 1600);
   };
 
@@ -1687,123 +1695,123 @@ function VendorDetailView({ vendor, onBack }) {
 
       {tab === "overview" && (
         <>
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
-        <div className="text-xs font-semibold tracking-wide text-slate-400 uppercase mb-4">Onboarding stage</div>
-        <VendorStepper stage={vendor.stage} />
-      </div>
-
-      <div className="rounded-xl bg-violet-50 ring-1 ring-inset ring-violet-200 p-4">
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-violet-700 mb-1.5"><Sparkles size={13} /> AI summary</div>
-        <p className="text-xs text-violet-900 leading-relaxed">{aiSummaryFor(vendor)}</p>
-      </div>
-
-      <div className="grid grid-cols-2 gap-5 items-start">
-        <div className="space-y-5">
           <div className="bg-white rounded-xl border border-slate-200 p-5">
-            <div className="text-xs font-semibold tracking-wide text-slate-400 uppercase mb-4">Vendor information</div>
-            <div className="flex items-center gap-3 pb-4 mb-4 border-b border-slate-100">
-              <span className="w-11 h-11 rounded-full bg-violet-100 text-violet-700 font-semibold flex items-center justify-center shrink-0">{vendor.name.split(" ").map(p => p[0]).slice(0, 2).join("")}</span>
-              <div>
-                <div className="text-sm font-semibold text-slate-900">{vendor.name}</div>
-                <div className="text-xs text-slate-500">{vendor.company}</div>
-              </div>
-            </div>
-            <div className="space-y-3 text-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-slate-400 text-xs inline-flex items-center gap-1.5"><Package size={13} /> Category</span>
-                <CategoryTag category={vendor.category} />
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-400 text-xs inline-flex items-center gap-1.5"><MapPin size={13} /> Region</span>
-                <span className="text-slate-700">{vendor.region}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-400 text-xs inline-flex items-center gap-1.5"><UserCog size={13} /> Supervisor</span>
-                <span className="text-slate-700">{vendor.supervisor}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-400 text-xs inline-flex items-center gap-1.5"><Clock size={13} /> Submitted</span>
-                <span className="text-slate-700">{vendor.submitted}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-400 text-xs inline-flex items-center gap-1.5"><FileText size={13} /> Docs stage</span>
-                <span className="text-slate-700">{vendor.stage}</span>
-              </div>
-            </div>
+            <div className="text-xs font-semibold tracking-wide text-slate-400 uppercase mb-4">Onboarding stage</div>
+            <VendorStepper stage={vendor.stage} />
           </div>
 
-          <div className="bg-white rounded-xl border border-slate-200 p-5">
-            <div className="flex items-center justify-between mb-4">
-              <div className="text-xs font-semibold tracking-wide text-slate-400 uppercase">Sample products</div>
-              <span className="text-xs text-slate-400">{products.length} product{products.length !== 1 ? "s" : ""} submitted</span>
-            </div>
-            {products.length > 0 ? (
-              <div className="grid grid-cols-3 gap-2.5">
-                {products.map((p) => (
-                  <div key={p.id} className="rounded-lg overflow-hidden bg-slate-100" style={{ aspectRatio: "1 / 1" }}>
-                    <img src={`${p.images[0]}?w=300&h=300&fit=crop&auto=format&q=80`} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 text-xs text-slate-400 py-6 justify-center border border-dashed border-slate-200 rounded-lg">
-                <Package size={14} /> No products submitted for this vendor yet
-              </div>
-            )}
+          <div className="rounded-xl bg-violet-50 ring-1 ring-inset ring-violet-200 p-4">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-violet-700 mb-1.5"><Sparkles size={13} /> AI summary</div>
+            <p className="text-xs text-violet-900 leading-relaxed">{aiSummaryFor(vendor)}</p>
           </div>
-        </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <div className="flex items-center justify-between mb-1">
-            <div className="text-xs font-semibold tracking-wide text-slate-400 uppercase">Documents</div>
-            <div className="text-right">
-              <div className="text-lg font-semibold text-slate-900 leading-none">{pct}%</div>
-              <div className="text-xs text-slate-400">complete</div>
-            </div>
-          </div>
-          <div className="text-sm font-semibold text-slate-800 mb-2">{docsDone} of 6 submitted</div>
-          <div className="h-2 bg-slate-100 rounded-full overflow-hidden mb-4">
-            <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${pct}%` }} />
-          </div>
-          <div className="space-y-2">
-            {DOC_TEMPLATE.map((doc, i) => {
-              const done = i < docsDone;
-              return (
-                <div key={doc} className={`flex items-center justify-between rounded-lg px-3.5 py-2.5 ${done ? "bg-emerald-50/60 ring-1 ring-inset ring-emerald-100" : "bg-slate-50"}`}>
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${done ? "bg-emerald-100 text-emerald-600" : "bg-slate-200 text-slate-400"}`}>
-                      {done ? <Check size={12} /> : <Clock size={11} />}
-                    </span>
-                    <div className="min-w-0">
-                      <div className="text-sm font-medium text-slate-800 truncate">{doc}</div>
-                      <div className="text-xs text-slate-400">{done ? "Submitted · reviewed after final submission" : "Not yet submitted"}</div>
-                    </div>
+          <div className="grid grid-cols-2 gap-5 items-start">
+            <div className="space-y-5">
+              <div className="bg-white rounded-xl border border-slate-200 p-5">
+                <div className="text-xs font-semibold tracking-wide text-slate-400 uppercase mb-4">Vendor information</div>
+                <div className="flex items-center gap-3 pb-4 mb-4 border-b border-slate-100">
+                  <span className="w-11 h-11 rounded-full bg-violet-100 text-violet-700 font-semibold flex items-center justify-center shrink-0">{vendor.name.split(" ").map(p => p[0]).slice(0, 2).join("")}</span>
+                  <div>
+                    <div className="text-sm font-semibold text-slate-900">{vendor.name}</div>
+                    <div className="text-xs text-slate-500">{vendor.company}</div>
                   </div>
-                  {done && (
-                    <button onClick={() => setDocPreview(doc)} className="h-8 px-3 rounded-lg border border-slate-200 text-xs font-medium text-slate-600 hover:bg-white shrink-0">
-                      Preview
-                    </button>
-                  )}
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-400 text-xs inline-flex items-center gap-1.5"><Package size={13} /> Category</span>
+                    <CategoryTag category={vendor.category} />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-400 text-xs inline-flex items-center gap-1.5"><MapPin size={13} /> Region</span>
+                    <span className="text-slate-700">{vendor.region}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-400 text-xs inline-flex items-center gap-1.5"><UserCog size={13} /> Supervisor</span>
+                    <span className="text-slate-700">{vendor.supervisor}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-400 text-xs inline-flex items-center gap-1.5"><Clock size={13} /> Submitted</span>
+                    <span className="text-slate-700">{vendor.submitted}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-400 text-xs inline-flex items-center gap-1.5"><FileText size={13} /> Docs stage</span>
+                    <span className="text-slate-700">{vendor.stage}</span>
+                  </div>
+                </div>
+              </div>
 
-      {canDecide && (
-        <div className="bg-white rounded-xl border border-slate-200 p-4 flex items-center justify-between sticky bottom-4 shadow-lg">
-          <span className="text-sm text-slate-500">Ready to make a decision on this vendor?</span>
-          <div className="flex gap-2">
-            <button onClick={() => setDecision("reject")} className="h-9 px-4 rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 inline-flex items-center gap-1.5">
-              <X size={14} /> Reject
-            </button>
-            <button onClick={() => setDecision("approve")} className="h-9 px-4 rounded-lg bg-emerald-600 text-white text-sm hover:bg-emerald-700 inline-flex items-center gap-1.5">
-              <Check size={14} /> Approve
-            </button>
+              <div className="bg-white rounded-xl border border-slate-200 p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="text-xs font-semibold tracking-wide text-slate-400 uppercase">Sample products</div>
+                  <span className="text-xs text-slate-400">{products.length} product{products.length !== 1 ? "s" : ""} submitted</span>
+                </div>
+                {products.length > 0 ? (
+                  <div className="grid grid-cols-3 gap-2.5">
+                    {products.map((p) => (
+                      <div key={p.id} className="rounded-lg overflow-hidden bg-slate-100" style={{ aspectRatio: "1 / 1" }}>
+                        <img src={`${p.images[0]}?w=300&h=300&fit=crop&auto=format&q=80`} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 text-xs text-slate-400 py-6 justify-center border border-dashed border-slate-200 rounded-lg">
+                    <Package size={14} /> No products submitted for this vendor yet
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl border border-slate-200 p-5">
+              <div className="flex items-center justify-between mb-1">
+                <div className="text-xs font-semibold tracking-wide text-slate-400 uppercase">Documents</div>
+                <div className="text-right">
+                  <div className="text-lg font-semibold text-slate-900 leading-none">{pct}%</div>
+                  <div className="text-xs text-slate-400">complete</div>
+                </div>
+              </div>
+              <div className="text-sm font-semibold text-slate-800 mb-2">{docsDone} of 6 submitted</div>
+              <div className="h-2 bg-slate-100 rounded-full overflow-hidden mb-4">
+                <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${pct}%` }} />
+              </div>
+              <div className="space-y-2">
+                {DOC_TEMPLATE.map((doc, i) => {
+                  const done = i < docsDone;
+                  return (
+                    <div key={doc} className={`flex items-center justify-between rounded-lg px-3.5 py-2.5 ${done ? "bg-emerald-50/60 ring-1 ring-inset ring-emerald-100" : "bg-slate-50"}`}>
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${done ? "bg-emerald-100 text-emerald-600" : "bg-slate-200 text-slate-400"}`}>
+                          {done ? <Check size={12} /> : <Clock size={11} />}
+                        </span>
+                        <div className="min-w-0">
+                          <div className="text-sm font-medium text-slate-800 truncate">{doc}</div>
+                          <div className="text-xs text-slate-400">{done ? "Submitted · reviewed after final submission" : "Not yet submitted"}</div>
+                        </div>
+                      </div>
+                      {done && (
+                        <button onClick={() => setDocPreview(doc)} className="h-8 px-3 rounded-lg border border-slate-200 text-xs font-medium text-slate-600 hover:bg-white shrink-0">
+                          Preview
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+
+          {canDecide && (
+            <div className="bg-white rounded-xl border border-slate-200 p-4 flex items-center justify-between sticky bottom-4 shadow-lg">
+              <span className="text-sm text-slate-500">Ready to make a decision on this vendor?</span>
+              <div className="flex gap-2">
+                <button onClick={() => setDecision("reject")} className="h-9 px-4 rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 inline-flex items-center gap-1.5">
+                  <X size={14} /> Reject
+                </button>
+                <button onClick={() => setDecision("approve")} className="h-9 px-4 rounded-lg bg-emerald-600 text-white text-sm hover:bg-emerald-700 inline-flex items-center gap-1.5">
+                  <Check size={14} /> Approve
+                </button>
+              </div>
+            </div>
+          )}
         </>
       )}
 
@@ -1846,7 +1854,7 @@ export default function App() {
   }, [view]);
   const handleReset = () => {
     setResetSignal((n) => n + 1);
-    setToast("Demo data reset — all decisions cleared.");
+    setToast("Demo data reset - all decisions cleared.");
     setTimeout(() => setToast(null), 2200);
   };
   const navigate = (nextView) => {

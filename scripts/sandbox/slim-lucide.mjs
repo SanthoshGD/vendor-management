@@ -1,7 +1,7 @@
 // Tree-shakes lucide-react by hand.
 //
 // The installed lucide-react ships only a CommonJS bundle (its ESM entry files
-// are missing), and a CJS bundle cannot be tree-shaken by static analysis — so
+// are missing), and a CJS bundle cannot be tree-shaken by static analysis - so
 // naively bundling it drags ~1,600 unused icons into the shareable HTML.
 //
 // The bundle is unminified and completely regular: every icon is

@@ -1,7 +1,7 @@
 """Alembic environment.
 
 The URL comes from `core.config.Settings`, not from `alembic.ini`, so a
-migration can never run against a different database than the application —
+migration can never run against a different database than the application -
 and no credential is committed.
 
 Runs the migration through the async engine, because `models/orm.py` uses

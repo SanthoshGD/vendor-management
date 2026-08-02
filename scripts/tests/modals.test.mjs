@@ -3,7 +3,7 @@
 // This exists because of a real bug: the stylesheet scoped the footer rule to
 // `.modal-card>footer`, but the invite / new-request / settings modal wraps its
 // body and footer in a <form> for native submit. That one level of nesting
-// meant the rule matched nothing — the buttons lost their flex row and their
+// meant the rule matched nothing - the buttons lost their flex row and their
 // padding, so they stacked to the left and sat flush against the card edge.
 //
 // It is not catchable by reading the JSX (the markup is correct) or by reading
@@ -29,7 +29,7 @@ const click = async (el) => { el.dispatchEvent(new window.MouseEvent('click', { 
 // The selector that carries the footer's padding. Asserting the footer MATCHES
 // it is the honest test here: jsdom does not resolve `var()` in computed
 // styles, so it reports padding as "0" even when the rule applies correctly.
-// Matching is also the precise shape of the bug — the padding was never
+// Matching is also the precise shape of the bug - the padding was never
 // overridden, the rule simply did not select the element.
 const PADDED_RULE = '.modal-card > footer, .modal-card > form > footer';
 

@@ -85,7 +85,7 @@ class DocumentRepository(BaseRepository[VendorDocument]):
         every mutation, and only this method can see the original values.
 
         A corrected field is marked `human_verified` and pinned to confidence
-        100 — a human typing the value is the highest-confidence source there
+        100 - a human typing the value is the highest-confidence source there
         is, and leaving the model's score in place would keep firing
         `LOW_AI_CONFIDENCE` on a field that is now certain.
         """

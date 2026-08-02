@@ -57,7 +57,7 @@ const ACTION_META: Record<string, [any, string]> = {
 
 const cx = (...items: (string | boolean | undefined | null)[]): string => items.filter(Boolean).join(' ');
 
-const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const shortTime = (iso: string) => {
   if (!iso) return '';
   try {
@@ -65,8 +65,8 @@ const shortTime = (iso: string) => {
     if (isNaN(d.getTime())) return iso;
     const day = String(d.getUTCDate()).padStart(2, '0');
     const mon = MONTHS[d.getUTCMonth()];
-    const hh  = String(d.getUTCHours()).padStart(2, '0');
-    const mm  = String(d.getUTCMinutes()).padStart(2, '0');
+    const hh = String(d.getUTCHours()).padStart(2, '0');
+    const mm = String(d.getUTCMinutes()).padStart(2, '0');
     return `${day} ${mon}, ${hh}:${mm}`;
   } catch {
     return iso;
@@ -460,7 +460,7 @@ export function VendorDashboard({ onNavigate, onModal }: any) {
           </article>
           <article className="panel journey-card"><PanelHeading eyebrow="Application" title="Review progress" action="View details" onAction={() => onNavigate('onboarding')} /><Journey vendor={vendor} /></article>
         </div>
-        
+
         <div className="vendor-grid-col">
           <article className="panel contact-card">
             <span className="section-kicker">Onboarding contact</span>
@@ -486,7 +486,7 @@ function WorklistRow({ vendor, triage, onOpenVendor }: any) {
       <VendorIdentity vendor={vendor} />
       <span className="worklist-headline">
         <strong>{ownership.decisionAway
-          ? `With ${ownership.ownerName} — ${(REQUEST_TYPES[ownership.request.type as keyof typeof REQUEST_TYPES] || {}).label || 'sent up'}`
+          ? `With ${ownership.ownerName} - ${(REQUEST_TYPES[ownership.request.type as keyof typeof REQUEST_TYPES] || {}).label || 'sent up'}`
           : triage.headline}</strong>
         <small>
           {ownership.decisionAway ? (
@@ -541,19 +541,19 @@ function VendorsPage({ query, onOpenVendor, onModal, onViewAsVendor, readOnly = 
         : 'Prioritized by human action, then SLA.'}
     >
       {!readOnly && <>
-      <button
-        className="button secondary"
-        onClick={() => {
-          const open = vendors.filter((vendor: any) => !vendor.finalStatus);
-          const outcomes = open.map((vendor: any) => runAgentPass(vendor.id));
-          const queued = outcomes.filter((outcome: any) => outcome?.queued).length;
-          const duplicates = outcomes.filter((outcome: any) => outcome?.duplicate).length;
-          notify(`Agents ran across ${open.length} open application${open.length === 1 ? '' : 's'} · ${queued} new proposal${queued === 1 ? '' : 's'} queued${duplicates ? ` · ${duplicates} unchanged proposal${duplicates === 1 ? '' : 's'} already awaiting review` : ''}.`, 'critical');
-        }}
-      >
-        <Sparkles size={15} /> Run agents
-      </button>
-      <button className="button primary" onClick={() => onModal({ type: 'invite' })}><Plus size={15} /> Invite vendor</button>
+        <button
+          className="button secondary"
+          onClick={() => {
+            const open = vendors.filter((vendor: any) => !vendor.finalStatus);
+            const outcomes = open.map((vendor: any) => runAgentPass(vendor.id));
+            const queued = outcomes.filter((outcome: any) => outcome?.queued).length;
+            const duplicates = outcomes.filter((outcome: any) => outcome?.duplicate).length;
+            notify(`Agents ran across ${open.length} open application${open.length === 1 ? '' : 's'} · ${queued} new proposal${queued === 1 ? '' : 's'} queued${duplicates ? ` · ${duplicates} unchanged proposal${duplicates === 1 ? '' : 's'} already awaiting review` : ''}.`, 'critical');
+          }}
+        >
+          <Sparkles size={15} /> Run agents
+        </button>
+        <button className="button primary" onClick={() => onModal({ type: 'invite' })}><Plus size={15} /> Invite vendor</button>
       </>}
     </PageHero>
     <div className="filter-strip">
@@ -994,7 +994,7 @@ function SupervisorRequests({ onOpenVendor, onOpenAsAdmin }: any) {
         <strong>{selected.size} selected</strong>
         <span className="bulk-detail">
           {sharedOutcomes.length === 0
-            ? 'These types share no common outcome — narrow the selection.'
+            ? 'These types share no common outcome - narrow the selection.'
             : `${new Set(selectedRequests.map((r: any) => r.type)).size} type(s) / one rationale, recorded against each`}
         </span>
         {sharedOutcomes.map((outcome: string) => {
@@ -1176,14 +1176,14 @@ function RequestDialog({ request, outcome, note, onNote, expiry, onExpiry, onCan
         <div className="modal-body">
           {needsExpiry && (
             <label className="form-field">
-              <span>Expiry date (required — the exception lapses on this date)</span>
+              <span>Expiry date (required - the exception lapses on this date)</span>
               <input type="date" value={expiry} onChange={(event) => onExpiry(event.target.value)} />
             </label>
           )}
           <label className="form-field">
             <span>{outcome === 'RETURN'
               ? 'What do you need the reviewer to do? (required)'
-              : 'Rationale (required — written to the audit trail)'}</span>
+              : 'Rationale (required - written to the audit trail)'}</span>
             <textarea
               value={note} onChange={(event) => onNote(event.target.value)} autoFocus
               placeholder={outcome === 'RETURN'
@@ -1235,7 +1235,7 @@ function BulkDialog({ outcome, count, requests, note, onNote, onCancel, onConfir
             ))}
           </ul>
           <label className="form-field">
-            <span>Rationale (required — recorded against every one of these)</span>
+            <span>Rationale (required - recorded against every one of these)</span>
             <textarea
               value={note} onChange={(event) => onNote(event.target.value)} autoFocus
               placeholder="One reason that genuinely covers all of them..."
@@ -1288,14 +1288,14 @@ function downloadComplianceReport(vendors: any[], auditLogs: any[]) {
   ]];
   for (const v of vendors) {
     rows.push([v.id, v.name, v.country, v.category, v.stage, v.status, v.progress,
-      v.docs, v.missingCount, v.openFindings, v.risk, v.riskScore, v.owner, v.sla, v.erpId || '']);
+    v.docs, v.missingCount, v.openFindings, v.risk, v.riskScore, v.owner, v.sla, v.erpId || '']);
   }
   rows.push([]);
   rows.push(['Audit trail']);
   rows.push(['Timestamp', 'Vendor', 'Actor', 'Action', 'Document', 'Field', 'Original value', 'Human value', 'Reason']);
   for (const log of auditLogs) {
     rows.push([log.timestamp, log.vendorName, log.actorName, log.actionType,
-      log.documentName, log.fieldLabel, log.originalValue, log.humanValue, log.reason]);
+    log.documentName, log.fieldLabel, log.originalValue, log.humanValue, log.reason]);
   }
 
   const csv = rows.map((row) => row.map(escape).join(',')).join('\r\n');
@@ -1330,7 +1330,7 @@ function CompliancePage({ onNavigate, onOpenVendor }: any) {
   const expiring = vendors.flatMap((v: any) => v.documents.flatMap((d: any) => d.fields.map((f: any) => ({ ...f, vendor: v, doc: d }))))
     .filter((f: any) => !f.resolved && /expir/i.test(f.diagnostic || ''));
   return <div className="nexus-page">
-    <PageHero eyebrow="Portfolio health" title="Compliance" description="Coverage, exceptions, and expiring evidence."><button className="button secondary" onClick={() => { downloadComplianceReport(vendors, auditLogs); notify(`Compliance report exported — ${vendors.length} vendors, ${auditLogs.length} audit entries.`); }}>Export compliance report</button></PageHero>
+    <PageHero eyebrow="Portfolio health" title="Compliance" description="Coverage, exceptions, and expiring evidence."><button className="button secondary" onClick={() => { downloadComplianceReport(vendors, auditLogs); notify(`Compliance report exported - ${vendors.length} vendors, ${auditLogs.length} audit entries.`); }}>Export compliance report</button></PageHero>
     <section className="compliance-grid">{controls.map(([Icon, tone, title, value, note]) => <article className="panel compliance-card" key={title}><span className={cx('metric-icon', tone)}><Icon size={18} /></span><span><small>{title}</small><strong>{value}</strong><em>{note}</em><Progress value={Number(value.slice(0, -1))} /></span></article>)}</section>
     <section className="compliance-layout">
       <article className="panel expiry-panel"><PanelHeading eyebrow="Upcoming risk" title="Expiring evidence" action="Review all" onAction={() => onNavigate('ai-review')} />
@@ -1429,11 +1429,11 @@ export function VendorActions({ onModal }: any) {
     )}
     {!actionDoc && !myOpenRequest && <p className="attention-empty"><CheckCircle2 size={16} /> No open actions.</p>}
   </section>
-  <section className="panel vendor-chase-panel">
-    <PanelHeading eyebrow="Messages about your documents" title="What we need from you" />
-    <p className="awaiting-copy">Reply by email or WhatsApp with the file attached. You do not need to come back here.</p>
-    <ChaserPanel vendorId={activeVendorId} />
-  </section>
+    <section className="panel vendor-chase-panel">
+      <PanelHeading eyebrow="Messages about your documents" title="What we need from you" />
+      <p className="awaiting-copy">Reply by email or WhatsApp with the file attached. You do not need to come back here.</p>
+      <ChaserPanel vendorId={activeVendorId} />
+    </section>
   </div>;
 }
 
@@ -1635,17 +1635,17 @@ export function Modal({ modal, onClose, onOpenVendor, onViewAsVendor }: any) {
             <label className="settings-row"><span><strong>Notifications</strong><small>Show status messages. Required actions and errors always remain visible.</small></span><input name="notifications" type="checkbox" defaultChecked={settings.notifications} /></label>
             <label className="form-field"><span>Interface density</span><select name="density" defaultValue={settings.density}><option value="comfortable">Comfortable</option><option value="compact">Compact</option></select></label>
             <p className="modal-footnote">Preferences remain after refresh and demo reset.</p>
-          </div>            : modal.type === 'document' ? <div className="invite-result">
-              <div className="modal-summary"><span className={cx('file-icon', modal.doc.status === 'Verified' ? 'green' : modal.doc.status === 'Missing' ? 'red' : 'amber')}><FileText size={19} /></span><span><strong>{modal.doc.status}</strong><small>{modal.doc.fileName || 'No file on record yet'}{modal.doc.pageCount ? ` / ${modal.doc.pageCount} page(s)` : ''}</small></span></div>
-              {modal.doc.fields.length > 0 && <dl className="doc-field-list">{modal.doc.fields.slice(0, 6).map((f: any) => <div key={f.key}><dt>{f.label}</dt><dd>{f.value}{f.resolved ? '' : ` / ${f.confidence}% confidence`}</dd></div>)}</dl>}
-              <label className="upload-zone"><span><Upload size={22} /></span><strong>{modal.doc.status === 'Missing' ? 'Upload this document' : 'Upload a replacement'}</strong><small>PDF, PNG, or JPG / up to 10 MB</small><input name="file" type="file" /></label>
-            </div>
-              : modal.type === 'upload' ? <label className="upload-zone"><span><Upload size={22} /></span><strong>Choose a document</strong><small>PDF, PNG, or JPG / up to 10 MB</small><input name="file" type="file" /></label>
-            : modal.type === 'contact' ? <><div className="modal-summary"><span className="user-avatar">ER</span><span><strong>Elena Rostova</strong><small>Vendor onboarding executive / elena.rostova@stylesphere.com</small></span></div><Field name="subject" label="Subject" placeholder="e.g. Question about my bank letter" required /><label className="form-field"><span>Message</span><textarea name="message" placeholder="Describe what you need help with. Your application reference is attached automatically." /></label></>
-            : modal.type === 'invite' ? <><Field name="name" label="Vendor company" placeholder="e.g. Northstar Materials Ltd." required /><Field name="email" label="Primary contact email" placeholder="vendor@company.com" type="email" /><div className="form-grid"><Field name="country" label="Country (optional)" placeholder="e.g. China" /><Field name="category" label="Supply category (optional)" placeholder="e.g. Hardware & Leather" /></div></>
-            : modal.type === 'request' ? <><Field name="title" label="Request title" placeholder="What do you need to procure?" required /><div className="form-grid"><label className="form-field"><span>Vendor</span><select name="vendorId" defaultValue={vendors[0]?.id}>{vendors.map((v: any) => <option key={v.id} value={v.id}>{v.shortName || v.name}</option>)}</select></label><label className="form-field"><span>Response due</span><input name="due" type="date" /></label></div><label className="form-field"><span>Requirements</span><textarea name="requirements" placeholder="Specification, quantity, certifications, delivery terms..." /></label></>
-              : modal.type === 'quote' ? <div className="form-grid"><Field name="total" label="Total quote" placeholder="$84,600" /><Field name="leadTime" label="Lead time" placeholder="28 days" /><label className="form-field span-2"><span>Commercial notes</span><textarea name="notes" placeholder="MOQ, Incoterms, validity, and additional notes..." /></label></div>
-                : (modal.type === 'vendor' || modal.type === 'request-detail') ? <div className="request-overview"><div className="modal-summary"><span className="company-avatar large">{modal.vendor?.initials || 'SS'}</span><span><strong>{modal.vendor?.stage || modal.request?.status || 'StyleSphere workspace'}</strong><small>{modal.vendor ? `${modal.vendor.progress}% onboarding complete · ${modal.vendor.docs} documents` : `${modal.request.vendor} · ${modal.request.amount}`}</small></span></div>{modal.request && <dl className="request-detail"><div><dt>Request</dt><dd>{modal.request.id}</dd></div><div><dt>Response due</dt><dd>{modal.request.due}</dd></div><div><dt>Status</dt><dd>{modal.request.status}</dd></div><div><dt>Requirements</dt><dd>Specification, quantity, certifications, terms, and delivery.</dd></div></dl>}</div> : <p className="modal-help-copy">Email support@stylesphere.example or open the onboarding guide.</p>}
+          </div> : modal.type === 'document' ? <div className="invite-result">
+            <div className="modal-summary"><span className={cx('file-icon', modal.doc.status === 'Verified' ? 'green' : modal.doc.status === 'Missing' ? 'red' : 'amber')}><FileText size={19} /></span><span><strong>{modal.doc.status}</strong><small>{modal.doc.fileName || 'No file on record yet'}{modal.doc.pageCount ? ` / ${modal.doc.pageCount} page(s)` : ''}</small></span></div>
+            {modal.doc.fields.length > 0 && <dl className="doc-field-list">{modal.doc.fields.slice(0, 6).map((f: any) => <div key={f.key}><dt>{f.label}</dt><dd>{f.value}{f.resolved ? '' : ` / ${f.confidence}% confidence`}</dd></div>)}</dl>}
+            <label className="upload-zone"><span><Upload size={22} /></span><strong>{modal.doc.status === 'Missing' ? 'Upload this document' : 'Upload a replacement'}</strong><small>PDF, PNG, or JPG / up to 10 MB</small><input name="file" type="file" /></label>
+          </div>
+            : modal.type === 'upload' ? <label className="upload-zone"><span><Upload size={22} /></span><strong>Choose a document</strong><small>PDF, PNG, or JPG / up to 10 MB</small><input name="file" type="file" /></label>
+              : modal.type === 'contact' ? <><div className="modal-summary"><span className="user-avatar">ER</span><span><strong>Elena Rostova</strong><small>Vendor onboarding executive / elena.rostova@stylesphere.com</small></span></div><Field name="subject" label="Subject" placeholder="e.g. Question about my bank letter" required /><label className="form-field"><span>Message</span><textarea name="message" placeholder="Describe what you need help with. Your application reference is attached automatically." /></label></>
+                : modal.type === 'invite' ? <><Field name="name" label="Vendor company" placeholder="e.g. Northstar Materials Ltd." required /><Field name="email" label="Primary contact email" placeholder="vendor@company.com" type="email" /><div className="form-grid"><Field name="country" label="Country (optional)" placeholder="e.g. China" /><Field name="category" label="Supply category (optional)" placeholder="e.g. Hardware & Leather" /></div></>
+                  : modal.type === 'request' ? <><Field name="title" label="Request title" placeholder="What do you need to procure?" required /><div className="form-grid"><label className="form-field"><span>Vendor</span><select name="vendorId" defaultValue={vendors[0]?.id}>{vendors.map((v: any) => <option key={v.id} value={v.id}>{v.shortName || v.name}</option>)}</select></label><label className="form-field"><span>Response due</span><input name="due" type="date" /></label></div><label className="form-field"><span>Requirements</span><textarea name="requirements" placeholder="Specification, quantity, certifications, delivery terms..." /></label></>
+                    : modal.type === 'quote' ? <div className="form-grid"><Field name="total" label="Total quote" placeholder="$84,600" /><Field name="leadTime" label="Lead time" placeholder="28 days" /><label className="form-field span-2"><span>Commercial notes</span><textarea name="notes" placeholder="MOQ, Incoterms, validity, and additional notes..." /></label></div>
+                      : (modal.type === 'vendor' || modal.type === 'request-detail') ? <div className="request-overview"><div className="modal-summary"><span className="company-avatar large">{modal.vendor?.initials || 'SS'}</span><span><strong>{modal.vendor?.stage || modal.request?.status || 'StyleSphere workspace'}</strong><small>{modal.vendor ? `${modal.vendor.progress}% onboarding complete · ${modal.vendor.docs} documents` : `${modal.request.vendor} · ${modal.request.amount}`}</small></span></div>{modal.request && <dl className="request-detail"><div><dt>Request</dt><dd>{modal.request.id}</dd></div><div><dt>Response due</dt><dd>{modal.request.due}</dd></div><div><dt>Status</dt><dd>{modal.request.status}</dd></div><div><dt>Requirements</dt><dd>Specification, quantity, certifications, terms, and delivery.</dd></div></dl>}</div> : <p className="modal-help-copy">Email support@stylesphere.example or open the onboarding guide.</p>}
       </div>
       <footer>
         {!linkVendor && <button type="button" className="button secondary" onClick={onClose}>Cancel</button>}
@@ -1669,7 +1669,7 @@ function vendorSituation(vendor: any) {
     return {
       tone: 'amber',
       stage: 'Not submitted yet',
-      summary: `Your application is still a draft. ${missing.length ? `${missing.length} document(s) still needed.` : 'All documents are attached — you can submit whenever you are ready.'}`,
+      summary: `Your application is still a draft. ${missing.length ? `${missing.length} document(s) still needed.` : 'All documents are attached - you can submit whenever you are ready.'}`,
       blocking: missing.length ? `You still need: ${missing.map((d: any) => d.title).join(', ')}.` : 'Nothing is blocking you. Open the wizard and submit.',
     };
   }
@@ -1694,7 +1694,7 @@ function vendorSituation(vendor: any) {
       tone: 'blue',
       stage: 'AI verification running',
       summary: `${processing.length} document(s) are being checked right now.`,
-      blocking: 'Nothing — this step is automatic and usually finishes within a few minutes.',
+      blocking: 'Nothing - this step is automatic and usually finishes within a few minutes.',
     };
   }
   if (vendor.finalStatus === 'Active') {
@@ -1729,7 +1729,7 @@ function VendorAssistant({ onClose }: { onClose: () => void }) {
       if (!missing.length && !flagged.length) return [`All ${vendor.documents.length} required documents are in. Nothing further is needed from you.`];
       return [
         missing.length ? `Not yet supplied: ${missing.map((d: any) => d.title).join(', ')}.` : null,
-        flagged.length ? `Needs replacing: ${flagged.map((d: any) => `${d.title} — ${d.rejection.reason}`).join('; ')}.` : null,
+        flagged.length ? `Needs replacing: ${flagged.map((d: any) => `${d.title} - ${d.rejection.reason}`).join('; ')}.` : null,
       ].filter(Boolean) as string[];
     }
     if (/how long|when|time|eta|delay|wait/.test(q)) {
@@ -1745,7 +1745,7 @@ function VendorAssistant({ onClose }: { onClose: () => void }) {
       return [`Your application is at: ${situation.stage}.`, situation.summary];
     }
     if (/ai|extract|fill|accur/.test(q)) {
-      return ['On the AI-assisted path, your company details were read from the documents you uploaded and you confirmed them before submitting. If something was read wrongly, tell Elena and it can be corrected — the original file is always kept alongside the extracted values.'];
+      return ['On the AI-assisted path, your company details were read from the documents you uploaded and you confirmed them before submitting. If something was read wrongly, tell Elena and it can be corrected - the original file is always kept alongside the extracted values.'];
     }
     return [
       `Your application is at: ${situation.stage}. ${situation.summary}`,

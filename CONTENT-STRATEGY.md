@@ -1,4 +1,4 @@
-# StyleSphere Nexus — content strategy
+# StyleSphere Nexus - content strategy
 
 ## The problem being fixed
 
@@ -27,29 +27,29 @@ words that earn nothing.
 
 ## By persona
 
-**Reviewer (Priya Nair, Compliance Manager)** — task-first, imperative, assumes
+**Reviewer (Priya Nair, Compliance Manager)** - task-first, imperative, assumes
 expertise. She knows what a REACH certificate is; do not gloss it. Copy states
 thresholds and rules because those are the things she cannot see for herself.
 
-**Supervisor (Arun Mehta, Head of Compliance)** — decision-first. Every screen
+**Supervisor (Arun Mehta, Head of Compliance)** - decision-first. Every screen
 answers "what is mine to decide, and what happens when I do". Consequence and
 authority are stated plainly, because his decisions carry his name.
 
-**Supplier (external)** — the only non-expert, and the only one who gets extra
+**Supplier (external)** - the only non-expert, and the only one who gets extra
 words. Plain language, no internal jargon, no acronyms without expansion.
 Always answers: what do you need, by when, and what happens next. Anxiety is
-the enemy — an exporter in Guangzhou reading a rejection needs the fix, not the
+the enemy - an exporter in Guangzhou reading a rejection needs the fix, not the
 policy.
 
 ## By page category
 
 | Category | H1 | Subhead |
 |---|---|---|
-| **Dashboard** (Command center, Oversight, My workspace) | The role's noun — "Overview", "Oversight" | Only the one count that changes behaviour |
-| **Queue / list** (Vendor queue, Requests, Documents) | The collection — "Requests" | The sort rule, because sort order is a real, invisible rule |
-| **Workspace / detail** (Review workspace, Case file) | **No hero.** The subject's identity is the header | — |
+| **Dashboard** (Command center, Oversight, My workspace) | The role's noun - "Overview", "Oversight" | Only the one count that changes behaviour |
+| **Queue / list** (Vendor queue, Requests, Documents) | The collection - "Requests" | The sort rule, because sort order is a real, invisible rule |
+| **Workspace / detail** (Review workspace, Case file) | **No hero.** The subject's identity is the header | - |
 | **System** (Agent console, Audit record) | The system's name | Its one hard constraint |
-| **Form / wizard** | The step's ask, as an instruction — "Upload your evidence pack" | What happens on submit |
+| **Form / wizard** | The step's ask, as an instruction - "Upload your evidence pack" | What happens on submit |
 
 ## Applied changes
 
@@ -70,26 +70,26 @@ policy.
 | "Every supplier, unbanded" | "All suppliers" |
 
 Subheads deleted outright where they only restated the H1. Where a subhead
-survived, it carries a rule — e.g. the supervisor queue keeps "Ordered by time
+survived, it carries a rule - e.g. the supervisor queue keeps "Ordered by time
 past SLA" because sort order is genuinely invisible, and drops the sentence
 explaining that reviewers work the queue.
 
 ## UX laws applied to structure
 
-- **Jakob's** — master–detail everywhere it fits, because every reviewer already
+- **Jakob's** - master–detail everywhere it fits, because every reviewer already
   runs an inbox. No novel navigation.
-- **Hick's** — admin nav 8 → 6, supplier 6 → 4. Fewer choices, faster choosing.
-- **Miller's** — no group exceeds seven items before it chunks.
-- **Von Restorff** — exactly one emphatic element per context. The verdict band
+- **Hick's** - admin nav 8 → 6, supplier 6 → 4. Fewer choices, faster choosing.
+- **Miller's** - no group exceeds seven items before it chunks.
+- **Von Restorff** - exactly one emphatic element per context. The verdict band
   is the only thing on Screen 2 allowed to shout.
-- **Fitts's** — primary actions are the largest targets and sit closest to the
+- **Fitts's** - primary actions are the largest targets and sit closest to the
   content they act on.
-- **Proximity / common region** — spacing does the grouping; borders only where
+- **Proximity / common region** - spacing does the grouping; borders only where
   a region genuinely changes owner.
-- **Doherty threshold** — every action acknowledges inside 400ms; simulated
+- **Doherty threshold** - every action acknowledges inside 400ms; simulated
   verification shows a processing state rather than freezing.
-- **Serial position** — first and last nav slots hold the most-used destinations.
-- **Prägnanz** — one card recipe, two elevations, four severity colours.
+- **Serial position** - first and last nav slots hold the most-used destinations.
+- **Prägnanz** - one card recipe, two elevations, four severity colours.
 
 ## Page-level content plan
 

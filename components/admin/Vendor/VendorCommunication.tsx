@@ -17,10 +17,10 @@ const MESSAGE_SEEDS: Record<string, Array<{ from: 'admin' | 'vendor'; text: stri
   ],
   v6: [
     { from: 'admin', text: "We noticed the business name on your GST certificate doesn't quite match your registered profile name. Could you clarify or share an updated certificate?", time: 'Today, 8:20 AM' },
-    { from: 'vendor', text: "Thanks for flagging that — we're mid-way through a legal entity name change. I'll send the updated certificate this week.", time: 'Today, 9:05 AM' },
+    { from: 'vendor', text: "Thanks for flagging that - we're mid-way through a legal entity name change. I'll send the updated certificate this week.", time: 'Today, 9:05 AM' },
   ],
   v4: [
-    { from: 'admin', text: 'Your product submission was rejected due to incomplete image sets — a few listings were missing required angles.', time: '2 hrs ago' },
+    { from: 'admin', text: 'Your product submission was rejected due to incomplete image sets - a few listings were missing required angles.', time: '2 hrs ago' },
     { from: 'vendor', text: "Understood, I'll resubmit with the complete photo set by Friday.", time: '1 hr ago' },
   ],
 };
@@ -28,8 +28,8 @@ const MESSAGE_SEEDS: Record<string, Array<{ from: 'admin' | 'vendor'; text: stri
 function quickReplyFor(vendor: any, kind: string) {
   const first = vendor?.name ? vendor.name.split(' ')[0] : 'Vendor';
   if (kind === 'docs') return `Hi ${first}, could you please upload the remaining documents at your earliest convenience so we can continue the review?`;
-  if (kind === 'clarify') return `Hi ${first}, we need a bit of clarification on one of your submitted documents — could you confirm the details when you get a chance?`;
-  return `Hi ${first}, great news — your profile has been approved! Welcome aboard.`;
+  if (kind === 'clarify') return `Hi ${first}, we need a bit of clarification on one of your submitted documents - could you confirm the details when you get a chance?`;
+  return `Hi ${first}, great news - your profile has been approved! Welcome aboard.`;
 }
 
 interface VendorCommunicationProps {
@@ -59,7 +59,7 @@ export default function VendorCommunication({ vendor }: VendorCommunicationProps
     setTyping(true);
     setTimeout(() => {
       setTyping(false);
-      setMessages((m) => [...m, { from: 'vendor', text: "Thanks, noted — I'll follow up shortly.", time: 'Just now' }]);
+      setMessages((m) => [...m, { from: 'vendor', text: "Thanks, noted - I'll follow up shortly.", time: 'Just now' }]);
     }, 1600);
   };
 

@@ -2,7 +2,7 @@
 
 Thin by design: `AnalyticsRepository` owns the SQL, this owns the shape. The
 split matters because the dashboard and the analytics view share most of their
-aggregates but assemble them differently — duplicating the queries to serve two
+aggregates but assemble them differently - duplicating the queries to serve two
 payloads is how they drift apart.
 
 Zero is a valid result and is returned as zero. A placeholder count when a
@@ -38,7 +38,7 @@ class AnalyticsService:
         """Metrics, trend, funnel, priority queue, recent activity, approval rate.
 
         Sequential rather than gathered: these share one `AsyncSession`, and a
-        session is not safe for concurrent use — `asyncio.gather` over the same
+        session is not safe for concurrent use - `asyncio.gather` over the same
         session raises `InterfaceError: another operation is in progress`. The
         queries are indexed and cheap; correctness beats a few milliseconds.
         """

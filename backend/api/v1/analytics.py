@@ -17,7 +17,7 @@ router = APIRouter(prefix="/analytics", tags=["analytics"])
     summary="Aggregated analytics view data",
     description=(
         "Approval trend, country distribution and cycle times. These are real "
-        "server-side aggregates — a trend over time cannot be derived from a "
+        "server-side aggregates - a trend over time cannot be derived from a "
         "vendor list in the browser."
     ),
 )

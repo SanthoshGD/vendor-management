@@ -100,7 +100,7 @@ class GeminiProvider:
         """OCR + structured field extraction.
 
         Not implemented in this phase. When it lands it must return per-field
-        confidence alongside values — the risk engine consumes confidence as an
+        confidence alongside values - the risk engine consumes confidence as an
         input (`LOW_AI_CONFIDENCE`), so it cannot be dropped.
         """
         raise NotImplementedError(
@@ -119,7 +119,7 @@ class GeminiProvider:
     async def health_check(self) -> dict[str, Any]:
         """Verify the pool end to end: pick a key, call Gemini, report back.
 
-        Uses `count_tokens` — the cheapest call that still proves the key is
+        Uses `count_tokens` - the cheapest call that still proves the key is
         accepted upstream. A check that only read the database would pass with
         a pool full of revoked keys.
         """
@@ -149,7 +149,7 @@ class GeminiProvider:
 
         Reports every outcome back to the policy so `used_today`, cooldown and
         disable transitions stay accurate, and emits the spec §17 AI log line
-        for every attempt — including failed ones, which are the attempts worth
+        for every attempt - including failed ones, which are the attempts worth
         having a record of.
         """
         self._keys.reset_attempt_history()

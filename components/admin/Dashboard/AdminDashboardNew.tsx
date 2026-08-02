@@ -47,7 +47,7 @@ export default function AdminDashboardNew({ onNavigate, onModal, onOpenVendor }:
             Enterprise Admin Control Center
           </h1>
           <p style={{ fontSize: '13px', color: '#64748B', margin: '2px 0 0 0' }}>
-            Central operational hub — live vendor metrics, approval trends, and priority queue
+            Central operational hub - live vendor metrics, approval trends, and priority queue
           </p>
         </div>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>

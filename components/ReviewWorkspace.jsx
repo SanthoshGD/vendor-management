@@ -41,7 +41,7 @@ const DECISION_COPY = {
 };
 
 // ---------------------------------------------------------------------------
-// Screen 2 — the Review Workspace.
+// Screen 2 - the Review Workspace.
 //
 // Restructured from three competing panels into a single linear spine, because
 // the previous layout failed on its own terms: it forced the reviewer to decide
@@ -59,7 +59,7 @@ const DECISION_COPY = {
 //
 // Master–detail is the pattern every reviewer already knows from an inbox
 // (Jakob's law), so the layout itself needs no learning. The chat moved from a
-// third column to an overlay drawer — that column was what pushed the page past
+// third column to an overlay drawer - that column was what pushed the page past
 // the viewport, and a reference tool should not permanently occupy space it
 // only occasionally earns.
 // ---------------------------------------------------------------------------
@@ -138,7 +138,7 @@ export default function ReviewWorkspace({
   // Delegation of authority. A Compliance Manager may sign off up to residual
   // risk 70; above that the decision is not theirs to make, so the primary
   // action stops being "approve" and becomes "send it to someone who can".
-  // This is a routing rule, not a judgement — which is exactly why it is
+  // This is a routing rule, not a judgement - which is exactly why it is
   // evaluated here rather than left to the reviewer to remember.
   const aboveAuthority = Boolean(vendor) && vendor.riskScore > APPROVAL_CEILING;
   const evidenceReady = vendor && assessment.blockers.length === 0 && vendor.missingCount === 0 && !isClosed && !readOnly;
@@ -163,7 +163,7 @@ export default function ReviewWorkspace({
   const decisionIsAway = ownership.decisionAway;
   const noticeRequest = pendingRequest && !decisionIsAway ? pendingRequest : null;
 
-  // The next case worth opening once this one is decided — the highest-priority
+  // The next case worth opening once this one is decided - the highest-priority
   // open vendor that is not the one on screen. Computing it here means the
   // "next" button is never a dead link and never sends the reviewer to a case
   // that is already closed.
@@ -301,7 +301,7 @@ export default function ReviewWorkspace({
         <div className="rw-verdict hold">
           <AlertOctagon size={17} />
           <div>
-            <strong>Read-only review — {recommendationLabel(assessment.recommendation)}</strong>
+            <strong>Read-only review - {recommendationLabel(assessment.recommendation)}</strong>
             <small>Case actions belong to {vendor.owner}. Resolve your decisions from Requests.</small>
           </div>
         </div>
@@ -317,7 +317,7 @@ export default function ReviewWorkspace({
         <div className="rw-verdict ready">
           <CheckCircle2 size={17} />
           <div>
-            <strong>Approved — not yet in the ERP supplier master</strong>
+            <strong>Approved - not yet in the ERP supplier master</strong>
             <small>{gate.canActivate
               ? 'All mandatory documents verified and a human approval is on record. PROC-3.3 and PROC-5.1 are satisfied.'
               : gate.blockers.join(' ')}</small>
@@ -333,7 +333,7 @@ export default function ReviewWorkspace({
         <div className="rw-verdict hold">
           <AlertOctagon size={17} />
           <div>
-            <strong>With {SUPERVISOR_NAME} — {(REQUEST_TYPES[pendingRequest.type] || {}).label}</strong>
+            <strong>With {SUPERVISOR_NAME} - {(REQUEST_TYPES[pendingRequest.type] || {}).label}</strong>
             <small>
               {pendingRequest.id} · raised {new Date(pendingRequest.raisedAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}.
               It comes back approved, refused, or with an instruction for you.
@@ -350,14 +350,14 @@ export default function ReviewWorkspace({
           {vendor.finalStatus === 'Escalated' ? <AlertOctagon size={17} /> : <XCircle size={17} />}
           <div>
             <strong>{vendor.finalStatus === 'Escalated'
-              ? 'With the supervisor — waiting on their decision'
-              : `Decision recorded — ${vendor.finalStatus}`}</strong>
+              ? 'With the supervisor - waiting on their decision'
+              : `Decision recorded - ${vendor.finalStatus}`}</strong>
             <small>{vendor.finalStatus === 'Escalated'
               ? 'You have handed this up. It will come back to you approved, rejected, or with an instruction.'
               : 'This case is closed; every finding and override stays in the audit trail.'}</small>
           </div>
           {/* The loop back to the queue. A decided case is not the end of the
-              flow — it is the end of one lap of it. */}
+              flow - it is the end of one lap of it. */}
           {nextVendor && onNextVendor && (
             <button className="button primary" onClick={() => onNextVendor(nextVendor.id, 'ai-review')}>
               Next: {nextVendor.shortName || nextVendor.name} <ArrowRight size={15} />
@@ -373,7 +373,7 @@ export default function ReviewWorkspace({
               {assessment.blockers.length > 0
                 ? `${assessment.blockers.length} blocking · ${assessment.cautions.length} cautions · ${vendor.missingCount} document(s) outstanding`
                 : aboveAuthority
-                  ? `Pack complete. Residual risk ${vendor.riskScore} is above the ${APPROVAL_CEILING} you may approve alone — this one goes to ${SUPERVISOR_NAME}.`
+                  ? `Pack complete. Residual risk ${vendor.riskScore} is above the ${APPROVAL_CEILING} you may approve alone - this one goes to ${SUPERVISOR_NAME}.`
                   : assessment.cautions.length > 0
                     ? `No blockers. Review ${assessment.cautions.length} caution${assessment.cautions.length === 1 ? '' : 's'} before approval.`
                     : 'Pack complete. Ready for your decision.'}
@@ -392,7 +392,7 @@ export default function ReviewWorkspace({
               <Sparkles size={15} /> Run agents
             </button>
             {/* A blocking finding that cannot be cleared is not always a
-                rejection — sometimes the honest answer is that the control
+                rejection - sometimes the honest answer is that the control
                 cannot be met and the risk has to be formally accepted by
                 someone with the authority to accept it. Offering that route
                 here is what stops reviewers quietly overriding instead. */}
@@ -561,7 +561,7 @@ export default function ReviewWorkspace({
 //                    it in the meantime has not made a case, and the form
 //                    should not let them pretend otherwise.
 //
-//   AUTHORITY        needs no case at all. Nobody is asking for a favour —
+//   AUTHORITY        needs no case at all. Nobody is asking for a favour -
 //                    a threshold fired. So it collects context, not
 //                    justification, and the fields are pre-filled from the
 //                    assessment rather than retyped.
@@ -586,9 +586,9 @@ function RaiseRequestDialog({ type, vendor, assessment, onCancel, onSubmit }) {
         detail: {
           // The finding's own id travels with the request. Without it a granted
           // exception has nothing to attach to and the blocker it was raised
-          // about stays open — which made the whole route decorative.
+          // about stays open - which made the whole route decorative.
           findingId: blocker?.id || null,
-          control: blocker?.clauseId ? `${blocker.clauseId} — ${blocker.title}` : (blocker?.title || 'Unresolved blocking finding'),
+          control: blocker?.clauseId ? `${blocker.clauseId} - ${blocker.title}` : (blocker?.title || 'Unresolved blocking finding'),
           compensating,
           proposedExpiry: new Date(expiry).toISOString(),
         },
@@ -601,7 +601,7 @@ function RaiseRequestDialog({ type, vendor, assessment, onCancel, onSubmit }) {
       detail: {
         threshold: `Compliance Manager may approve up to residual risk ${APPROVAL_CEILING}`,
         trigger: `Residual risk ${vendor.riskScore} · ${vendor.country} · ${vendor.category}`,
-        fourEyes: `Reviewed by ${SUPERVISOR_REVIEWER} — she cannot also approve it.`,
+        fourEyes: `Reviewed by ${SUPERVISOR_REVIEWER} - she cannot also approve it.`,
       },
     });
   };
@@ -617,7 +617,7 @@ function RaiseRequestDialog({ type, vendor, assessment, onCancel, onSubmit }) {
             <span className="section-kicker">{vendor.id} · to {SUPERVISOR_NAME}</span>
             <h2 id="raise-dialog-title">{isAcceptance ? 'Request a risk acceptance' : 'Send for approval'}</h2>
             <p>{isAcceptance
-              ? 'You are asking to proceed with a control unmet. Exceptions are time-boxed — say what covers the gap and when it ends.'
+              ? 'You are asking to proceed with a control unmet. Exceptions are time-boxed - say what covers the gap and when it ends.'
               : `Residual risk ${vendor.riskScore} is above the ${APPROVAL_CEILING} a Compliance Manager may approve alone. This is a routing rule, not a judgement on your review.`}</p>
           </div>
           <button type="button" onClick={onCancel} aria-label="Close"><X size={18} /></button>
@@ -648,7 +648,7 @@ function RaiseRequestDialog({ type, vendor, assessment, onCancel, onSubmit }) {
                 />
               </label>
               <label className="form-field">
-                <span>Proposed expiry (required — the exception lapses on this date)</span>
+                <span>Proposed expiry (required - the exception lapses on this date)</span>
                 <input type="date" value={expiry} onChange={(event) => setExpiry(event.target.value)} />
               </label>
             </>
@@ -682,7 +682,7 @@ function ConfirmDialog({ vendorId, decision, notes, onNotes, onCancel, onConfirm
         </header>
         <div className="modal-body">
           <label className="form-field">
-            <span>Rationale (required — written to the audit trail)</span>
+            <span>Rationale (required - written to the audit trail)</span>
             <textarea value={notes} onChange={(event) => onNotes(event.target.value)} autoFocus placeholder="Record the basis for this decision…" />
           </label>
         </div>

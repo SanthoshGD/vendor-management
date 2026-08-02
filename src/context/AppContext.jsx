@@ -38,7 +38,7 @@ export const DEFAULT_SETTINGS = Object.freeze({ density: 'comfortable', notifica
 //
 // This lives in the context rather than in the Review Workspace because a
 // delegation-of-authority threshold that is only enforced by which button
-// renders is not a control — it is a suggestion. `submitDecision` checks it on
+// renders is not a control - it is a suggestion. `submitDecision` checks it on
 // every APPROVE, so the limit holds for the keyboard shortcut and for any
 // future caller, exactly the way the activation gate does.
 export const APPROVAL_CEILING = 70;
@@ -595,14 +595,14 @@ export function NexusProvider({ children }) {
     };
     setSettings(next);
     appendAudit({
-      vendorId: '—', vendorName: 'StyleSphere workspace',
+      vendorId: '-', vendorName: 'StyleSphere workspace',
       actorName: CURRENT_USERS.admin.name, actorId: CURRENT_USERS.admin.id,
       actionType: 'SETTINGS_UPDATED', documentName: 'Workspace preferences', fieldLabel: 'Density and notifications',
       originalValue: `${settings.density}; notifications ${settings.notifications ? 'on' : 'off'}`,
       humanValue: `${next.density}; notifications ${next.notifications ? 'on' : 'off'}`,
       reason: 'Workspace preferences updated', notes: 'Display preferences persist across refreshes and are preserved by Reset Demo Data.',
     });
-    notify(`Settings saved — notifications ${next.notifications ? 'on' : 'off'}, ${next.density} density.`, 'critical');
+    notify(`Settings saved - notifications ${next.notifications ? 'on' : 'off'}, ${next.density} density.`, 'critical');
   }, [settings, appendAudit, notify]);
 
   // -------------------------------------------------------------------------
@@ -657,7 +657,7 @@ export function NexusProvider({ children }) {
     const vendor = rawVendors.find((v) => v.id === vendorId);
     const verdict = canPerform(agentConfig, agentId, actionId, actorRole);
     const base = {
-      vendorId: vendorId || '—',
+      vendorId: vendorId || '-',
       vendorName: vendor?.name || 'Platform',
       actorName: definition?.name || agentId,
       actorId: `AGT-${agentId.toUpperCase()}@v${agentConfig.version}`,
@@ -763,7 +763,7 @@ export function NexusProvider({ children }) {
     }
     const vendor = rawVendors.find((candidate) => candidate.id === item.vendorId);
     appendAudit({
-      vendorId: item.vendorId || '—', vendorName: vendor?.name || item.vendorName || 'Platform',
+      vendorId: item.vendorId || '-', vendorName: vendor?.name || item.vendorName || 'Platform',
       actorName: CURRENT_USERS.customer.name, actorId: CURRENT_USERS.customer.id,
       agentId: item.agentId,
       actionType: 'AGENT_APPROVAL',
@@ -944,12 +944,12 @@ export function NexusProvider({ children }) {
         appendAudit({
           vendorId, vendorName: vendor.name, actorName: 'StyleSphere AI', actorId: 'IDP-3.4',
           actionType: 'DOCUMENT_REJECTED', documentName: doc.title, fieldLabel: 'Automated verification',
-          originalValue: reviewedFileName, humanValue: `Correction requested — ${outcome.reason}`,
+          originalValue: reviewedFileName, humanValue: `Correction requested - ${outcome.reason}`,
           reason: outcome.reason,
           clauseRef: clauseId,
           notes: `${outcome.detail} A re-upload task remains open in the supplier portal.`,
         });
-        if (!quiet) notify(`${doc.title} needs a corrected file — ${outcome.reason}.`, 'critical');
+        if (!quiet) notify(`${doc.title} needs a corrected file - ${outcome.reason}.`, 'critical');
         return;
       }
 
@@ -980,7 +980,7 @@ export function NexusProvider({ children }) {
       appendAudit({
         vendorId, vendorName: vendor.name, actorName: 'StyleSphere AI', actorId: 'IDP-3.4',
         actionType: 'DOCUMENT_VERIFIED', documentName: doc.title, fieldLabel: 'Automated verification',
-        originalValue: reviewedFileName, humanValue: 'Verified — 97% confidence',
+        originalValue: reviewedFileName, humanValue: 'Verified - 97% confidence',
         reason: 'Automated authenticity, expiry, and completeness checks', notes: `${doc.title} passed simulated AI verification. Any open supplier task was closed.`,
       });
       if (!quiet && notifyOnPass) notify(`${doc.title} passed review and is back with compliance.`, 'critical');
@@ -1298,7 +1298,7 @@ export function NexusProvider({ children }) {
     // A second APPROVE on an approved vendor is a double-click, not a second
     // decision. Letting it through would write a duplicate DECISION entry and
     // make the audit trail read as though the vendor were approved twice by the
-    // same person — which is exactly the kind of thing an auditor asks about.
+    // same person - which is exactly the kind of thing an auditor asks about.
     if (['Approved', 'Active'].includes(vendor.finalStatus) && ['APPROVE', 'ESCALATE'].includes(decisionType)) {
       notify(`${vendor.shortName || vendor.name} is already ${vendor.finalStatus.toLowerCase()}.`, 'critical');
       return false;
@@ -1321,12 +1321,12 @@ export function NexusProvider({ children }) {
           vendorId, vendorName: vendor.name, actorName: CURRENT_USERS.admin.name, actorId: CURRENT_USERS.admin.id,
           actionType: 'AUTHORITY_LIMIT_BLOCKED', documentName: 'Full compliance application', fieldLabel: 'Vendor approval',
           originalValue: `Residual risk ${view.riskScore}/100`,
-          humanValue: `Refused — above the ${APPROVAL_CEILING} delegated limit`,
+          humanValue: `Refused - above the ${APPROVAL_CEILING} delegated limit`,
           reason: `${CURRENT_USERS.admin.role} may approve up to residual risk ${APPROVAL_CEILING}. This vendor scores ${view.riskScore}.`,
           clauseRef: 'PROC-5.1',
           notes: `Send this to ${CURRENT_USERS.supervisor.name} for four-eyes approval instead.`,
         });
-        notify(`Residual risk ${view.riskScore} is above your ${APPROVAL_CEILING} limit — send it for approval instead.`, 'critical');
+        notify(`Residual risk ${view.riskScore} is above your ${APPROVAL_CEILING} limit - send it for approval instead.`, 'critical');
         return false;
       }
       const approvalBlockers = getApprovalBlockers(vendor);
@@ -1557,7 +1557,7 @@ export function NexusProvider({ children }) {
     }
 
     // -----------------------------------------------------------------------
-    // A granted exception clears ONE finding — never the vendor.
+    // A granted exception clears ONE finding - never the vendor.
     //
     // This is the whole point of the type. `statusFor.GRANT` is deliberately
     // `undefined` above, so the vendor's standing is untouched: the reviewer
@@ -1568,7 +1568,7 @@ export function NexusProvider({ children }) {
     //
     // The resolution carries the expiry with it. `evaluateVendor` ignores a
     // resolution whose date has passed, so the finding reopens by itself when
-    // the waiver lapses — nobody has to remember to come back and close it.
+    // the waiver lapses - nobody has to remember to come back and close it.
     if (outcome === 'GRANT' && item.detail?.findingId) {
       setFindingResolutions((current) => ({
         ...current,
@@ -1666,7 +1666,7 @@ export function NexusProvider({ children }) {
   //
   //   AUTHORITY / ESCALATION   hand the decision up. The reviewer has nothing
   //                            left to decide, so the case reads as the
-  //                            supervisor's everywhere — queue, directory and
+  //                            supervisor's everywhere - queue, directory and
   //                            workspace alike.
   //
   //   RISK_ACCEPTANCE /        ask about one finding, or about an approved
@@ -1844,7 +1844,7 @@ export function NexusProvider({ children }) {
         onboardingStep: Math.max(v.onboardingStep ?? 0, 2),
         aiSummary: `Company profile submitted by ${profile.contactName || 'the supplier'}. Awaiting the category-specific evidence pack before verification can run.`,
       };
-    }));    appendAudit({
+    })); appendAudit({
       vendorId, vendorName: profile.legalName, actorName: profile.contactName || CURRENT_USERS.vendor.name, actorId: vendorId,
       actionType: 'PROFILE_SUBMITTED', documentName: 'Company profile', fieldLabel: 'Registered company details',
       originalValue: vendor.profile ? vendor.name : 'Not yet provided',

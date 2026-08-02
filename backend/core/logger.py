@@ -1,6 +1,6 @@
 """Structured logging (spec §17).
 
-Every request and AI call logs — structured JSON, never printed — request id,
+Every request and AI call logs - structured JSON, never printed - request id,
 vendor id, admin id, latency, endpoint, tokens used, which Gemini key served
 the call (label only, never the key), and estimated cost. That is what makes
 key-rotation and cost problems debuggable after the fact instead of guessed at.
@@ -100,7 +100,7 @@ def log_ai_call(
 ) -> None:
     """Spec §17: one structured line per AI call.
 
-    `key_label` only — never the key value, and never its last characters here
+    `key_label` only - never the key value, and never its last characters here
     (spec §6.3 permits label + last 4 for admin surfaces, not for logs).
     """
     logger.info(

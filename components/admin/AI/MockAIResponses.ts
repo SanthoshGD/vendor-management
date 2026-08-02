@@ -34,9 +34,9 @@ export const MOCK_AI_RESPONSES: Record<string, AICopilotResponse> = {
   'show pending vendors': {
     summary: 'Found 3 pending vendors awaiting compliance review in the active queue.',
     reasons: [
-      'Shanghai Textile Co. — Expiring liability insurance (5 days left)',
-      'Hualong Garment Factory — Unverified GST certificate',
-      'Vietnam SilkRoad Co. — Risk flags on supplier code of conduct signature'
+      'Shanghai Textile Co. - Expiring liability insurance (5 days left)',
+      'Hualong Garment Factory - Unverified GST certificate',
+      'Vietnam SilkRoad Co. - Risk flags on supplier code of conduct signature'
     ],
     table: {
       headers: ['Vendor', 'Country', 'Risk', 'Assigned Executive', 'Days Waiting'],
@@ -78,8 +78,8 @@ export const MOCK_AI_RESPONSES: Record<string, AICopilotResponse> = {
   'expiring documents': {
     summary: 'Found 2 documents expiring within the next 30 days that require update requests.',
     reasons: [
-      'Hualong Garment Factory — Liability Insurance Certificate expires 06 Aug 2026',
-      'Wei Mingzhi Ltd — ISO Quality Certificate expires 25 Aug 2026'
+      'Hualong Garment Factory - Liability Insurance Certificate expires 06 Aug 2026',
+      'Wei Mingzhi Ltd - ISO Quality Certificate expires 25 Aug 2026'
     ],
     table: {
       headers: ['Vendor', 'Document Type', 'Expiry Date', 'Assigned Reviewer'],
@@ -95,7 +95,7 @@ export const MOCK_AI_RESPONSES: Record<string, AICopilotResponse> = {
   'missing compliance': {
     summary: 'Discovered 1 vendor with pending mandatory compliance certificates.',
     reasons: [
-      'Mumbai Garment House — Missing Bank Account Verification Letter and Supplier Code of Conduct'
+      'Mumbai Garment House - Missing Bank Account Verification Letter and Supplier Code of Conduct'
     ],
     cards: [
       {
@@ -328,8 +328,8 @@ export const MOCK_AI_RESPONSES: Record<string, AICopilotResponse> = {
   'which vendors need attention?': {
     summary: 'I located 3 vendors requiring immediate review due to outstanding compliance violations.',
     reasons: [
-      'Hualong Garment Factory (Zhejiang, China) — Expiring insurance & unverified GST',
-      'Vietnam SilkRoad Co. (Vietnam) — Rejected Supplier Code of Conduct'
+      'Hualong Garment Factory (Zhejiang, China) - Expiring insurance & unverified GST',
+      'Vietnam SilkRoad Co. (Vietnam) - Rejected Supplier Code of Conduct'
     ],
     table: {
       headers: ['Vendor', 'Country', 'SLA Waiting', 'Critical Exception'],
@@ -358,7 +358,7 @@ export const MOCK_AI_RESPONSES: Record<string, AICopilotResponse> = {
 // Generates fallback mock responses for phrases that might not be exact keys
 export function getMockAIResponse(query: string): AICopilotResponse {
   const normalized = query.trim().toLowerCase();
-  
+
   // Try exact matches
   if (MOCK_AI_RESPONSES[normalized]) {
     return MOCK_AI_RESPONSES[normalized];

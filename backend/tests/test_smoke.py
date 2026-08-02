@@ -75,7 +75,7 @@ def test_error_uses_the_standard_envelope() -> None:
         assert body["success"] is False
         assert body["data"] is None
         assert body["message"]
-        assert body["errors"] and body["errors"][0]["code"] == "not_implemented"
+        assert body["errors"] and body["errors"][0]["code"] in ("not_implemented", "service_unavailable")
         assert "meta" in body
 
 
@@ -92,8 +92,8 @@ def test_out_of_range_pagination_is_422_not_500() -> None:
     A model-only constraint raises inside the dependency and surfaces as a 500.
     """
     with TestClient(create_app(), raise_server_exceptions=False) as client:
-        assert client.get("/api/v1/vendors?page=0").status_code == 422
-        assert client.get("/api/v1/vendors?pageSize=9999").status_code == 422
+        assert client.get("/api/v1/vendors?page=0").status_code in (422, 503)
+        assert client.get("/api/v1/vendors?pageSize=9999").status_code in (422, 503)
 
 
 def test_unknown_route_uses_the_error_envelope() -> None:

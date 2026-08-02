@@ -37,6 +37,7 @@ from schemas.common import PaginationParams
 from services.ai.gemini_provider import GeminiProvider
 from services.ai.key_rotation import KeyRotationPolicy
 from services.ai.provider import AIProvider
+from services.ai.rag_pipeline import RagPipeline
 from services.analytics.analytics_service import AnalyticsService
 from services.notification.notification_service import NotificationService
 from services.storage.storage_service import StorageService
@@ -52,10 +53,16 @@ def get_app_settings() -> Settings:
 
 def get_database(request: Request) -> DatabaseProvider:
     """Read the process-wide provider off `app.state` (set by the lifespan)."""
+    if not hasattr(request.app.state, "database"):
+        from db.session import get_database_provider
+        request.app.state.database = get_database_provider(get_settings())
     return request.app.state.database
 
 
 def get_supabase(request: Request) -> SupabaseClientProvider:
+    if not hasattr(request.app.state, "supabase"):
+        from core.supabase import get_supabase_provider
+        request.app.state.supabase = get_supabase_provider(get_settings())
     return request.app.state.supabase
 
 
@@ -204,6 +211,13 @@ def get_ai_provider(rotation: KeyRotationDep, settings: SettingsDep) -> AIProvid
 AIProviderDep = Annotated[AIProvider, Depends(get_ai_provider)]
 
 
+def get_rag_pipeline(provider: AIProviderDep, settings: SettingsDep) -> RagPipeline:
+    return RagPipeline(provider, None, settings)
+
+
+RagPipelineDep = Annotated[RagPipeline, Depends(get_rag_pipeline)]
+
+
 # --- Request-scoped values --------------------------------------------------
 
 
@@ -229,7 +243,7 @@ def get_client_ip(request: Request) -> str | None:
     """Client IP for the audit trail (spec §11).
 
     `X-Forwarded-For` is honoured because Railway terminates TLS at a proxy, so
-    the socket peer is always the proxy. It is spoofable by a direct caller —
+    the socket peer is always the proxy. It is spoofable by a direct caller -
     acceptable for an audit *annotation*, and it is never used for an
     authorisation decision.
     """

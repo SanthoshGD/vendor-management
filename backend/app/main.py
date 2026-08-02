@@ -21,7 +21,7 @@ logger = get_logger(__name__)
 DESCRIPTION = """
 Vendor onboarding and compliance orchestration API for StyleSphere Nexus.
 
-**Scaffold status** — routing, layering, dependency wiring, schemas and service
+**Scaffold status** - routing, layering, dependency wiring, schemas and service
 seams are in place and verified. Business logic is not implemented: those
 endpoints answer `501 Not Implemented` inside the standard response envelope.
 `/health` and `/health/ready` are fully implemented.
@@ -56,7 +56,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
 
     # CORS first: a rejected preflight must not traverse the stack.
-    # Spec §19 — restricted to FRONTEND_ORIGIN.
+    # Spec §19 - restricted to FRONTEND_ORIGIN.
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,

@@ -2,7 +2,7 @@
 
 One engine per process, created in the lifespan and disposed on shutdown. A
 `AsyncSession` is created per request by `api.deps.get_session`, which commits
-on success and rolls back on any exception — so a route that raises never
+on success and rolls back on any exception - so a route that raises never
 leaves a half-applied mutation behind.
 
 Deliberately non-fatal when unconfigured, matching `core/supabase.py`: the API

@@ -1,70 +1,70 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { 
+import {
   FileText, Sparkles, Check, X, ShieldCheck, AlertTriangle, CheckCircle2, CircleDot
 } from 'lucide-react';
 
 const DOCUMENTS = [
-  { 
-    id: "d1", 
-    title: "Company Registration Certificate", 
-    vendor: "Zhang Weilong", 
-    company: "Hualong Garment Factory", 
-    pages: 5, 
-    submitted: "Yesterday", 
-    ageDays: 1, 
-    confidence: 41, 
-    flag: "Certificate number format doesn't match the issuing authority's known pattern.", 
-    risk: "high" 
+  {
+    id: "d1",
+    title: "Company Registration Certificate",
+    vendor: "Zhang Weilong",
+    company: "Hualong Garment Factory",
+    pages: 5,
+    submitted: "Yesterday",
+    ageDays: 1,
+    confidence: 41,
+    flag: "Certificate number format doesn't match the issuing authority's known pattern.",
+    risk: "high"
   },
-  { 
-    id: "d2", 
-    title: "GST / VAT Certificate", 
-    vendor: "Meera Nair", 
-    company: "Nair Global Exports Pvt. Ltd.", 
-    pages: 2, 
-    submitted: "4h ago", 
-    ageDays: 0.2, 
-    confidence: 62, 
-    flag: "Registered business name differs slightly from the certificate holder name.", 
-    risk: "medium" 
+  {
+    id: "d2",
+    title: "GST / VAT Certificate",
+    vendor: "Meera Nair",
+    company: "Nair Global Exports Pvt. Ltd.",
+    pages: 2,
+    submitted: "4h ago",
+    ageDays: 0.2,
+    confidence: 62,
+    flag: "Registered business name differs slightly from the certificate holder name.",
+    risk: "medium"
   },
-  { 
-    id: "d3", 
-    title: "Supplier Code of Conduct Sign-off", 
-    vendor: "Chen Lihua", 
-    company: "Dongfang Footwear Export", 
-    pages: 4, 
-    submitted: "5h ago", 
-    ageDays: 0.2, 
-    confidence: 99, 
-    flag: null, 
-    risk: "low" 
+  {
+    id: "d3",
+    title: "Supplier Code of Conduct Sign-off",
+    vendor: "Chen Lihua",
+    company: "Dongfang Footwear Export",
+    pages: 4,
+    submitted: "5h ago",
+    ageDays: 0.2,
+    confidence: 99,
+    flag: null,
+    risk: "low"
   },
-  { 
-    id: "d4", 
-    title: "Bank Account Verification Letter", 
-    vendor: "Meera Nair", 
-    company: "Nair Global Exports Pvt. Ltd.", 
-    pages: 1, 
-    submitted: "4h ago", 
-    ageDays: 0.2, 
-    confidence: 88, 
-    flag: null, 
-    risk: "low" 
+  {
+    id: "d4",
+    title: "Bank Account Verification Letter",
+    vendor: "Meera Nair",
+    company: "Nair Global Exports Pvt. Ltd.",
+    pages: 1,
+    submitted: "4h ago",
+    ageDays: 0.2,
+    confidence: 88,
+    flag: null,
+    risk: "low"
   },
-  { 
-    id: "d5", 
-    title: "ISO Quality Certificate", 
-    vendor: "Chen Lihua", 
-    company: "Dongfang Footwear Export", 
-    pages: 3, 
-    submitted: "2h ago", 
-    ageDays: 0.1, 
-    confidence: 96, 
-    flag: null, 
-    risk: "low" 
+  {
+    id: "d5",
+    title: "ISO Quality Certificate",
+    vendor: "Chen Lihua",
+    company: "Dongfang Footwear Export",
+    pages: 3,
+    submitted: "2h ago",
+    ageDays: 0.1,
+    confidence: 96,
+    flag: null,
+    risk: "low"
   },
 ];
 
@@ -411,7 +411,7 @@ export default function DocumentsView({ onOpenVendor }: { onOpenVendor?: (id: st
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 600, marginBottom: '6px' }}>
-                        <Sparkles size={13} /> AI verification — {active.confidence}% confidence
+                        <Sparkles size={13} /> AI verification - {active.confidence}% confidence
                       </div>
                       <p style={{ fontSize: '12px', lineHeight: '1.5', margin: 0 }}>
                         {active.flag ? active.flag : "No inconsistencies detected. Document format, issuer details, and metadata are consistent with prior verified submissions from this region."}
@@ -484,7 +484,7 @@ export default function DocumentsView({ onOpenVendor }: { onOpenVendor?: (id: st
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <AlertTriangle size={18} style={{ color: '#E11D48' }} />
                 <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#9F1239', margin: 0 }}>
-                  Reject Document — {rejectingDoc.title}
+                  Reject Document - {rejectingDoc.title}
                 </h3>
               </div>
               <button
@@ -577,7 +577,7 @@ export default function DocumentsView({ onOpenVendor }: { onOpenVendor?: (id: st
               <button
                 type="button"
                 onClick={() => {
-                  const finalReason = reasonInput.trim() || 'Document rejected — update required';
+                  const finalReason = reasonInput.trim() || 'Document rejected - update required';
                   setDecided((prev) => ({ ...prev, [rejectingDoc.id]: 'reject' }));
                   setRejections((prev) => ({ ...prev, [rejectingDoc.id]: finalReason }));
                   setRejectingDocId(null);

@@ -1,6 +1,6 @@
 // Smoke test for the Admin / Supervisor split, run against the built
 // standalone HTML in jsdom. It exercises the flow edges the original diagram
-// was missing — the request round-trip, the return loops, the role boundary —
+// was missing - the request round-trip, the return loops, the role boundary -
 // and the governance rules the request types exist to enforce.
 import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
@@ -27,7 +27,7 @@ const buttons = () => [...document.querySelectorAll('button')];
 const byText = (needle) => buttons().find((b) => (b.textContent || '').toLowerCase().includes(needle.toLowerCase()));
 const exact = (n) => buttons().find((b) => (b.textContent || '').trim() === n);
 // Scoped to the open dialog. A page-wide search for "Confirm" will happily
-// match a closed-request row whose rationale contains the word "confirmed" —
+// match a closed-request row whose rationale contains the word "confirmed" -
 // which is exactly the false positive this helper exists to prevent.
 const dialogButton = (needle) => [...document.querySelectorAll('.modal-card footer button')]
   .find((b) => (b.textContent || '').toLowerCase().includes(needle.toLowerCase()));
@@ -72,7 +72,7 @@ if (requestsNav) {
   await click(requestsNav);
   // The seeded queue (4) is above DENSITY_THRESHOLD (3), so the page opens
   // compact. These assertions are about what each request type carries and
-  // offers, which lives in the expanded card — so ask for full cards first.
+  // offers, which lives in the expanded card - so ask for full cards first.
   const fullCards = byText('Full cards');
   if (fullCards) await click(fullCards);
   const cards = [...document.querySelectorAll('.request-card')];
@@ -112,7 +112,7 @@ if (requestsNav) {
     check('granting asks for a rationale', Boolean(noteBox));
 
     // The reviewer's proposed date is pre-filled, so the supervisor confirms or
-    // changes it rather than retyping — but clearing it must block the grant.
+    // changes it rather than retyping - but clearing it must block the grant.
     check('the reviewer’s proposed expiry is pre-filled', Boolean(expiryInput?.value));
     if (noteBox && expiryInput) {
       setValue(noteBox, 'Re-audit is booked and confirmed in writing.');
@@ -144,7 +144,7 @@ if (adminTab) {
   const queue = byText('Vendor queue');
   if (queue) {
     await click(queue);
-    // Deliberately a vendor with NO seeded request in flight — Pearl River has
+    // Deliberately a vendor with NO seeded request in flight - Pearl River has
     // a blocking duplicate-applicant finding, so it should offer the
     // risk-acceptance route rather than "already with your supervisor".
     const rows = [...document.querySelectorAll('.worklist-rows button, .vendor-table.table-row')];
@@ -198,7 +198,7 @@ if (supTab2) {
     await click(nav);
     const expand = byText('Full cards');
     if (expand) await click(expand);
-    // Scope to an open request card — "Hand back" must not be picked up from
+    // Scope to an open request card - "Hand back" must not be picked up from
     // the closed list or the exception book.
     const handBack = [...document.querySelectorAll('.request-card button')]
       .find((b) => (b.textContent || '').includes('Hand back'));

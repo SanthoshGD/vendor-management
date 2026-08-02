@@ -486,10 +486,12 @@ function InternalWorklist({ cases, filter, setFilter, searchQuery, setSearchQuer
         </div>
       </section>
       <section className="metric-grid" aria-label="Operational summary">
-        {metrics.map((metric) => { const Icon = metric.icon; return <article className="metric-card" key={metric.label}>
-          <div className={classNames('metric-icon', metric.tone)}><Icon size={19} /></div>
-          <div><span>{metric.label}</span><strong>{metric.value}</strong><small>{metric.helper}</small></div>
-        </article>; })}
+        {metrics.map((metric) => {
+          const Icon = metric.icon; return <article className="metric-card" key={metric.label}>
+            <div className={classNames('metric-icon', metric.tone)}><Icon size={19} /></div>
+            <div><span>{metric.label}</span><strong>{metric.value}</strong><small>{metric.helper}</small></div>
+          </article>;
+        })}
       </section>
       <section className="worklist-card">
         <div className="worklist-toolbar">
@@ -551,7 +553,8 @@ function SupplierWorkbench({ item, audit, onEditProfile, onUpload, onViewActivit
         <div className="supplier-title-row"><div><h1>{item.name}</h1><p>Application {item.id} · Submitted {item.submittedAt}</p></div>
           <span className={classNames('status-pill large', status.tone)}>{status.label}</span></div>
         <div className="supplier-steps" aria-label="Application progress">
-          {STAGES.map((stage, index) => { const complete = index + 1 < item.stage; const active = index + 1 === item.stage;
+          {STAGES.map((stage, index) => {
+            const complete = index + 1 < item.stage; const active = index + 1 === item.stage;
             return <div className={classNames('supplier-step', complete && 'complete', active && 'active')} key={stage}>
               <span>{complete ? <Check size={15} /> : index + 1}</span><strong>{stage}</strong></div>;
           })}
@@ -644,7 +647,7 @@ function ReviewWorkspace({ item, activeDoc, activeIssue, activeDocId, setActiveD
       </section>
       <section className="review-progress-bar">
         <div className="review-progress-copy"><span><Sparkles size={15} /> AI assessment complete</span>
-          <strong>{unresolvedIssues.length ? `${unresolvedIssues.length} findings need your judgement` : 'All findings resolved — ready to recommend'}</strong></div>
+          <strong>{unresolvedIssues.length ? `${unresolvedIssues.length} findings need your judgement` : 'All findings resolved - ready to recommend'}</strong></div>
         <div className="review-gates"><span className="gate complete"><Check size={14} /> Profile</span>
           <span className={classNames('gate', missingDocuments.length === 0 && 'complete')}>
             {missingDocuments.length === 0 ? <Check size={14} /> : <Circle size={12} />} Evidence {verifiedCount}/{item.documents.length}</span>
@@ -871,11 +874,11 @@ function Modal({ modal, item, onClose, onResolve, onRequest, onUpload, onRecomme
         <div className="profile-verification-note span-2"><Sparkles size={17} /> We prefilled this record from your documents. Editing a verified field triggers a focused recheck.</div>
       </div>}
     </div><div className="modal-footer"><button type="button" className="button secondary" onClick={onClose}>Cancel</button>
-      <button type="submit" className={classNames('button', modal.type === 'reject' ? 'danger' : 'primary')}>
-        {modal.type === 'override' && 'Save correction'}{modal.type === 'request' && 'Send request'}{modal.type === 'upload' && 'Upload & submit'}
-        {modal.type === 'recommend' && 'Send recommendation'}{modal.type === 'approve' && 'Record approval'}{modal.type === 'reject' && 'Reject application'}
-        {modal.type === 'activate' && 'Confirm ERP activation'}{modal.type === 'profile' && 'Save company record'}<ArrowRight size={16} />
-      </button></div></form>
+        <button type="submit" className={classNames('button', modal.type === 'reject' ? 'danger' : 'primary')}>
+          {modal.type === 'override' && 'Save correction'}{modal.type === 'request' && 'Send request'}{modal.type === 'upload' && 'Upload & submit'}
+          {modal.type === 'recommend' && 'Send recommendation'}{modal.type === 'approve' && 'Record approval'}{modal.type === 'reject' && 'Reject application'}
+          {modal.type === 'activate' && 'Confirm ERP activation'}{modal.type === 'profile' && 'Save company record'}<ArrowRight size={16} />
+        </button></div></form>
   </div></div>;
 }
 

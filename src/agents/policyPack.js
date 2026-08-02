@@ -3,7 +3,7 @@
 //
 // Zip's Superagents are defined by three things: Skills (what to do), Actions
 // (what they may touch), and Context (the rules they reason against). This file
-// is the Context layer — StyleSphere's actual compliance policy, expressed as
+// is the Context layer - StyleSphere's actual compliance policy, expressed as
 // addressable clauses.
 //
 // Why clauses rather than prose in a prompt: every finding an agent raises
@@ -16,10 +16,10 @@
 export const POLICY_SOURCES = {
   PROC: 'StyleSphere Company Procurement Policy v4.2',
   SCOC: 'Supplier Code of Conduct (2026 revision)',
-  IEC: 'Foreign Trade Policy — Importer-Exporter Code',
+  IEC: 'Foreign Trade Policy - Importer-Exporter Code',
   GST: 'GST / national tax registration rules',
   REG: 'StyleSphere Regulatory Standards Register',
-  FIN: 'Group Treasury — Supplier Payment Controls',
+  FIN: 'Group Treasury - Supplier Payment Controls',
 };
 
 const clause = (id, source, title, requirement, severity) => ({

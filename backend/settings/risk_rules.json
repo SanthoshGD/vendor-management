@@ -1,29 +1,64 @@
 {
   "_comment": "Spec §12 driver point table plus the inputs the engine reads. Tunable without a redeploy.",
   "drivers": [
-    { "code": "INSURANCE_EXPIRED", "points": 25, "description": "Liability insurance has expired" },
-    { "code": "TAX_MISSING", "points": 20, "description": "Tax registration certificate not provided" },
-    { "code": "GST_MISMATCH", "points": 15, "description": "GST / tax number does not match across documents" },
-    { "code": "ADDRESS_MISMATCH", "points": 15, "description": "Registered address differs across documents" },
-    { "code": "BANK_PROOF_MISSING", "points": 10, "description": "Bank verification letter not provided" },
-    { "code": "LOW_AI_CONFIDENCE", "points": 10, "description": "Extraction confidence below threshold" },
-    { "code": "VENDOR_AGE_UNDER_6_MONTHS", "points": 5, "description": "Vendor entity registered less than 6 months ago" }
+    {
+      "code": "INSURANCE_EXPIRED",
+      "points": 25,
+      "description": "Liability insurance has expired"
+    },
+    {
+      "code": "TAX_MISSING",
+      "points": 20,
+      "description": "Tax registration certificate not provided"
+    },
+    {
+      "code": "GST_MISMATCH",
+      "points": 15,
+      "description": "GST / tax number does not match across documents"
+    },
+    {
+      "code": "ADDRESS_MISMATCH",
+      "points": 15,
+      "description": "Registered address differs across documents"
+    },
+    {
+      "code": "BANK_PROOF_MISSING",
+      "points": 10,
+      "description": "Bank verification letter not provided"
+    },
+    {
+      "code": "LOW_AI_CONFIDENCE",
+      "points": 10,
+      "description": "Extraction confidence below threshold"
+    },
+    {
+      "code": "VENDOR_AGE_UNDER_6_MONTHS",
+      "points": 5,
+      "description": "Vendor entity registered less than 6 months ago"
+    }
   ],
   "bands": {
-    "low": { "min": 0, "max": 34 },
-    "medium": { "min": 35, "max": 69 },
-    "high": { "min": 70, "max": 100 }
+    "low": {
+      "min": 0,
+      "max": 34
+    },
+    "medium": {
+      "min": 35,
+      "max": 69
+    },
+    "high": {
+      "min": 70,
+      "max": 100
+    }
   },
   "low_confidence_threshold": 60,
   "vendor_age_months": 6,
-
   "_required_documents_comment": "driver code -> document type whose absence fires it",
   "required_documents": {
     "TAX_MISSING": "TAX",
     "BANK_PROOF_MISSING": "BANK"
   },
   "insurance_document_type": "COI",
-
   "_present_statuses_comment": "A document counts as provided only in one of these states. 'Missing' never does.",
   "present_document_statuses": [
     "Uploaded",
@@ -32,17 +67,32 @@
     "Flagged",
     "Verified"
   ],
-
   "_field_aliases_comment": "Extractors name the same fact differently per document template; the engine reads whichever alias is present.",
   "field_aliases": {
-    "expiry": ["expiry_date", "valid_until", "insurance_expiry", "expires_on", "expiry"],
-    "gst": ["gst_number", "gstin", "tax_id", "vat_number", "tax_registration_number"],
-    "address": ["registered_address", "address", "business_address", "principal_address"]
+    "expiry": [
+      "expiry_date",
+      "valid_until",
+      "insurance_expiry",
+      "expires_on",
+      "expiry"
+    ],
+    "gst": [
+      "gst_number",
+      "gstin",
+      "tax_id",
+      "vat_number",
+      "tax_registration_number"
+    ],
+    "address": [
+      "registered_address",
+      "address",
+      "business_address",
+      "principal_address"
+    ]
   },
-
   "recommendations": {
-    "clean": "Approve — every checked rule passed.",
-    "low": "Approve — no blocking findings. Spot-check the verified documents before sign-off.",
+    "clean": "Approve - every checked rule passed.",
+    "low": "Approve - no blocking findings. Spot-check the verified documents before sign-off.",
     "medium": "Review before approval. Resolve the findings below, or record why each is acceptable.",
     "high": "Do not approve as-is. Request corrected documents for the findings below."
   }

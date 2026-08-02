@@ -1,7 +1,7 @@
 """`DocumentUploaded` event and its listeners (spec §9, §10).
 
 Emitted immediately after the file lands in Supabase Storage, before any OCR.
-The extraction listener queues work rather than doing it — spec §10: uploads
+The extraction listener queues work rather than doing it - spec §10: uploads
 must not block on OCR.
 """
 

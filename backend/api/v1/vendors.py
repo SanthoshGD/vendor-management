@@ -86,7 +86,7 @@ async def list_vendor_documents(
     response_model=ApiResponse[RiskOut],
     summary="Risk score, level, drivers and recommendation",
     description=(
-        "Deterministic (spec §12). Always returns the driver decomposition — a "
+        "Deterministic (spec §12). Always returns the driver decomposition - a "
         "score a reviewer cannot decompose is not explainable."
     ),
 )

@@ -1,5 +1,5 @@
 // Regression pass: the parts of the app that already worked and must keep
-// working after the Admin/Supervisor split — the vendor portal, the invite
+// working after the Admin/Supervisor split - the vendor portal, the invite
 // path, the read-only supervisor lens, and the loop back to the queue.
 import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';

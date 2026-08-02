@@ -15,10 +15,10 @@ export default function PipelineFunnel({ vendors = [], onNavigate }: PipelineFun
     const totalCount = vendors.length || 20;
     const multiplier = viewMode === 'monthly' ? 3.5 : 1;
 
-    const submitted = Math.round((vendors.filter(v => v.hasSubmittedApplication || v.stage).length || 18) * multiplier);
-    const aiExtraction = Math.round((vendors.filter(v => v.docsCount !== '0/6').length || 15) * multiplier);
-    const aiValidation = Math.round((vendors.filter(v => v.stage === 'Doc Review' || v.stage === 'Profile Approved' || v.finalStatus).length || 12) * multiplier);
-    const humanReview = Math.round((vendors.filter(v => v.stage === 'Doc Review' || v.status === 'Pending').length || 7) * multiplier);
+    const submitted = Math.round((vendors.filter(v => v.hasSubmittedApplication || v.stage === 'Profile Submitted' || v.onboardingStep >= 1).length || 18) * multiplier);
+    const aiExtraction = Math.round((vendors.filter(v => v.documents?.some((d: any) => d.status === 'Uploaded' || d.status === 'Processing' || d.status === 'Verified')).length || 15) * multiplier);
+    const aiValidation = Math.round((vendors.filter(v => v.verifiedCount > 0 || v.stage === 'Verified' || v.documents?.some((d: any) => d.status === 'Verified')).length || 12) * multiplier);
+    const humanReview = Math.round((vendors.filter(v => v.stage === 'Doc Review' || v.status === 'In Review' || v.status === 'Pending Review' || v.status === 'Pending').length || 7) * multiplier);
     const approved = Math.round((vendors.filter(v => v.finalStatus === 'Approved' || v.finalStatus === 'Active' || v.status === 'Approved').length || 5) * multiplier);
     const rejected = Math.round((vendors.filter(v => v.finalStatus === 'Rejected' || v.status === 'Rejected').length || 2) * multiplier);
 

@@ -2,7 +2,7 @@
 
 One composite payload: metrics, approval trend, pipeline funnel, priority
 queue, recent activity, China approval rate. Deliberately a single endpoint
-rather than six — the page renders as a unit, and six parallel requests would
+rather than six - the page renders as a unit, and six parallel requests would
 only add latency and six independent loading states.
 """
 

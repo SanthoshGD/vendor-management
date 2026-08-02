@@ -5,7 +5,7 @@ portal doing OCR extraction, field validation, RAG chat and quick prompts can
 burst past a single key's quota quickly. Rotation spreads load and fails over
 automatically instead of the assistant hard-failing during a burst.
 
-Keys live in `gemini_api_keys` encrypted at rest (spec §6.2) — never plaintext
+Keys live in `gemini_api_keys` encrypted at rest (spec §6.2) - never plaintext
 in the database and never in a committed `.env`. Only this class decrypts,
 using `MASTER_ENCRYPTION_KEY`.
 
@@ -97,6 +97,23 @@ class KeyRotationPolicy:
         Raises `AIUnavailableError` when the pool is exhausted, so the frontend
         receives a clean "AI temporarily unavailable" rather than a raw 500.
         """
+        if not self._database.is_connected:
+            seed_keys = self._settings.gemini_seed_keys
+            for i, secret in enumerate(seed_keys):
+                key_id = f"seed-{i}"
+                if key_id in self._excluded:
+                    continue
+                return ApiKeyRecord(
+                    id=key_id,
+                    key_label=f"Seed Key #{i+1}",
+                    status=KeyStatus.active,
+                    daily_quota=10000,
+                    used_today=0,
+                    priority=i,
+                    secret=secret,
+                )
+            raise AIUnavailableError("All seed Gemini API keys are exhausted or excluded.")
+
         async with self._database.session() as session:
             repository = GeminiKeyRepository(session)
             candidates = await repository.eligible_keys()
@@ -110,7 +127,7 @@ class KeyRotationPolicy:
                 secret = decrypt_secret(candidate.encrypted_key, self._master_key)
             except EncryptionError as exc:
                 # A key that cannot be decrypted is unusable, but it is a
-                # configuration fault, not a Gemini fault — do not cool it down
+                # configuration fault, not a Gemini fault - do not cool it down
                 # or disable it, because rotating MASTER_ENCRYPTION_KEY back
                 # would make it good again.
                 undecryptable += 1
@@ -151,11 +168,15 @@ class KeyRotationPolicy:
     # --- reporting ----------------------------------------------------------
 
     async def report_success(self, key_id: str, tokens_used: int) -> None:
+        if not self._database.is_connected:
+            return
         async with self._database.session() as session:
             await GeminiKeyRepository(session).record_success(key_id, tokens_used=tokens_used)
 
     async def report_failure(self, key_id: str, error: GeminiError) -> None:
         """Apply the health transition this failure implies."""
+        if not self._database.is_connected:
+            return
         message = str(error)[:1000]
         async with self._database.session() as session:
             repository = GeminiKeyRepository(session)
@@ -188,7 +209,7 @@ class KeyRotationPolicy:
                 )
                 return
 
-            # Anything else — transient upstream error, timeout, bad request —
+            # Anything else - transient upstream error, timeout, bad request -
             # is recorded but does not change eligibility. Cooling a key down
             # because a prompt was malformed would shrink the pool for a fault
             # the key had nothing to do with.
@@ -214,7 +235,7 @@ class KeyRotationPolicy:
         """Encrypt and store a key. Returns its id.
 
         Encryption happens here rather than in the repository so plaintext
-        never crosses the persistence boundary — the repository handles
+        never crosses the persistence boundary - the repository handles
         ciphertext exclusively and cannot leak what it never receives.
         """
         encrypted = self.encrypt(api_key)

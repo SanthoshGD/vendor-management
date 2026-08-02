@@ -1,7 +1,7 @@
 """Gemini key pool persistence (spec §4 `gemini_api_keys`, §6).
 
 Ciphertext in, ciphertext out. This layer never decrypts and never sees a
-plaintext key — that capability belongs to `KeyRotationPolicy` alone, which is
+plaintext key - that capability belongs to `KeyRotationPolicy` alone, which is
 what keeps the blast radius of a bug here to "cannot pick a key" rather than
 "leaked the pool".
 """

@@ -2,8 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import { useNexus } from '../../../context/NexusContext';
-import { 
-  CheckCircle2, XCircle, FileText, Users, CircleDot, ChevronRight, Activity 
+import {
+  CheckCircle2, XCircle, FileText, Users, CircleDot, ChevronRight, Activity
 } from 'lucide-react';
 
 interface ActivityItem {
@@ -189,7 +189,7 @@ export default function ActivityView({ onOpenVendor }: ActivityViewProps) {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: '13px', color: '#1E293B', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                     <span style={{ fontWeight: 600 }}>{a.actor}</span>
-                    <span style={{ color: '#94A3B8' }}>—</span>
+                    <span style={{ color: '#94A3B8' }}>-</span>
                     <span>{a.target}</span>
                     <StatusBadge status={a.action} />
                   </div>

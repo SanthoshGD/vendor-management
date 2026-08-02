@@ -1,7 +1,7 @@
 # Migrations
 
 Alembic owns the Supabase Postgres schema (spec §4). `alembic.ini` carries no
-URL — `env.py` reads `DATABASE_URL` from `core.config.Settings`, so migrations
+URL - `env.py` reads `DATABASE_URL` from `core.config.Settings`, so migrations
 and the running API can never point at different databases.
 
 ```bash
@@ -37,7 +37,7 @@ creating the core tables.
   Alembic does not detect column renames (it emits drop + add, which loses
   data), and cannot infer a backfill.
 - **Constraint names come from `db/base.py`'s naming convention.** Never write
-  `op.drop_constraint(None, ...)` — an unnamed constraint is not droppable.
+  `op.drop_constraint(None, ...)` - an unnamed constraint is not droppable.
 - **`activity_log` is append-only** (spec §11). No migration may add an update
   path to it, and the production database role should have UPDATE and DELETE
   revoked on that table.

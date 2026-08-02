@@ -16,7 +16,7 @@ const CHANNEL_ICON = { whatsapp: MessageCircle, email: Mail, portal: Monitor };
 const RISK_TONE = { low: 'green', medium: 'amber', high: 'red' };
 
 // ---------------------------------------------------------------------------
-// The Agent Console — Skills, Actions, Context, and the governance around them.
+// The Agent Console - Skills, Actions, Context, and the governance around them.
 //
 // This is the surface that makes the agents a platform rather than a feature.
 // Three things it deliberately does:
@@ -25,7 +25,7 @@ const RISK_TONE = { low: 'green', medium: 'amber', high: 'red' };
 //      that "approve a supplier" is withheld structurally, not merely absent.
 //      The constraint is in the allowlist, not in a prompt.
 //   2. Shows the permission inheritance. An agent runs as the record owner, so
-//      it cannot exceed that person's scope — a much stronger guarantee than
+//      it cannot exceed that person's scope - a much stronger guarantee than
 //      instructing a model to behave.
 //   3. Versions every edit with a revert. Configuration nobody dares touch is
 //      configuration that rots; a visible undo is what makes it editable.
@@ -366,7 +366,7 @@ export default function AgentConsole({ persona = 'admin' }) {
                 <button
                   className="button secondary compact"
                   onClick={() => dispatchAgentAction('config', 'propose_config', {
-                    vendorId: '—',
+                    vendorId: '-',
                     summary: insight.proposal,
                     reasoning: `${insight.title}. ${insight.detail}`,
                     configChange: {

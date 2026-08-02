@@ -5,7 +5,7 @@ error generically:
 
     { "success": bool, "data": {}, "message": "", "errors": [], "meta": {} }
 
-Implemented once here and used by every router — per the spec, "not something
+Implemented once here and used by every router - per the spec, "not something
 each route reinvents". Spec §14 calls this out as trivial to start with and
 painful to retrofit, which is why it exists before any business logic does.
 """
@@ -111,7 +111,7 @@ def failure(
 ) -> ApiResponse[None]:
     """Build a failure envelope.
 
-    `success` is always False here. A failure is never reported as a success —
+    `success` is always False here. A failure is never reported as a success -
     the frontend's current `catch { return true }` on approve/reject is exactly
     the bug this shape exists to prevent.
     """

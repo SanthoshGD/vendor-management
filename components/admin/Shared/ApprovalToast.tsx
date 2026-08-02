@@ -26,7 +26,7 @@ export default function ApprovalToast({ vendorId, vendorName, onClose, onViewVen
       <div className="toast-content">
         <strong className="toast-title">✅ Vendor Approved</strong>
         <p className="toast-body">
-          {vendorName} has been approved. An approval email and portal notification have been sent.
+          Approval email and portal notification have been sent to the vendor.
         </p>
         <button
           type="button"

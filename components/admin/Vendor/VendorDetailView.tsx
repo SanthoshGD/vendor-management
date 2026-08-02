@@ -3,8 +3,8 @@
 
 import React, { useState, useMemo, useRef } from 'react';
 import { useNexus } from '../../../context/NexusContext';
-import { 
-  ArrowLeft, Sparkles, Check, X, ShieldCheck, Clock, Package, MapPin, 
+import {
+  ArrowLeft, Sparkles, Check, X, ShieldCheck, Clock, Package, MapPin,
   UserCog, FileText, CheckCircle2, AlertTriangle, CircleDot,
   ChevronLeft, ChevronRight
 } from 'lucide-react';
@@ -100,7 +100,7 @@ function Stepper({ stage, onSelectStage }: { stage: string; onSelectStage?: (sta
 
           return (
             <React.Fragment key={s.num}>
-              <div 
+              <div
                 onClick={() => onSelectStage && onSelectStage(s.label)}
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', zIndex: 2, cursor: 'pointer' }}
                 title={`Click to switch stage to: ${s.label}`}
@@ -149,14 +149,14 @@ function Stepper({ stage, onSelectStage }: { stage: string; onSelectStage?: (sta
   );
 }
 
-export default function VendorDetailView({ 
-  vendorId, 
-  onBack, 
+export default function VendorDetailView({
+  vendorId,
+  onBack,
   onApproveSuccess,
-  readOnly = false 
+  readOnly = false
 }: VendorDetailViewProps) {
   const { getVendor, auditLogs, submitDecision, notify } = useNexus();
-  const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'communication' | 'activity'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'activity' | 'communication' | 'history' | 'products'>('overview');
   const [decisionState, setDecisionState] = useState<'Approved' | 'Rejected' | null>(null);
   const [previewDoc, setPreviewDoc] = useState<string | null>(null);
   const [docDecisions, setDocDecisions] = useState<Record<string, { status: 'Verified' | 'Rejected'; comment?: string }>>({});
@@ -271,15 +271,12 @@ export default function VendorDetailView({
 
 
 
-  const tabs: { id: 'overview' | 'products' | 'communication' | 'activity'; label: string }[] = isInvited ? [
+  const tabs: { id: 'overview' | 'documents' | 'activity' | 'communication' | 'history'; label: string }[] = [
     { id: 'overview', label: 'Overview' },
-    { id: 'communication', label: 'Communication' },
+    { id: 'documents', label: 'Documents' },
     { id: 'activity', label: 'Activity' },
-  ] : [
-    { id: 'overview', label: 'Overview' },
-    { id: 'products', label: 'Product Catalog' },
     { id: 'communication', label: 'Communication' },
-    { id: 'activity', label: 'Activity' },
+    { id: 'history', label: 'Approval History' },
   ];
 
   return (
@@ -411,7 +408,7 @@ export default function VendorDetailView({
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid #E2E8F0' }}>
                 <div>
                   <div style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.05em', color: '#0284C7', textTransform: 'uppercase' }}>
-                    STAGE 3 — DOCUMENT REVIEW WORKSPACE
+                    STAGE 3 - DOCUMENT REVIEW WORKSPACE
                   </div>
                   <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#0F172A', margin: '2px 0 0 0' }}>
                     Reviewing Submitted Documents for {vendor.name} ({vendor.company})
@@ -425,320 +422,329 @@ export default function VendorDetailView({
             </div>
           )}
 
-          {/* Two Column Grid — hidden during Stage 3 Doc Review (admin focuses on document workspace) */}
+          {/* Two Column Grid - hidden during Stage 3 Doc Review (admin focuses on document workspace) */}
           {vendor.stage !== 'Doc Review' && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '20px', alignItems: 'start' }}>
-            {/* Left Column: Vendor Info & Risk Engine */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              {/* Vendor Information Card */}
-              <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '16px' }}>
-                  COMPANY INFORMATION
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingBottom: '16px', marginBottom: '16px', borderBottom: '1px solid #F1F5F9' }}>
-                  <span style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#F3E8FF', color: '#6D28D9', fontWeight: 600, fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {vendor.initials}
-                  </span>
-                  <div>
-                    <div style={{ fontSize: '15px', fontWeight: 600, color: '#0F172A' }}>{vendor.name}</div>
-                    <div style={{ fontSize: '13px', color: '#64748B' }}>{vendor.company}</div>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ color: '#94A3B8', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
-                      <Package size={13} /> Category
-                    </span>
-                    <span style={{ padding: '2px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 600, backgroundColor: '#F0F9FF', color: '#0369A1', border: '1px solid #BAE6FD' }}>
-                      {vendor.category}
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ color: '#94A3B8', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
-                      <MapPin size={13} /> Country / Region
-                    </span>
-                    <span style={{ color: '#334155', fontWeight: 500 }}>{vendor.region}</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ color: '#94A3B8', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
-                      <UserCog size={13} /> Assigned Vendor Executive
-                    </span>
-                    <span style={{ color: '#334155', fontWeight: 600 }}>{vendor.supervisor}</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ color: '#94A3B8', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
-                      <Clock size={13} /> Submission Date
-                    </span>
-                    <span style={{ color: '#334155', fontWeight: 500 }}>{vendor.submitted}</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ color: '#94A3B8', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
-                      <FileText size={13} /> Overall Status
-                    </span>
-                    <StatusBadge status={vendor.status} />
-                  </div>
-                </div>
-              </div>
-
-              {/* Vendor Risk Card */}
-              <VendorRiskCard vendor={rawVendor || vendor} />
-            </div>
-
-            {/* Right Column: Compact Onboarding Progress or Documents Summary + Sample Products */}
-            {isInvited ? (
-              <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '24px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '12px' }}>
-                  ONBOARDING PROGRESS SUMMARY
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', backgroundColor: '#FEF3C7', border: '1px solid #FDE68A', padding: '14px', borderRadius: '10px', marginBottom: '16px' }}>
-                  <Clock size={20} className="text-amber-600" />
-                  <div>
-                    <strong style={{ fontSize: '13px', color: '#92400E' }}>Invited — Documents Pending</strong>
-                    <p style={{ fontSize: '12px', color: '#B45309', margin: '2px 0 0 0' }}>
-                      The vendor has been invited. Full Documents and Product Catalog will be unlocked once initial documents are submitted by the supplier.
-                    </p>
-                  </div>
-                </div>
-                <div style={{ fontSize: '12px', color: '#64748B', lineHeight: '1.6' }}>
-                  <strong>Next steps:</strong>
-                  <ul style={{ paddingLeft: '18px', marginTop: '6px' }}>
-                    <li>Vendor opens onboarding portal via unique invite link</li>
-                    <li>Submits Business Registration, Tax ID, and Insurance</li>
-                    <li>Uploads sample product catalog line items</li>
-                  </ul>
-                </div>
-              </div>
-            ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '20px', alignItems: 'start' }}>
+              {/* Left Column: Vendor Info & Risk Engine */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                {/* Documents Summary Card */}
+                {/* Vendor Information Card */}
                 <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase' }}>
-                      DOCUMENTS SUMMARY
+                  <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '16px' }}>
+                    COMPANY INFORMATION
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingBottom: '16px', marginBottom: '16px', borderBottom: '1px solid #F1F5F9' }}>
+                    <span style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#F3E8FF', color: '#6D28D9', fontWeight: 600, fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {vendor.initials}
+                    </span>
+                    <div>
+                      <div style={{ fontSize: '15px', fontWeight: 600, color: '#0F172A' }}>{vendor.name}</div>
+                      <div style={{ fontSize: '13px', color: '#64748B' }}>{vendor.company}</div>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: '18px', fontWeight: 700, color: '#0F172A' }}>{pct}%</div>
-                      <div style={{ fontSize: '11px', color: '#94A3B8' }}>complete</div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#94A3B8', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
+                        <Package size={13} /> Category
+                      </span>
+                      <span style={{ padding: '2px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 600, backgroundColor: '#F0F9FF', color: '#0369A1', border: '1px solid #BAE6FD' }}>
+                        {vendor.category}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#94A3B8', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
+                        <MapPin size={13} /> Country / Region
+                      </span>
+                      <span style={{ color: '#334155', fontWeight: 500 }}>{vendor.region}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#94A3B8', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
+                        <UserCog size={13} /> Assigned Vendor Executive
+                      </span>
+                      <span style={{ color: '#334155', fontWeight: 600 }}>{vendor.supervisor}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#94A3B8', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
+                        <Clock size={13} /> Submission Date
+                      </span>
+                      <span style={{ color: '#334155', fontWeight: 500 }}>{vendor.submitted}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#94A3B8', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
+                        <FileText size={13} /> Overall Status
+                      </span>
+                      <StatusBadge status={vendor.status} />
                     </div>
                   </div>
-                  <div style={{ fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '8px' }}>
-                    {verifiedCount} of 6 submitted
+                </div>
+
+                {/* Vendor Risk Card */}
+                <VendorRiskCard vendor={rawVendor || vendor} />
+              </div>
+
+              {/* Right Column: Compact Onboarding Progress or Documents Summary + Sample Products */}
+              {isInvited ? (
+                <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '24px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                  <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '12px' }}>
+                    ONBOARDING PROGRESS SUMMARY
                   </div>
-                  <div style={{ height: '8px', backgroundColor: '#F1F5F9', borderRadius: '9999px', overflow: 'hidden', marginBottom: '16px' }}>
-                    <div style={{ height: '100%', backgroundColor: '#10B981', borderRadius: '9999px', width: `${pct}%`, transition: 'width 0.3s ease' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', backgroundColor: '#FEF3C7', border: '1px solid #FDE68A', padding: '14px', borderRadius: '10px', marginBottom: '16px' }}>
+                    <Clock size={20} className="text-amber-600" />
+                    <div>
+                      <strong style={{ fontSize: '13px', color: '#92400E' }}>Invited - Documents Pending</strong>
+                      <p style={{ fontSize: '12px', color: '#B45309', margin: '2px 0 0 0' }}>
+                        The vendor has been invited. Full Documents and Product Catalog will be unlocked once initial documents are submitted by the supplier.
+                      </p>
+                    </div>
                   </div>
+                  <div style={{ fontSize: '12px', color: '#64748B', lineHeight: '1.6' }}>
+                    <strong>Next steps:</strong>
+                    <ul style={{ paddingLeft: '18px', marginTop: '6px' }}>
+                      <li>Vendor opens onboarding portal via unique invite link</li>
+                      <li>Submits Business Registration, Tax ID, and Insurance</li>
+                      <li>Uploads sample product catalog line items</li>
+                    </ul>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  {/* Documents Summary Card */}
+                  <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase' }}>
+                        DOCUMENTS SUMMARY
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: '18px', fontWeight: 700, color: '#0F172A' }}>{pct}%</div>
+                        <div style={{ fontSize: '11px', color: '#94A3B8' }}>complete</div>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '8px' }}>
+                      {verifiedCount} of 6 submitted
+                    </div>
+                    <div style={{ height: '8px', backgroundColor: '#F1F5F9', borderRadius: '9999px', overflow: 'hidden', marginBottom: '16px' }}>
+                      <div style={{ height: '100%', backgroundColor: '#10B981', borderRadius: '9999px', width: `${pct}%`, transition: 'width 0.3s ease' }} />
+                    </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {DOC_TEMPLATE.map((docName, i) => {
-                      const decision = docDecisions[docName];
-                      const isProfileSubmittedStage = currentStep <= 2;
-                      const isApprovedStage = currentStep >= 4;
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {DOC_TEMPLATE.map((docName, i) => {
+                        const decision = docDecisions[docName];
+                        const isProfileSubmittedStage = currentStep <= 2;
+                        const isApprovedStage = currentStep >= 4;
 
-                      let isVerified = false;
-                      let isPendingReview = false;
+                        let isVerified = false;
+                        let isPendingReview = false;
 
-                      if (isApprovedStage) {
-                        isVerified = decision ? decision.status === 'Verified' : true;
-                      } else if (isProfileSubmittedStage) {
-                        isPendingReview = true;
-                        isVerified = false;
-                      } else {
-                        // Stage 3 Doc Review
-                        isVerified = decision ? decision.status === 'Verified' : i < baseDocsDone;
-                        isPendingReview = !isVerified;
-                      }
+                        if (isApprovedStage) {
+                          isVerified = decision ? decision.status === 'Verified' : true;
+                        } else if (isProfileSubmittedStage) {
+                          isPendingReview = true;
+                          isVerified = false;
+                        } else {
+                          // Stage 3 Doc Review
+                          isVerified = decision ? decision.status === 'Verified' : i < baseDocsDone;
+                          isPendingReview = !isVerified;
+                        }
 
-                      const isRejected = decision ? decision.status === 'Rejected' : false;
+                        const isRejected = decision ? decision.status === 'Rejected' : false;
 
-                      const statusBg = isVerified ? '#ECFDF5' : isRejected ? '#FFF1F2' : isPendingReview ? '#F8FAFC' : '#F8FAFC';
-                      const statusBorder = isVerified ? '#A7F3D0' : isRejected ? '#FECDD3' : isPendingReview ? '#CBD5E1' : '#E2E8F0';
-                      const iconBg = isVerified ? '#D1FAE5' : isRejected ? '#FFE4E6' : isPendingReview ? '#E2E8F0' : '#E2E8F0';
-                      const iconColor = isVerified ? '#059669' : isRejected ? '#E11D48' : isPendingReview ? '#475569' : '#94A3B8';
+                        const statusBg = isVerified ? '#ECFDF5' : isRejected ? '#FFF1F2' : isPendingReview ? '#F8FAFC' : '#F8FAFC';
+                        const statusBorder = isVerified ? '#A7F3D0' : isRejected ? '#FECDD3' : isPendingReview ? '#CBD5E1' : '#E2E8F0';
+                        const iconBg = isVerified ? '#D1FAE5' : isRejected ? '#FFE4E6' : isPendingReview ? '#E2E8F0' : '#E2E8F0';
+                        const iconColor = isVerified ? '#059669' : isRejected ? '#E11D48' : isPendingReview ? '#475569' : '#94A3B8';
 
-                      return (
-                        <div
-                          key={docName}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            borderRadius: '8px',
-                            padding: '10px 14px',
-                            backgroundColor: statusBg,
-                            border: `1px solid ${statusBorder}`,
-                          }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-                            <span style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: iconBg, color: iconColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                              {isVerified ? <Check size={12} /> : isRejected ? <X size={12} /> : <FileText size={11} />}
-                            </span>
-                            <div style={{ minWidth: 0 }}>
-                              <div style={{ fontSize: '13px', fontWeight: 500, color: '#1E293B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{docName}</div>
-                              <div style={{ fontSize: '11px', color: isRejected ? '#E11D48' : isVerified ? '#059669' : '#64748B' }}>
-                                {isRejected
-                                  ? (decision?.comment ? `Rejected: ${decision.comment}` : 'Rejected · Needs correction')
-                                  : isVerified
-                                  ? 'Submitted · Verified'
-                                  : isPendingReview
-                                  ? 'Submitted · Pending Review'
-                                  : 'Not yet submitted'}
+                        return (
+                          <div
+                            key={docName}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              borderRadius: '8px',
+                              padding: '10px 14px',
+                              backgroundColor: statusBg,
+                              border: `1px solid ${statusBorder}`,
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                              <span style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: iconBg, color: iconColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                {isVerified ? <Check size={12} /> : isRejected ? <X size={12} /> : <FileText size={11} />}
+                              </span>
+                              <div style={{ minWidth: 0 }}>
+                                <div style={{ fontSize: '13px', fontWeight: 500, color: '#1E293B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{docName}</div>
+                                <div style={{ fontSize: '11px', color: isRejected ? '#E11D48' : isVerified ? '#059669' : '#64748B' }}>
+                                  {isRejected
+                                    ? (decision?.comment ? `Rejected: ${decision.comment}` : 'Rejected · Needs correction')
+                                    : isVerified
+                                      ? 'Submitted · Verified'
+                                      : isPendingReview
+                                        ? 'Submitted · Pending Review'
+                                        : 'Not yet submitted'}
+                                </div>
                               </div>
                             </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPreviewDoc(docName);
+                                setShowRejectForm(false);
+                                setRejectReason('');
+                              }}
+                              style={{
+                                height: '28px',
+                                padding: '0 10px',
+                                borderRadius: '6px',
+                                border: '1px solid #CBD5E1',
+                                backgroundColor: '#FFFFFF',
+                                color: '#334155',
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                flexShrink: 0,
+                              }}
+                            >
+                              View
+                            </button>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setPreviewDoc(docName);
-                              setShowRejectForm(false);
-                              setRejectReason('');
-                            }}
-                            style={{
-                              height: '28px',
-                              padding: '0 10px',
-                              borderRadius: '6px',
-                              border: '1px solid #CBD5E1',
-                              backgroundColor: '#FFFFFF',
-                              color: '#334155',
-                              fontSize: '11px',
-                              fontWeight: 600,
-                              cursor: 'pointer',
-                              flexShrink: 0,
-                            }}
-                          >
-                            View
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Sample Products Card below Documents Summary */}
-                <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', position: 'relative' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-                    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase' }}>
-                      SAMPLE PRODUCTS
+                        );
+                      })}
                     </div>
-                    <span style={{ fontSize: '11px', color: '#94A3B8' }}>
-                      {sampleProducts.length} product{sampleProducts.length !== 1 ? 's' : ''} submitted
-                    </span>
                   </div>
-                  {sampleProducts.length > 0 ? (
-                    <div style={{ position: 'relative', width: '100%' }}>
-                      {/* Left Scroll Button */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (productScrollRef.current) {
-                            productScrollRef.current.scrollBy({ left: -360, behavior: 'smooth' });
-                          }
-                        }}
-                        style={{
-                          position: 'absolute',
-                          left: '-12px',
-                          top: '50%',
-                          transform: 'translateY(-50%)',
-                          zIndex: 5,
-                          width: '28px',
-                          height: '28px',
-                          borderRadius: '50%',
-                          border: '1px solid #E2E8F0',
-                          backgroundColor: '#FFFFFF',
-                          color: '#475569',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s'
-                        }}
-                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#F8FAFC'; e.currentTarget.style.transform = 'translateY(-50%) scale(1.05)'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#FFFFFF'; e.currentTarget.style.transform = 'translateY(-50%) scale(1)'; }}
-                      >
-                        <ChevronLeft size={14} />
-                      </button>
 
-                      {/* Horizontal scroll row */}
-                      <div
-                        ref={productScrollRef}
-                        style={{
-                          display: 'flex',
-                          gap: '10px',
-                          overflowX: 'auto',
-                          scrollBehavior: 'smooth',
-                          scrollbarWidth: 'none',
-                          padding: '2px 0'
-                        }}
-                      >
-                        {sampleProducts.map((p) => (
-                          <div
-                            key={p.id}
-                            style={{
-                              flex: '0 0 180px', // width of each card increased to 180px
-                              borderRadius: '8px',
-                              overflow: 'hidden',
-                              backgroundColor: '#F1F5F9',
-                              aspectRatio: '1 / 1',
-                              border: '1px solid #E2E8F0',
-                              position: 'relative'
-                            }}
-                          >
-                            <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
-                          </div>
-                        ))}
+                  {/* Sample Products Card below Documents Summary */}
+                  <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '20px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', position: 'relative' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                      <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: '#94A3B8', textTransform: 'uppercase' }}>
+                        SAMPLE PRODUCTS
                       </div>
+                      <span style={{ fontSize: '11px', color: '#94A3B8' }}>
+                        {sampleProducts.length} product{sampleProducts.length !== 1 ? 's' : ''} submitted
+                      </span>
+                    </div>
+                    {sampleProducts.length > 0 ? (
+                      <div style={{ position: 'relative', width: '100%' }}>
+                        {/* Left Scroll Button */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (productScrollRef.current) {
+                              productScrollRef.current.scrollBy({ left: -360, behavior: 'smooth' });
+                            }
+                          }}
+                          style={{
+                            position: 'absolute',
+                            left: '-12px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            zIndex: 5,
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '50%',
+                            border: '1px solid #E2E8F0',
+                            backgroundColor: '#FFFFFF',
+                            color: '#475569',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#F8FAFC'; e.currentTarget.style.transform = 'translateY(-50%) scale(1.05)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#FFFFFF'; e.currentTarget.style.transform = 'translateY(-50%) scale(1)'; }}
+                        >
+                          <ChevronLeft size={14} />
+                        </button>
 
-                      {/* Right Scroll Button */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (productScrollRef.current) {
-                            productScrollRef.current.scrollBy({ left: 360, behavior: 'smooth' });
-                          }
-                        }}
-                        style={{
-                          position: 'absolute',
-                          right: '-12px',
-                          top: '50%',
-                          transform: 'translateY(-50%)',
-                          zIndex: 5,
-                          width: '28px',
-                          height: '28px',
-                          borderRadius: '50%',
-                          border: '1px solid #E2E8F0',
-                          backgroundColor: '#FFFFFF',
-                          color: '#475569',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s'
-                        }}
-                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#F8FAFC'; e.currentTarget.style.transform = 'translateY(-50%) scale(1.05)'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#FFFFFF'; e.currentTarget.style.transform = 'translateY(-50%) scale(1)'; }}
-                      >
-                        <ChevronRight size={14} />
-                      </button>
-                    </div>
-                  ) : (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#94A3B8', padding: '24px 0', justifyContent: 'center', border: '1px dashed #CBD5E1', borderRadius: '8px' }}>
-                      <Package size={14} /> No products submitted for this vendor yet
-                    </div>
-                  )}
+                        {/* Horizontal scroll row */}
+                        <div
+                          ref={productScrollRef}
+                          style={{
+                            display: 'flex',
+                            gap: '10px',
+                            overflowX: 'auto',
+                            scrollBehavior: 'smooth',
+                            scrollbarWidth: 'none',
+                            padding: '2px 0'
+                          }}
+                        >
+                          {sampleProducts.map((p) => (
+                            <div
+                              key={p.id}
+                              style={{
+                                flex: '0 0 180px', // width of each card increased to 180px
+                                borderRadius: '8px',
+                                overflow: 'hidden',
+                                backgroundColor: '#F1F5F9',
+                                aspectRatio: '1 / 1',
+                                border: '1px solid #E2E8F0',
+                                position: 'relative'
+                              }}
+                            >
+                              <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Right Scroll Button */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (productScrollRef.current) {
+                              productScrollRef.current.scrollBy({ left: 360, behavior: 'smooth' });
+                            }
+                          }}
+                          style={{
+                            position: 'absolute',
+                            right: '-12px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            zIndex: 5,
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '50%',
+                            border: '1px solid #E2E8F0',
+                            backgroundColor: '#FFFFFF',
+                            color: '#475569',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#F8FAFC'; e.currentTarget.style.transform = 'translateY(-50%) scale(1.05)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#FFFFFF'; e.currentTarget.style.transform = 'translateY(-50%) scale(1)'; }}
+                        >
+                          <ChevronRight size={14} />
+                        </button>
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#94A3B8', padding: '24px 0', justifyContent: 'center', border: '1px dashed #CBD5E1', borderRadius: '8px' }}>
+                        <Package size={14} /> No products submitted for this vendor yet
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
           )}
         </div>
       )}
 
       {/* Sub-tab views */}
+      {activeTab === 'documents' && <DocumentsView />}
       {activeTab === 'products' && <ProductCatalog vendorId={vendor.id} />}
       {activeTab === 'activity' && <VendorActivity vendor={rawVendor || vendor} auditLogs={auditLogs} />}
       {activeTab === 'communication' && <VendorCommunication vendor={rawVendor || vendor} />}
+      {activeTab === 'history' && (
+        <VendorActivity
+          vendor={rawVendor || vendor}
+          auditLogs={(auditLogs || []).filter((a: any) =>
+            a.actionType === 'DECISION' || a.actionType === 'FIELD_ACCEPT' || a.actionType === 'GATE_BLOCKED' || a.actionType === 'APPROVAL' || a.actionType === 'REJECTED'
+          )}
+        />
+      )}
 
       {/* Sticky Decision Bar */}
       {canDecide && (
@@ -791,7 +797,7 @@ export default function VendorDetailView({
 
       {/* Document Preview Modal Popup */}
       {previewDoc && (
-        <div 
+        <div
           style={{
             position: 'fixed',
             inset: 0,
@@ -805,7 +811,7 @@ export default function VendorDetailView({
           }}
           onClick={() => { setPreviewDoc(null); setShowRejectForm(false); }}
         >
-          <div 
+          <div
             style={{
               backgroundColor: '#FFFFFF',
               borderRadius: '16px',
@@ -832,7 +838,7 @@ export default function VendorDetailView({
                 <X size={18} />
               </button>
             </div>
-            
+
             <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ backgroundColor: '#F1F5F9', borderRadius: '10px', height: '180px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', border: '1px stroke #CBD5E1' }}>
                 <FileText size={40} style={{ color: '#059669', opacity: 0.8 }} />
@@ -867,7 +873,7 @@ export default function VendorDetailView({
                   <label style={{ fontSize: '12px', fontWeight: 600, color: '#BE123C' }}>
                     Reason for Rejection / Required Corrections:
                   </label>
-                  
+
                   {/* Preset Quick Reason Pills */}
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                     {[

@@ -65,7 +65,7 @@ class TimestampMixin:
 
 
 class CreatedAtMixin:
-    """`created_at` only — for append-only tables that are never updated."""
+    """`created_at` only - for append-only tables that are never updated."""
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// The agent catalog — Skills / Actions / Context.
+// The agent catalog - Skills / Actions / Context.
 //
 // This is the configurable definition of every agent in the platform. It is
 // data, not behaviour: `agentEngine.js` reads this to decide what an agent is
@@ -10,7 +10,7 @@
 // The governance rule that matters most is expressed structurally rather than
 // in prose: `approve_vendor`, `reject_vendor` and `activate_erp` appear in
 // FORBIDDEN_ACTIONS and in no agent's action list. An agent cannot perform them
-// because the action does not exist in its allowlist — not because a prompt
+// because the action does not exist in its allowlist - not because a prompt
 // asked it not to.
 // ---------------------------------------------------------------------------
 
@@ -74,7 +74,7 @@ export const AGENT_CATALOG = [
     name: 'Chaser Agent',
     glyph: 'CH',
     tone: 'amber',
-    purpose: 'Drives an incomplete file to a complete one — in the supplier\'s language, in the channel they actually read.',
+    purpose: 'Drives an incomplete file to a complete one - in the supplier\'s language, in the channel they actually read.',
     autonomy: 'autonomous',
     channels: ['whatsapp', 'email'],
     skills: [
@@ -83,11 +83,11 @@ export const AGENT_CATALOG = [
       skill('ladder', 'Follow an escalation ladder',
         'Follow up at 48h, then at 96h copying the supplier\'s manager contact. At 144h stop and hand the thread to a human rather than sending a fourth message.'),
       skill('localise', 'Write in the supplier\'s working language',
-        'Compose in the language of the country of manufacture — Mandarin, Vietnamese, Bengali, Turkish, German — with an English copy underneath for the audit trail.'),
+        'Compose in the language of the country of manufacture - Mandarin, Vietnamese, Bengali, Turkish, German - with an English copy underneath for the audit trail.'),
       skill('ingest-reply', 'Accept a reply with an attachment',
         'Treat a photo or scan attached to an email or WhatsApp reply as a submission. OCR it, file it against the open request, and close the request. Never require a portal login.'),
       skill('reject-precisely', 'Explain a rejection at page level',
-        'If a resubmission fails, say which page and what is wrong — "page 2 is cut off, resend that page only" — never "document rejected".'),
+        'If a resubmission fails, say which page and what is wrong - "page 2 is cut off, resend that page only" - never "document rejected".'),
     ],
     actions: [
       action('send_request', 'Send a document request', 'low', false),
@@ -115,7 +115,7 @@ export const AGENT_CATALOG = [
       skill('tiering', 'Tier every finding by confidence',
         'Auto-clear at 90% and above. Route 60–89% for review. Route below 60%, and every cross-document conflict, for a reviewer decision.'),
       skill('corroborate', 'Corroborate against an external registry',
-        'Where a public registry exists — national tax portal, IEC directory, denied-party lists — check the claimed registration resolves to an active record.'),
+        'Where a public registry exists - national tax portal, IEC directory, denied-party lists - check the claimed registration resolves to an active record.'),
     ],
     actions: [
       action('run_extraction', 'Run extraction over a document', 'low', false),
@@ -163,7 +163,7 @@ export const AGENT_CATALOG = [
       skill('stage-timing', 'Measure time per stage',
         'Track how long each supplier spends at each stage, split by country and category, and surface the outliers.'),
       skill('propose-change', 'Propose a configuration change',
-        'Turn each pattern into a concrete proposal — a prompt to retune, a checklist item to drop, a translation to fix — for a human to accept or dismiss.'),
+        'Turn each pattern into a concrete proposal - a prompt to retune, a checklist item to drop, a translation to fix - for a human to accept or dismiss.'),
     ],
     actions: [
       action('read_audit', 'Read the audit trail', 'low', false),

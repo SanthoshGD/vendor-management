@@ -8,13 +8,13 @@
     rel="stylesheet">
   <style>
     /* ===========================================================================
-   FOUNDATION — the single source of truth for scale.
+   FOUNDATION - the single source of truth for scale.
    ---------------------------------------------------------------------------
    Everything below this block is component anatomy. Nothing below it is
    allowed to invent a number: if a value is not on one of these scales, it is
    a bug, not a decision. Three token blocks used to compete here (one per
    redesign pass) and the sheet had drifted to 44 spacing values, 21 type sizes
-   and 8 font weights — which is why the product read as busy rather than
+   and 8 font weights - which is why the product read as busy rather than
    dense. One scale each now.
    =========================================================================== */
     :root {
@@ -49,7 +49,7 @@
       --t-3xl: 30px;
       --t-4xl: 38px;
       --t-5xl: 38px;
-      /* Line heights are a scale too — headings tighten as they grow. */
+      /* Line heights are a scale too - headings tighten as they grow. */
       --lh-tight: 1.15;
       --lh-snug: 1.3;
       --lh-body: 1.55;
@@ -103,7 +103,7 @@
       --muted: #52635b;
       --faint: #5e6f67;
       /* --faint cleared 4.5:1 on pure white and nothing else. Most of the places
-     it is actually used — table heads, stat wells, tinted rows — sit on a
+     it is actually used - table heads, stat wells, tinted rows - sit on a
      #f6f9f7-ish surface, where it measured 4.35. Two shades down clears AA on
      every surface in the product. */
       --canvas: #f4f6f5;
@@ -121,12 +121,12 @@
 
       /* Status tints. Four severities, and that is the whole vocabulary:
        neutral  nothing is being claimed
-       green    settled — verified, cleared, approved
+       green    settled - verified, cleared, approved
        amber    a human should look
        red      blocked; nothing proceeds
      `blue` survives only as "in flight, no judgement yet", desaturated so it
      reads as motion rather than as a fifth opinion. Violet is retired as a
-     status and kept only as the agent's identity accent — a supplier being
+     status and kept only as the agent's identity accent - a supplier being
      "in review" and an agent having done something are different kinds of
      fact and should never have shared a hue. */
       --tint-neutral: #f1f4f3;
@@ -710,7 +710,7 @@
       transform: translateY(-1px)
     }
 
-    /* Disabled buttons are styled once, near the other .button variants below —
+    /* Disabled buttons are styled once, near the other .button variants below -
    a flat 50% opacity dropped the label on the app's primary action to roughly
    1.6:1 against the banner behind it. */
     .button.primary {
@@ -3749,7 +3749,7 @@
       }
     }
 
-    /* ================= Review Workspace (Screen 2 — core feature) ================= */
+    /* ================= Review Workspace (Screen 2 - core feature) ================= */
     .review-workspace {
       height: calc(100vh - 85px);
       display: flex;
@@ -4463,7 +4463,7 @@
       gap: 8px
     }
 
-    /* ================= Audit Trail (Screen 3 — immutable log) ================= */
+    /* ================= Audit Trail (Screen 3 - immutable log) ================= */
     .audit-toolbar {
       display: flex;
       align-items: center;
@@ -4798,7 +4798,7 @@
       text-wrap: balance
     }
 
-    /* Consistent focus treatment on every interactive surface — the base sheet had none. */
+    /* Consistent focus treatment on every interactive surface - the base sheet had none. */
     button:focus-visible,
     a:focus-visible,
     input:focus-visible,
@@ -5469,7 +5469,7 @@
     }
 
     /* =========================================================================
-   CORE SCREEN 2 — AI REVIEW WORKSPACE
+   CORE SCREEN 2 - AI REVIEW WORKSPACE
    ========================================================================= */
     .review-workspace {
       height: calc(100vh - 72px)
@@ -5536,7 +5536,7 @@
       font: 700 var(--t-2xs) var(--font-mono)
     }
 
-    /* document canvas — the paper has to feel like a real scanned document */
+    /* document canvas - the paper has to feel like a real scanned document */
     .doc-canvas-toolbar {
       padding: var(--s-3) var(--s-5)
     }
@@ -5714,7 +5714,7 @@
     }
 
     /* =========================================================================
-   CORE SCREEN 3 — IMMUTABLE AUDIT TRAIL
+   CORE SCREEN 3 - IMMUTABLE AUDIT TRAIL
    ========================================================================= */
     .audit-toolbar {
       padding: var(--s-3) var(--s-4);
@@ -5998,7 +5998,7 @@
    The vendor-facing half of the product: what someone sees when they open an
    invite link on a device that has never run this app. Built entirely from the
    token layer above so it inherits the same scale, radii, and elevation as the
-   customer workspace — the two halves are one product, not two skins.
+   customer workspace - the two halves are one product, not two skins.
    ========================================================================= */
 
     .wizard-page {
@@ -7050,7 +7050,7 @@
 
     /* ---------- vendor workspace switcher (sidebar) ----------
    In the vendor portal the workspace lockup is a real picker: it answers
-   "whose portal am I in?" and lets you jump to any vendor — including the ones
+   "whose portal am I in?" and lets you jump to any vendor - including the ones
    still mid-onboarding, which is how the wizard stays one click away. */
     .workspace-picker-wrap {
       position: relative
@@ -7188,7 +7188,7 @@
 
     /* ===========================================================================
    AGENT PLATFORM
-   Everything below is built from the token layer above — no raw pixel values
+   Everything below is built from the token layer above - no raw pixel values
    for colour, spacing, radius or type. Changing a token restyles the agent
    surfaces along with the rest of the app.
    =========================================================================== */
@@ -9480,7 +9480,7 @@
     }
 
     /* ===========================================================================
-   REVIEW WORKSPACE — restructured
+   REVIEW WORKSPACE - restructured
    The previous grid (rail | split | chat) plus internal min-widths ran past
    the viewport, clipping the command bar and the extracted-data panel. Every
    track below is `minmax(0, …)` so nothing can force horizontal scroll, and
@@ -10392,7 +10392,7 @@
     /* ================= Supervisor workspace =================
    The supervisor role reuses the admin's panels, lists and metric cards
    wherever the content is the same shape. Only the genuinely new objects get
-   styles here — an escalation card, a clickable KPI, and the returned-work
+   styles here - an escalation card, a clickable KPI, and the returned-work
    banner that closes the escalation round-trip. */
 
     /* A KPI you can follow. The affordance is deliberately quiet: it reads as a
@@ -10587,7 +10587,7 @@
       line-height: 1.6;
     }
 
-    /* The evidence row. A definition list because that is what it is — the terms
+    /* The evidence row. A definition list because that is what it is - the terms
    are fixed per request type and the values are what the decision rests on. */
     .request-detail {
       display: grid;
@@ -10850,7 +10850,7 @@
     }
 
     /* A request that is with the supervisor but has not taken the case away.
-   Deliberately quieter than .rw-returned — it is information, not an
+   Deliberately quieter than .rw-returned - it is information, not an
    instruction, and the reviewer still has work to do below it. */
     .rw-notice {
       display: flex;
@@ -10973,7 +10973,7 @@
       font-weight: 600;
     }
 
-    /* Compact row. Still a real summary — who, what kind, how late — rather than a
+    /* Compact row. Still a real summary - who, what kind, how late - rather than a
    truncated card, so triage does not require expanding anything. */
     .request-row {
       display: flex;
@@ -11063,7 +11063,7 @@
       cursor: pointer;
     }
 
-    /* Sticky bulk bar. Only present when something is selected — an always-on
+    /* Sticky bulk bar. Only present when something is selected - an always-on
    action bar teaches people to ignore it. */
     .bulk-bar {
       position: sticky;
@@ -11169,7 +11169,7 @@
 
     /* ================= Gated onboarding shell =================
    What a supplier sees before they have submitted anything. No sidebar, no
-   search, no notifications — the application IS the app until it is sent. */
+   search, no notifications - the application IS the app until it is sent. */
     .onboarding-shell {
       min-height: 100vh;
       display: flex;
@@ -11296,7 +11296,7 @@
 
     /* Why a document was rejected, shown against the document itself. A supplier
    is the only person who can fix this, so the reason has to be where they are
-   looking — not in a notification, and not in an email they may never open. */
+   looking - not in a notification, and not in an email they may never open. */
     .wizard-doc {
       flex-wrap: wrap
     }
@@ -11873,7 +11873,7 @@
    ---------------------------------------------------------------------------
    Appended last so it wins without editing the sheets above it.
 
-   The problem this solves is not that any one screen was ugly — it is that the
+   The problem this solves is not that any one screen was ugly - it is that the
    product was signalling with six hues, four type weights and three card
    treatments at once, so nothing could be emphatic because everything already
    was. This layer takes vocabulary away rather than adding decoration.
@@ -12060,14 +12060,14 @@
     }
 
     /* ===========================================================================
-   SCREEN 2 — the Review Workspace
+   SCREEN 2 - the Review Workspace
    ---------------------------------------------------------------------------
    This is where a reviewer spends their day, so it gets the strictest reading.
    The spine was right; it was competing with itself for attention.
    =========================================================================== */
 
     /* Identity is context, not content. It should be legible and then get out of
-   the way — it was previously as loud as the verdict beneath it. */
+   the way - it was previously as loud as the verdict beneath it. */
     .rw-identity {
       padding-block: var(--s-3)
     }
@@ -12216,7 +12216,7 @@
       color: var(--agent-accent)
     }
 
-    /* Buttons: one primary per context was already the rule — this makes the
+    /* Buttons: one primary per context was already the rule - this makes the
    secondary genuinely secondary so the rule is visible, not just enforced. */
     .button.secondary {
       background: #fff;
@@ -12236,7 +12236,7 @@
     }
 
     /* ===========================================================================
-   AUDIT — CASE FILES
+   AUDIT - CASE FILES
    ---------------------------------------------------------------------------
    One supplier's history, forward, with every event sitting in the lane of
    whoever held the authority for it.
@@ -12244,7 +12244,7 @@
    The design problem: an audit trail is the least-read screen in most
    compliance products because it is always a table, and a table of 200 rows
    answers "what happened" only if you already know what you are looking for.
-   A case reads as a story instead — and because the lanes are fixed, the shape
+   A case reads as a story instead - and because the lanes are fixed, the shape
    of the story is itself the finding. A case where the agent lane is dense and
    the human lanes hold every decision looks *right* from across the room. One
    where a decision sits in the agent lane would look wrong instantly, which is
@@ -12564,7 +12564,7 @@
       font-weight: 600;
     }
 
-    /* Refusals are the load-bearing entries — the moments the platform said no.
+    /* Refusals are the load-bearing entries - the moments the platform said no.
    They are the only thing here allowed to shout. */
     .case-event.is-refused .case-event-card {
       background: var(--tint-red);
@@ -12675,7 +12675,7 @@
     }
 
     /* ---------- RHYTHM (Prägnanz) ----------------------------------------------
-   One vertical scale. Sections separate by space, not by rules and boxes —
+   One vertical scale. Sections separate by space, not by rules and boxes -
    a border is only earned where the *owner* of the content changes. */
     .nexus-page>section+section,
     .nexus-page>div+section {
@@ -12687,7 +12687,7 @@
     }
 
     /* The unguarded `.panel>*+*{margin-top}` that used to sit here is restated in
-   the composition layer with the flex/grid panels excluded — here it was
+   the composition layer with the flex/grid panels excluded - here it was
    stacking a margin on top of those panels' own row-gap. */
     .panel-heading {
       margin-bottom: var(--s-4)
@@ -12759,7 +12759,7 @@
     }
 
     /* ---------- INTERACTION (Doherty threshold) ---------------------------------
-   Every interactive surface answers in three states — rest, hover, press — and
+   Every interactive surface answers in three states - rest, hover, press - and
    the press state is immediate and physical, so the interface always feels
    like it heard you even before the state actually changes. 120ms is under the
    threshold where a transition starts to feel like latency. */
@@ -12814,9 +12814,9 @@
    so they competed and none of them read as authoritative. They are now three
    different mechanisms and cannot be confused:
 
-     hover      a wash          — reversible, means nothing
-     selected   a left edge     — persistent, means "this is the subject"
-     focus      a ring          — keyboard only, means "typing lands here"
+     hover      a wash          - reversible, means nothing
+     selected   a left edge     - persistent, means "this is the subject"
+     focus      a ring          - keyboard only, means "typing lands here"
 */
     .worklist-row:hover,
     .queue-row:hover,
@@ -12845,7 +12845,7 @@
       background: var(--green-2);
     }
 
-    /* Focus is never merely a colour change — it must survive on every background. */
+    /* Focus is never merely a colour change - it must survive on every background. */
     :focus-visible {
       outline: 2px solid var(--green-2);
       outline-offset: 2px
@@ -12879,7 +12879,7 @@
     }
 
     /* ---------- TABLES & DENSITY ------------------------------------------------
-   Row separation by hairline, not by alternating fills — zebra striping adds a
+   Row separation by hairline, not by alternating fills - zebra striping adds a
    second visual rhythm competing with the one the content already has. */
     .request-table tr+tr td,
     .mini-activity>*+* {
@@ -12916,7 +12916,7 @@
    interaction. Earlier layers remain for page-specific anatomy.
    ========================================================================== */
 
-    /* The third copy of the token scale used to live here — same names, different
+    /* The third copy of the token scale used to live here - same names, different
    values, so which one applied depended on source order rather than on intent.
    Folded into the foundation at the top of the sheet. */
 
@@ -14162,7 +14162,7 @@
     /* ---------------------------------------------------------------------------
    1. TYPOGRAPHY
    Ten sizes, four weights, three line-heights, two families. A heading is
-   distinguished from body text by size and family — not by also being a
+   distinguished from body text by size and family - not by also being a
    different colour, a heavier weight, and uppercase.
    --------------------------------------------------------------------------- */
 
@@ -14289,7 +14289,7 @@
     }
 
     /* …except inside containers already narrower than the measure, where the cap
-   is dead weight — and except where the element is a *region* that happens to
+   is dead weight - and except where the element is a *region* that happens to
    be built from a <p>, which must still fill its panel. */
     .metric-card p,
     .queue-row p,
@@ -14315,7 +14315,7 @@
 
     /* Default rhythm for panels laid out in normal flow. Panels that are
    themselves a flex or grid container already space their own children with
-   `gap`, and adding a margin on top of that gap compounds the two — the
+   `gap`, and adding a margin on top of that gap compounds the two - the
    onboarding card's heading sat 40px from its own lede that way. There is no
    selector for "parent is not a flex container", so the exceptions are named.
    `:where()` keeps this at one class of specificity so any component can still
@@ -14335,7 +14335,7 @@
 
     /* PROXIMITY. The gap inside a label/value pair must always be smaller than the
    gap between pairs, or the pairs stop reading as pairs. Several metric strips
-   had this inverted — which is exactly what made them feel like noise. */
+   had this inverted - which is exactly what made them feel like noise. */
     .metric-card>span:last-child,
     .vendor-metrics article>span:last-child,
     .governance-card>div,
@@ -14400,7 +14400,7 @@
       box-shadow: none;
     }
 
-    /* Status is carried by tint plus word, never by tint alone — a red pill and an
+    /* Status is carried by tint plus word, never by tint alone - a red pill and an
    amber pill are the same pill to a red-green colourblind reader. The border
    adds a second, non-chromatic cue at the edge. */
     .status-pill {
@@ -14425,7 +14425,7 @@
 
     /* ---------------------------------------------------------------------------
    4. INTERACTION
-   Rest, hover, press, focus, disabled — five states, the same five everywhere.
+   Rest, hover, press, focus, disabled - five states, the same five everywhere.
    Transitions stay under 220ms; past that a state change reads as latency
    rather than as feedback (Doherty).
    --------------------------------------------------------------------------- */
@@ -14473,7 +14473,7 @@
     }
 
     /* Focus is a ring and only a ring, so it reads identically on white, on tint
-   and on the dark sidebar — and it never doubles as hover. */
+   and on the dark sidebar - and it never doubles as hover. */
     :focus-visible {
       outline: 2px solid var(--green-2);
       outline-offset: 2px;
@@ -14524,7 +14524,7 @@
     /* -- Onboarding pipeline ----------------------------------------------------
    Five 240px columns plus gaps need 1248px; the content area at a 1440px
    window is about 1130px. So the board overflowed at the most common desktop
-   size and every card title truncated mid-word — on a screen whose entire job
+   size and every card title truncated mid-word - on a screen whose entire job
    is telling you which supplier is where.
 
    Columns now size to the content instead of to a guess, the board scrolls
@@ -14549,7 +14549,7 @@
     }
 
     /* A supplier name is the one thing on the card that must survive. Two lines
-   then ellipsis beats one truncated line every single time — "Nordwind Lede…"
+   then ellipsis beats one truncated line every single time - "Nordwind Lede…"
    and "Nordwind Leder…" are the same word to a reader scanning the board. */
     .pipeline-card .vendor-identity strong {
       display: -webkit-box;
@@ -14574,7 +14574,7 @@
     /* -- Expiring evidence row --------------------------------------------------
    The grid was `auto 1fr auto auto` and the third track held a full sentence.
    An `auto` track sized to a sentence starves the `1fr` beside it, so the
-   document title — the subject of the row — was squeezed into four wrapped
+   document title - the subject of the row - was squeezed into four wrapped
    lines next to a pill running the full width of the panel.
 
    The note is the *explanation*, so it belongs under the title, not beside it
@@ -14631,7 +14631,7 @@
       padding-bottom: 0
     }
 
-    /* Two panels of unrelated length should not be stretched to match each other —
+    /* Two panels of unrelated length should not be stretched to match each other -
    the shorter one just grows a pool of empty white. */
     .compliance-layout>.panel {
       align-self: start
@@ -14684,7 +14684,7 @@
     }
 
     /* Some labels in a strip wrap and some do not, so the values they introduce
-   land on different baselines — and the whole point of a strip is that you
+   land on different baselines - and the whole point of a strip is that you
    compare across it in one horizontal sweep. Reserving two lines for every
    label puts every value on the same line, whatever the label's length. */
     .governance-card small,
@@ -14696,7 +14696,7 @@
 
     /* -- Outcome bars -----------------------------------------------------------
    The label lives inside the bar, but the bar's width is a percentage of the
-   slowest stage — so the fastest stage drew a 34px bar around a 36px label and
+   slowest stage - so the fastest stage drew a 34px bar around a 36px label and
    the text spilled out of its own rounded corner. A bar is now never narrower
    than the number it is carrying. */
     .outcome-bar {
@@ -14757,7 +14757,7 @@
     }
 
     /* -- Review workspace -------------------------------------------------------
-   Four full-width bands stack above the working area — identity, stepper,
+   Four full-width bands stack above the working area - identity, stepper,
    verdict, and whichever notices apply. Each was individually reasonable and
    together they took a fifth of the viewport before a reviewer saw a finding.
    The bands that carry a decision keep their height; the ones that carry
@@ -14849,7 +14849,7 @@
       }
 
       /* The hero is a heading, a sentence and up to two actions on one row. The
-     actions hold their width, so the sentence is what gets crushed — at 768 it
+     actions hold their width, so the sentence is what gets crushed - at 768 it
      was wrapping to two lines inside a third of the page while the buttons had
      the rest. Below this it stacks and the sentence gets the full measure. */
       .page-hero {
@@ -14890,7 +14890,7 @@
       }
 
       /* Reading order beats source order on a phone: the eyebrow, then the
-     heading, then the copy, then the actions — never actions above copy. */
+     heading, then the copy, then the actions - never actions above copy. */
       .page-hero {
         flex-direction: column;
         align-items: stretch
@@ -14906,7 +14906,7 @@
       }
     }
 
-    /* Coarse pointers get no hover lift at all — on touch it fires on tap and
+    /* Coarse pointers get no hover lift at all - on touch it fires on tap and
    reads as a rendering glitch rather than as feedback. */
     @media (hover:none) {
 
@@ -14965,7 +14965,7 @@
 
     /* ---------------------------------------------------------------------------
    7. HIT AREAS
-   Inline text buttons — "View pipeline", "Open review", "Open document" — are
+   Inline text buttons - "View pipeline", "Open review", "Open document" - are
    19 to 22 pixels tall because that is how tall the words are. Fitts's law
    costs you the same time whether the target is small by design or small by
    accident, so the touchable area is grown with a pseudo-element instead of
@@ -15080,7 +15080,7 @@
       background: var(--green-2);
     }
 
-    /* Anything the app is still deriving gets a shimmer rather than a spinner —
+    /* Anything the app is still deriving gets a shimmer rather than a spinner -
    a spinner says "wait", a skeleton says "here is the shape of what is
    coming", which is the difference between a 400ms wait feeling slow or not. */
     .is-loading {
@@ -15164,7 +15164,7 @@
     }
 
     /* The last three targets below the 28px floor. The document card's overflow
-   menu was a 21px-wide "…" with a 40px-tall parent — tall enough, but you had
+   menu was a 21px-wide "…" with a 40px-tall parent - tall enough, but you had
    to hit a 21px-wide column to reach it. */
     .document-card header button {
       width: var(--c-sm);
@@ -15206,7 +15206,7 @@
 
     /* ---------------------------------------------------------------------------
    10. THE EXCEPTION HAS TO LOOK LIKE ONE
-   Eight document cards, six of them settled and two needing work — drawn
+   Eight document cards, six of them settled and two needing work - drawn
    identically, so the supplier's own to-do list read as a filing cabinet. The
    difference was carried entirely by a small pill at the bottom of the card,
    which is the last thing the eye reaches.
@@ -15277,7 +15277,7 @@
 
     /* The step rail is the supplier's answer to "how much more of this is there".
    It stays legible rather than clever: the current step is filled, done steps
-   are ticked, and the ones ahead are dimmed but never hidden — a progress
+   are ticked, and the ones ahead are dimmed but never hidden - a progress
    indicator you cannot read the end of is worse than none (Zeigarnik). */
     .wizard-rail-step.next {
       opacity: .7
@@ -15298,7 +15298,7 @@
    12. DIALOGS
    A modal is a question. It gets a clear title, a body at reading measure, and
    the answer buttons in a bar of their own so the commit action is always in
-   the same place — bottom right, primary last (Jakob).
+   the same place - bottom right, primary last (Jakob).
    --------------------------------------------------------------------------- */
     .modal-card>header h2 {
       line-height: var(--lh-snug)
@@ -15352,7 +15352,7 @@
 
     /* ---------------------------------------------------------------------------
    14. HORIZONTAL SCROLL AFFORDANCE
-   Several strips scroll sideways on narrow screens — the primary-flow stepper,
+   Several strips scroll sideways on narrow screens - the primary-flow stepper,
    the wizard rail, the decision bar, the pipeline board. A row that simply
    stops at the viewport edge reads as clipped, not as scrollable, so people do
    not try. A mask that fades the content out at whichever edge has more
@@ -15373,7 +15373,7 @@
     }
 
     /* The mask costs nothing when there is nothing to scroll to, but it would clip
-   a focus ring at the edge — so it is dropped the moment focus is inside. */
+   a focus ring at the edge - so it is dropped the moment focus is inside. */
     .rw-stepper:focus-within,
     .wizard-rail:focus-within,
     .detail-actions:focus-within,
@@ -15400,7 +15400,7 @@
    15. CARD DENSITY
    A metric card was 104px tall around three lines of text totalling 66px. The
    min-height existed to keep a row of cards even, which the grid already does
-   — so it was buying nothing and spending a fifth of the fold.
+   - so it was buying nothing and spending a fifth of the fold.
    --------------------------------------------------------------------------- */
     .metric-card,
     .governance-card {
@@ -15419,7 +15419,7 @@
     /* ---------------------------------------------------------------------------
    16. THE STAGE BAR
    Five segments in five greens, reading as a legend for a scale that does not
-   exist — the colour was carrying no information the width was not already
+   exist - the colour was carrying no information the width was not already
    carrying. One hue, one meaning: further right is further along.
    --------------------------------------------------------------------------- */
     .stage-bar i:nth-child(1) {
@@ -15451,12 +15451,12 @@
     /* ---------------------------------------------------------------------------
    17. LAST STRAGGLERS OFF THE SCALE
    Found by auditing computed styles in the running app rather than the source
-   — which is the only way to catch values the browser supplies rather than
+   - which is the only way to catch values the browser supplies rather than
    the sheet.
    --------------------------------------------------------------------------- */
 
     /* Both display headings were fluid between endpoints that were not on the type
-   ramp, so at 1440px the vendor hero rendered at 43.2px — a size that appears
+   ramp, so at 1440px the vendor hero rendered at 43.2px - a size that appears
    nowhere else in the product and reads as "slightly wrong" without being
    obviously so. Same two endpoints as the admin hero now. */
     .page-hero h1,
@@ -15465,7 +15465,7 @@
     }
 
     /* Paragraph bottom margins were still the browser's 1em, i.e. 13px under a
-   13px paragraph and 15px under a 15px one — a spacing value that changes with
+   13px paragraph and 15px under a 15px one - a spacing value that changes with
    the font size is not a scale. Vertical rhythm belongs to the container. */
     .panel p:last-child,
     .awaiting-copy,
@@ -15504,8 +15504,8 @@
    its action group, and the group is right-aligned.
 
    It is enforced with `order` rather than by reordering markup, so the DOM
-   keeps its reading order — the primary action stays first in the tab order
-   and first for a screen reader, which is where it belongs — while the
+   keeps its reading order - the primary action stays first in the tab order
+   and first for a screen reader, which is where it belongs - while the
    rendered row puts it where the eye and the cursor finish.
 
    Anything that is not an action (a resolved-state note, a "back" link) is
@@ -15576,7 +15576,7 @@
     }
 
     /* When a group has exactly one thing in it and that thing is the primary, the
-   right edge is still where it goes — nothing to do beyond the flex-end above.
+   right edge is still where it goes - nothing to do beyond the flex-end above.
    When a group has a destructive action, it stays left of the primary so the
    safe path is the one under the cursor at rest. */
     :where(.detail-actions, .rw-verdict-actions, .modal-card>footer)>:where(.button.danger, .button.danger-outline, .button.warning-outline) {
@@ -15586,7 +15586,7 @@
     /* --- narrow viewports ------------------------------------------------------
    Stacked, "the right end" becomes "the bottom", which is the same promise:
    the commit action is the last thing you reach. The decision bar stops being
-   a horizontal scroller here — with the primary ordered last, scrolling would
+   a horizontal scroller here - with the primary ordered last, scrolling would
    have hidden the one button the screen exists for. */
     @media (max-width:900px) {
       .detail-actions {
@@ -15626,7 +15626,7 @@
 
     /* ---------------------------------------------------------------------------
    20. THE SIMULATED DOCUMENT
-   The paper is meant to read as a scan, and faded ink is part of that — but
+   The paper is meant to read as a scan, and faded ink is part of that - but
    the reference number and the authentication line are information a reviewer
    may need to read out loud, and they measured 3.0:1 and 3.7:1. Darkened just
    far enough to clear AA; still clearly subordinate to the document body, so
@@ -15642,7 +15642,7 @@
 
     /* ---------------------------------------------------------------------------
    21. EMPTY STATES, ONE TREATMENT
-   Twelve classes were drawing "there is nothing here" twelve ways — centred
+   Twelve classes were drawing "there is nothing here" twelve ways - centred
    grey text, a bordered white box, a dashed region, a bare paragraph. An
    empty state is a status message, and a product should have exactly one way
    of saying the same thing.

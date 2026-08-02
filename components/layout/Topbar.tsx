@@ -261,8 +261,14 @@ export function Topbar({ persona, page, query, setQuery, onSwitch, onMobile, onH
             value={query}
             onChange={(e) => { setQuery(e.target.value); setOpen(e.target.value.trim() ? 'search' : null); }}
             onFocus={() => query.trim() && setOpen('search')}
-            aria-label={persona === 'vendor' ? 'Search your documents' : 'Search vendors and documents'}
-            placeholder={persona === 'vendor' ? 'Search your documents...' : 'Search vendors and documents...'}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && query.trim()) {
+                setOpen(null);
+                onModal({ type: 'ai-assistant', query });
+              }
+            }}
+            aria-label={persona === 'vendor' ? 'Search your documents' : 'Search vendors, documents, or ask AI...'}
+            placeholder={persona === 'vendor' ? 'Search your documents...' : 'Search vendors, documents, or ask AI...'}
           />
           {query ? <button type="button" className="search-clear" aria-label="Clear search" onClick={() => { setQuery(''); close(); }}><X size={14} /></button> : <kbd>Ctrl K</kbd>}
         </label>
@@ -360,7 +366,7 @@ export function Topbar({ persona, page, query, setQuery, onSwitch, onMobile, onH
             <button className="danger" onClick={() => { close(); if (typeof window !== 'undefined' && window.confirm('Reset all demo data back to its original state?')) resetDemo(); }}>
               <RefreshCw size={15} /> Reset demo data
             </button>
-            <footer><button onClick={() => { close(); notify('This prototype keeps you signed in — there is no account to sign out of.'); }}>Sign out</button></footer>
+            <footer><button onClick={() => { close(); notify('This prototype keeps you signed in - there is no account to sign out of.'); }}>Sign out</button></footer>
           </div>
         )}
       </div>

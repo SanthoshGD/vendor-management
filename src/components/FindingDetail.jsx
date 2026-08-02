@@ -9,7 +9,7 @@ import {
 
 const cx = (...v) => v.filter(Boolean).join(' ');
 
-// Finding kinds whose existence is keyed to `field.resolved` — only for these
+// Finding kinds whose existence is keyed to `field.resolved` - only for these
 // does accepting the extracted value genuinely close the finding.
 const FIELD_BACKED_KINDS = new Set(['extraction', 'cross_doc', 'recency']);
 
@@ -20,7 +20,7 @@ const TIER_LABEL = {
 };
 
 // ---------------------------------------------------------------------------
-// The detail pane — everything about ONE decision, in reading order.
+// The detail pane - everything about ONE decision, in reading order.
 //
 // The order is deliberate and always the same, so the reviewer builds a habit
 // rather than re-scanning each time:
@@ -28,7 +28,7 @@ const TIER_LABEL = {
 //   1. WHAT the agent found        (the claim)
 //   2. WHY it matters              (the policy clause it was raised under)
 //   3. THE EVIDENCE                (the source document, highlighted)
-//   4. WHAT THE AGENT SUGGESTS     (its recommendation — never its decision)
+//   4. WHAT THE AGENT SUGGESTS     (its recommendation - never its decision)
 //   5. YOUR DECISION               (one primary action, alternatives beside it)
 //
 // Previously steps 3 and 5 lived in a separate panel with its own competing set
@@ -59,7 +59,7 @@ export default function FindingDetail({ vendor, finding, onJumpToDoc }) {
   return (
     <div className="detail-pane">
       <div className="detail-scroll">
-        {/* 1 — WHAT */}
+        {/* 1 - WHAT */}
         <header className="detail-head">
           <div className="detail-head-top">
             <span className={cx('detail-tier', finding.tier)}>{tierLabel}</span>
@@ -73,7 +73,7 @@ export default function FindingDetail({ vendor, finding, onJumpToDoc }) {
           <p className="detail-detail">{finding.detail}</p>
         </header>
 
-        {/* 2 — WHY */}
+        {/* 2 - WHY */}
         {finding.clause && (
           <section className="detail-section">
             <h3><ScrollText size={13} /> Why this matters</h3>
@@ -90,7 +90,7 @@ export default function FindingDetail({ vendor, finding, onJumpToDoc }) {
           </section>
         )}
 
-        {/* 3 — EVIDENCE */}
+        {/* 3 - EVIDENCE */}
         {finding.evidence?.length > 0 && (
           <section className="detail-section">
             <h3><FileSearch size={13} /> The evidence</h3>
@@ -126,17 +126,17 @@ export default function FindingDetail({ vendor, finding, onJumpToDoc }) {
           </section>
         )}
 
-        {/* 4 — WHAT THE AGENT SUGGESTS */}
+        {/* 4 - WHAT THE AGENT SUGGESTS */}
         <section className="detail-section">
           <h3><Sparkles size={13} /> What the agent suggests</h3>
           <p className="detail-reco">{finding.recommendation}</p>
           <small className="detail-reco-note">
-            A suggestion, not a decision — PROC-5.1 reserves the decision for you.
+            A suggestion, not a decision - PROC-5.1 reserves the decision for you.
           </small>
         </section>
       </div>
 
-      {/* 5 — YOUR DECISION. Pinned so it is reachable without scrolling back
+      {/* 5 - YOUR DECISION. Pinned so it is reachable without scrolling back
           (Fitts's law), and carrying exactly one primary action so there is no
           ambiguity about the expected path (Hick's law). */}
       <footer className="detail-actions">
@@ -145,7 +145,7 @@ export default function FindingDetail({ vendor, finding, onJumpToDoc }) {
             <span><Check size={14} /> {finding.resolution?.label || 'Auto-cleared'}</span>
             {finding.resolution && (
               <>
-                <p>&ldquo;{finding.resolution.reason}&rdquo; — {finding.resolution.by}</p>
+                <p>&ldquo;{finding.resolution.reason}&rdquo; - {finding.resolution.by}</p>
                 <button onClick={() => reopenFinding(vendor.id, finding)}><RotateCcw size={12} /> Reopen</button>
               </>
             )}
@@ -200,11 +200,11 @@ export default function FindingDetail({ vendor, finding, onJumpToDoc }) {
 }
 
 // Split out of FindingDetail so the dialog hook runs on mount/unmount of the
-// dialog itself — FindingDetail returns early when there is no finding, so it
+// dialog itself - FindingDetail returns early when there is no finding, so it
 // cannot host a conditional hook.
 function ResolveDialog({ finding, outcome, reason, onReason, onCancel, onCommit }) {
   const cardRef = useRef(null);
-  // autoFocus:false — the textarea below claims focus, which is the field the
+  // autoFocus:false - the textarea below claims focus, which is the field the
   // reviewer actually has to fill in.
   useDialog(cardRef, onCancel, { autoFocus: false });
 
@@ -228,7 +228,7 @@ function ResolveDialog({ finding, outcome, reason, onReason, onCancel, onCommit 
         </header>
         <div className="modal-body">
           <label className="form-field">
-            <span>Your reason (required — written to the audit trail)</span>
+            <span>Your reason (required - written to the audit trail)</span>
             <textarea
               value={reason} onChange={(e) => onReason(e.target.value)} autoFocus
               placeholder={outcome === 'dismiss'

@@ -1,7 +1,7 @@
 """Communication contracts (spec §4 `communications`, §8).
 
 Backs the Vendor Communication tab: vendor chat, internal notes and the chaser
-panel — currently local component state that vanishes on unmount.
+panel - currently local component state that vanishes on unmount.
 """
 
 from __future__ import annotations
@@ -32,5 +32,5 @@ class MessageOut(CamelModel):
 class PostMessageRequest(CamelModel):
     channel: CommunicationChannel
     message: str = Field(min_length=1, max_length=8000)
-    # `sender` is intentionally absent — resolved from the session, so a client
+    # `sender` is intentionally absent - resolved from the session, so a client
     # cannot post as somebody else.

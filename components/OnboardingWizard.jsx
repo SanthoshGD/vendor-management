@@ -118,7 +118,7 @@ export function WizardStepper({ step, method }) {
             {/* The pill lives on this inner span, not on the <li>. The
                 connector is a pseudo-element of the <li>, so a background on
                 the <li> painted the dash as part of the highlight  -  the
-                current step read as "— Documents" rather than "Documents". */}
+                current step read as "- Documents" rather than "Documents". */}
             <span className="wizard-stepper-pill">
               <span className="wizard-stepper-dot">
                 <b className="wizard-stepper-num">{index + 1}</b>
@@ -447,7 +447,7 @@ export function allowedStep(vendor) {
   return Math.min(stored, furthest);
 }
 
-export default function OnboardingWizard({ vendor: propVendor = null, onFinish = () => {} }) {
+export default function OnboardingWizard({ vendor: propVendor = null, onFinish = () => { } }) {
   const nexus = useNexus();
   const activeVendor = propVendor || (nexus?.getVendor ? nexus.getVendor(nexus.activeVendorId) : null);
 
@@ -957,7 +957,7 @@ function ReviewStep({ vendor, onBack, onDraft, onSubmit }) {
                   <strong>{doc.title}</strong>
                   <small>{doc.fileName || 'Not supplied'}</small>
                 </span>
-                <span className="status-pill blue">Uploaded</span> 
+                <span className="status-pill blue">Uploaded</span>
               </li>
             ))}
           </ul>

@@ -32,7 +32,7 @@ const ACTION_LABEL = {
   FINDING_REOPENED: 'Finding reopened',
   REQUEST_RESOLVED: 'Supervisor decision',
   APPROVAL_GATE_BLOCKED: 'Approval refused by the evidence gate',
-  AUTHORITY_LIMIT_BLOCKED: 'Approval refused — above delegated authority',
+  AUTHORITY_LIMIT_BLOCKED: 'Approval refused - above delegated authority',
   CHASER_PAUSED: 'Supplier chasing paused',
   CHASER_RESUMED: 'Supplier chasing resumed',
   SETTINGS_UPDATED: 'Workspace preferences changed',
@@ -49,9 +49,9 @@ const ACTION_LABEL = {
 // ---------------------------------------------------------------------------
 const LANES = {
   supplier: { label: 'Supplier', icon: Building2, hint: 'Evidence supplied by the vendor' },
-  agent: { label: 'Agents', icon: Bot, hint: 'Extraction, corroboration, chasing — never a decision' },
+  agent: { label: 'Agents', icon: Bot, hint: 'Extraction, corroboration, chasing - never a decision' },
   reviewer: { label: 'Reviewer', icon: UserCog, hint: 'Compliance Manager, within delegated authority' },
-  supervisor: { label: 'Supervisor', icon: ShieldCheck, hint: 'Head of Compliance — four-eyes and exceptions' },
+  supervisor: { label: 'Supervisor', icon: ShieldCheck, hint: 'Head of Compliance - four-eyes and exceptions' },
 };
 const LANE_ORDER = ['supplier', 'agent', 'reviewer', 'supervisor'];
 
@@ -67,7 +67,7 @@ const SUPPLIER_ACTIONS = new Set([
 function laneFor(log) {
   if (log.actionType === 'REQUEST_RESOLVED' || /^AM-/.test(log.actorId || '')) return 'supervisor';
   if (SUPPLIER_ACTIONS.has(log.actionType)) return 'supplier';
-  // An agent-attributed entry stays in the agent lane even when it was refused —
+  // An agent-attributed entry stays in the agent lane even when it was refused -
   // the refusal is the agent's attempt, and hiding it would flatter the record.
   if (log.agentId || /^(AGT-|IDP-)/.test(log.actorId || '')) return 'agent';
   return 'reviewer';
@@ -84,7 +84,7 @@ function formatTime(isoString) {
 }
 
 // ---------------------------------------------------------------------------
-// Case files — one supplier's history, forward, in authority lanes.
+// Case files - one supplier's history, forward, in authority lanes.
 //
 // "What happened to this vendor, in order?" is the question an auditor actually
 // opens this page to answer, and the event log answered it worst: the right
@@ -95,7 +95,7 @@ function CaseFiles({ logs, onNavigateVendor }) {
   const cases = useMemo(() => {
     const byVendor = new Map();
     for (const log of logs) {
-      if (!log.vendorId || log.vendorId === '—' || log.vendorId === ' - ') continue;
+      if (!log.vendorId || log.vendorId === '-' || log.vendorId === ' - ') continue;
       if (!byVendor.has(log.vendorId)) {
         byVendor.set(log.vendorId, { id: log.vendorId, name: log.vendorName, events: [] });
       }
@@ -226,7 +226,7 @@ function CaseFiles({ logs, onNavigateVendor }) {
   );
 }
 
-// Screen 3 — the immutable audit log. Every accept/correct/upload/decision
+// Screen 3 - the immutable audit log. Every accept/correct/upload/decision
 // action anywhere in the app lands here automatically via NexusContext, so
 // this always reflects real state rather than a hardcoded activity feed.
 export default function AuditTrail({ onNavigateVendor }) {
@@ -273,102 +273,102 @@ export default function AuditTrail({ onNavigateVendor }) {
 
       {tab === 'log' && (
         <>
-      <section className="panel audit-toolbar">
-        <label className="audit-search">
-          <Search size={15} />
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search vendor, field, or reason…" />
-        </label>
-        <div className="audit-filter">
-          <Filter size={14} />
-          <select value={actionFilter} onChange={(event) => setActionFilter(event.target.value)}>
-            <option value="ALL">All event types</option>
-            <option value="FIELD_ACCEPT">Findings accepted</option>
-            <option value="FIELD_OVERRIDE">Fields corrected</option>
-            <option value="DOCUMENT_UPLOAD">Documents uploaded</option>
-            <option value="DOCUMENT_VERIFIED">Documents verified</option>
-            <option value="DECISION">Decisions</option>
-            <option value="VENDOR_INVITED">Vendors invited</option>
-            <option value="AGENT_ACTION">Agent actions executed</option>
-            <option value="AGENT_BLOCKED">Agent actions refused</option>
-            <option value="AGENT_PENDING">Held for approval</option>
-            <option value="AGENT_APPROVAL">Approval gates resolved</option>
-            <option value="AGENT_CONFIG">Configuration changes</option>
-            <option value="GATE_BLOCKED">Activation refusals</option>
-          </select>
-        </div>
-      </section>
+          <section className="panel audit-toolbar">
+            <label className="audit-search">
+              <Search size={15} />
+              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search vendor, field, or reason…" />
+            </label>
+            <div className="audit-filter">
+              <Filter size={14} />
+              <select value={actionFilter} onChange={(event) => setActionFilter(event.target.value)}>
+                <option value="ALL">All event types</option>
+                <option value="FIELD_ACCEPT">Findings accepted</option>
+                <option value="FIELD_OVERRIDE">Fields corrected</option>
+                <option value="DOCUMENT_UPLOAD">Documents uploaded</option>
+                <option value="DOCUMENT_VERIFIED">Documents verified</option>
+                <option value="DECISION">Decisions</option>
+                <option value="VENDOR_INVITED">Vendors invited</option>
+                <option value="AGENT_ACTION">Agent actions executed</option>
+                <option value="AGENT_BLOCKED">Agent actions refused</option>
+                <option value="AGENT_PENDING">Held for approval</option>
+                <option value="AGENT_APPROVAL">Approval gates resolved</option>
+                <option value="AGENT_CONFIG">Configuration changes</option>
+                <option value="GATE_BLOCKED">Activation refusals</option>
+              </select>
+            </div>
+          </section>
 
-      <section className="audit-grid">
-        <div className="audit-feed">
-          {filtered.length === 0 && (
-            <div className="panel audit-empty"><History size={26} /><p>No events match your filters.</p></div>
-          )}
-          {filtered.map((log) => {
-            const isDiff = log.originalValue && log.humanValue && log.originalValue !== log.humanValue;
-            return (
-              <article
-                key={log.id}
-                className={cx('panel audit-entry', active?.id === log.id && 'active')}
-                onClick={() => setActiveId(log.id)}
-              >
-                <header>
-                  <div>
-                    <strong>{ACTION_LABEL[log.actionType] || log.actionType}</strong>
-                    <span>{log.vendorName}</span>
-                  </div>
-                  <time><Calendar size={12} /> {formatTime(log.timestamp)}</time>
-                </header>
-                {log.agentId && (
-                  <div className="audit-agent-chip"><Bot size={11} /> {log.actorName}
-                    {log.clauseRef && <em>{log.clauseRef}</em>}
-                  </div>
-                )}
-                <div className="audit-entry-field">{log.fieldLabel}{log.documentName ? ` · ${log.documentName}` : ''}</div>
-                {isDiff ? (
-                  <div className="audit-diff">
-                    <div className="audit-diff-old"><small>AI value</small><span className="audit-strike">{log.originalValue}</span></div>
-                    <div className="audit-diff-new"><small>Human decision</small><span className="audit-win">{log.humanValue}</span></div>
-                  </div>
-                ) : (
-                  <div className="audit-plain">{log.notes || log.humanValue}</div>
-                )}
-                <footer>
-                  <span><UserCheck size={12} /> {log.actorName} ({log.actorId})</span>
-                  <span className="audit-reason">{log.reason}</span>
-                </footer>
-              </article>
-            );
-          })}
-        </div>
+          <section className="audit-grid">
+            <div className="audit-feed">
+              {filtered.length === 0 && (
+                <div className="panel audit-empty"><History size={26} /><p>No events match your filters.</p></div>
+              )}
+              {filtered.map((log) => {
+                const isDiff = log.originalValue && log.humanValue && log.originalValue !== log.humanValue;
+                return (
+                  <article
+                    key={log.id}
+                    className={cx('panel audit-entry', active?.id === log.id && 'active')}
+                    onClick={() => setActiveId(log.id)}
+                  >
+                    <header>
+                      <div>
+                        <strong>{ACTION_LABEL[log.actionType] || log.actionType}</strong>
+                        <span>{log.vendorName}</span>
+                      </div>
+                      <time><Calendar size={12} /> {formatTime(log.timestamp)}</time>
+                    </header>
+                    {log.agentId && (
+                      <div className="audit-agent-chip"><Bot size={11} /> {log.actorName}
+                        {log.clauseRef && <em>{log.clauseRef}</em>}
+                      </div>
+                    )}
+                    <div className="audit-entry-field">{log.fieldLabel}{log.documentName ? ` · ${log.documentName}` : ''}</div>
+                    {isDiff ? (
+                      <div className="audit-diff">
+                        <div className="audit-diff-old"><small>AI value</small><span className="audit-strike">{log.originalValue}</span></div>
+                        <div className="audit-diff-new"><small>Human decision</small><span className="audit-win">{log.humanValue}</span></div>
+                      </div>
+                    ) : (
+                      <div className="audit-plain">{log.notes || log.humanValue}</div>
+                    )}
+                    <footer>
+                      <span><UserCheck size={12} /> {log.actorName} ({log.actorId})</span>
+                      <span className="audit-reason">{log.reason}</span>
+                    </footer>
+                  </article>
+                );
+              })}
+            </div>
 
-        <aside className="panel audit-detail">
-          {active ? (
-            <>
-              <div className="audit-detail-header"><ShieldCheck size={16} /><span>Event detail</span></div>
-              <dl className="audit-detail-list">
-                <div><dt>Audit ID</dt><dd>{active.id}</dd></div>
-                <div><dt>Timestamp</dt><dd>{active.timestamp}</dd></div>
-                <div><dt>Vendor</dt><dd>{active.vendorName} ({active.vendorId})</dd></div>
-                <div><dt>Actor</dt><dd>{active.actorName} — {active.actorId}</dd></div>
-                <div><dt>Document</dt><dd>{active.documentName || '—'}</dd></div>
-                <div><dt>Field</dt><dd>{active.fieldLabel}</dd></div>
-                <div><dt>Reason</dt><dd>{active.reason}</dd></div>
-                {active.clauseRef && <div><dt>Policy clause</dt><dd>{active.clauseRef}</dd></div>}
-              </dl>
-              {active.reasoning && (
-                <div className="audit-reasoning">
-                  <span><Bot size={12} /> Agent reasoning</span>
-                  <p>{active.reasoning}</p>
-                </div>
-              )}
-              <p className="audit-detail-notes">{active.notes}</p>
-              {onNavigateVendor && (
-                <button className="button secondary full" onClick={() => onNavigateVendor(active.vendorId)}>Open vendor record</button>
-              )}
-            </>
-          ) : <p>Select an event to inspect it.</p>}
-        </aside>
-      </section>
+            <aside className="panel audit-detail">
+              {active ? (
+                <>
+                  <div className="audit-detail-header"><ShieldCheck size={16} /><span>Event detail</span></div>
+                  <dl className="audit-detail-list">
+                    <div><dt>Audit ID</dt><dd>{active.id}</dd></div>
+                    <div><dt>Timestamp</dt><dd>{active.timestamp}</dd></div>
+                    <div><dt>Vendor</dt><dd>{active.vendorName} ({active.vendorId})</dd></div>
+                    <div><dt>Actor</dt><dd>{active.actorName} - {active.actorId}</dd></div>
+                    <div><dt>Document</dt><dd>{active.documentName || '-'}</dd></div>
+                    <div><dt>Field</dt><dd>{active.fieldLabel}</dd></div>
+                    <div><dt>Reason</dt><dd>{active.reason}</dd></div>
+                    {active.clauseRef && <div><dt>Policy clause</dt><dd>{active.clauseRef}</dd></div>}
+                  </dl>
+                  {active.reasoning && (
+                    <div className="audit-reasoning">
+                      <span><Bot size={12} /> Agent reasoning</span>
+                      <p>{active.reasoning}</p>
+                    </div>
+                  )}
+                  <p className="audit-detail-notes">{active.notes}</p>
+                  {onNavigateVendor && (
+                    <button className="button secondary full" onClick={() => onNavigateVendor(active.vendorId)}>Open vendor record</button>
+                  )}
+                </>
+              ) : <p>Select an event to inspect it.</p>}
+            </aside>
+          </section>
         </>
       )}
     </div>

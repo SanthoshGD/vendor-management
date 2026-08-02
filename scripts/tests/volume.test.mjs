@@ -39,7 +39,7 @@ await click(exact('Supervisor'));
 await click(byText('Requests'));
 check('queue opens', cards() + rows() > 0);
 // DENSITY_THRESHOLD is 3, and the seeded queue carries four requests, so the
-// page is already compact on arrival — that is the auto-density rule doing its
+// page is already compact on arrival - that is the auto-density rule doing its
 // job, not a regression. What has to hold is that the density control still
 // works in both directions.
 check('auto-density collapses the seeded queue', rows() > 0 && cards() === 0);

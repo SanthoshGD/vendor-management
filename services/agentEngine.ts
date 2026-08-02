@@ -23,7 +23,7 @@ export function canPerform(config: AgentConfig | null | undefined, agentId: stri
   if (FORBIDDEN_IDS.has(actionId as any)) {
     return {
       allowed: false, blocked: 'forbidden', clauseId: 'PROC-5.1',
-      reason: 'This action is withheld from every agent by policy PROC-5.1 — human approval is mandatory.',
+      reason: 'This action is withheld from every agent by policy PROC-5.1 - human approval is mandatory.',
     };
   }
 
@@ -67,7 +67,7 @@ const LEGAL_FORMS = /\b(co|company|ltd|limited|pvt|private|inc|corp|corporation|
 const normalizeEntity = (value: any) => String(value || '')
   .toLowerCase()
   .replace(/[.,()'"&]/g, ' ')
-  .replace(/[-–—]/g, ' ')
+  .replace(/[-–-]/g, ' ')
   .replace(LEGAL_FORMS, ' ')
   .replace(/\s+/g, ' ')
   .trim();
@@ -184,7 +184,7 @@ export function evaluateVendor(vendor: Vendor, options: { allVendors?: Vendor[];
         confidence: Math.round(60 + overlap * 39),
         resolved: Boolean(other.field.resolved),
         recommendation: normalisedMatch
-          ? 'Accept. No supplier action required — this is an abbreviation, not a different company.'
+          ? 'Accept. No supplier action required - this is an abbreviation, not a different company.'
           : tier === 'amber'
             ? 'Confirm which name is authoritative against the registry, then correct the weaker source.'
             : 'Do not proceed. Request a corrected document naming the contracting entity.',
@@ -352,7 +352,7 @@ export function evaluateVendor(vendor: Vendor, options: { allVendors?: Vendor[];
 }
 
 const RECOMMENDATION_COPY: Record<string, string> = {
-  HOLD: 'Hold — approval is not ready',
+  HOLD: 'Hold - approval is not ready',
   RECOMMEND_WITH_NOTES: 'Ready for approval, with noted cautions',
   RECOMMEND_APPROVAL: 'Ready for approval',
 };
@@ -361,7 +361,7 @@ export const recommendationLabel = (key: string) => RECOMMENDATION_COPY[key] || 
 
 function buildBrief(vendor: Vendor, { blockers, cautions, recommendation, mandatoryDocsComplete }: any) {
   const lines: string[] = [];
-  lines.push(`${vendor.name} — ${vendor.category || 'uncategorised'}, manufacturing in ${vendor.country || 'an unstated market'}.`);
+  lines.push(`${vendor.name} - ${vendor.category || 'uncategorised'}, manufacturing in ${vendor.country || 'an unstated market'}.`);
   lines.push(mandatoryDocsComplete
     ? `Full evidence pack received: ${vendor.documents.length} documents, ${vendor.docs || 0} verified.`
     : `Evidence pack incomplete: ${vendor.missingCount || 0} of ${vendor.documents.length} documents outstanding.`);
@@ -389,11 +389,11 @@ export const languageFor = (country: string) => LANGUAGE_BY_COUNTRY[country] || 
 const TEMPLATES: Record<string, Record<string, (d: string, c: string) => string>> = {
   request: {
     zh: (d, c) => `${c}您好：为完成 StyleSphere 供应商审核，我们还需要《${d}》。请直接回复本条消息并附上文件即可，无需登录任何系统。`,
-    vi: (d, c) => `Kính gửi ${c}, để hoàn tất hồ sơ nhà cung cấp StyleSphere, chúng tôi cần bản «${d}». Quý công ty chỉ cần trả lời tin nhắn này kèm tệp đính kèm — không cần đăng nhập hệ thống.`,
-    bn: (d, c) => `প্রিয় ${c}, StyleSphere সরবরাহকারী যাচাই সম্পূর্ণ করতে আমাদের «${d}» প্রয়োজন। এই বার্তার উত্তরে ফাইলটি সংযুক্ত করে পাঠালেই হবে — কোনো পোর্টালে লগইন করতে হবে না।`,
-    tr: (d, c) => `Sayın ${c}, StyleSphere tedarikçi incelemesini tamamlamak için «${d}» belgesine ihtiyacımız var. Bu mesajı yanıtlayıp dosyayı ekleyebilirsiniz — herhangi bir portala giriş yapmanız gerekmez.`,
-    de: (d, c) => `Guten Tag ${c}, für den Abschluss der StyleSphere-Lieferantenprüfung benötigen wir noch «${d}». Antworten Sie einfach auf diese Nachricht und hängen Sie die Datei an — eine Portal-Anmeldung ist nicht erforderlich.`,
-    en: (d, c) => `Hello ${c} — to finish your StyleSphere supplier review we still need your ${d}. Just reply to this message with the file attached; there is no portal to log into.`,
+    vi: (d, c) => `Kính gửi ${c}, để hoàn tất hồ sơ nhà cung cấp StyleSphere, chúng tôi cần bản «${d}». Quý công ty chỉ cần trả lời tin nhắn này kèm tệp đính kèm - không cần đăng nhập hệ thống.`,
+    bn: (d, c) => `প্রিয় ${c}, StyleSphere সরবরাহকারী যাচাই সম্পূর্ণ করতে আমাদের «${d}» প্রয়োজন। এই বার্তার উত্তরে ফাইলটি সংযুক্ত করে পাঠালেই হবে - কোনো পোর্টালে লগইন করতে হবে না।`,
+    tr: (d, c) => `Sayın ${c}, StyleSphere tedarikçi incelemesini tamamlamak için «${d}» belgesine ihtiyacımız var. Bu mesajı yanıtlayıp dosyayı ekleyebilirsiniz - herhangi bir portala giriş yapmanız gerekmez.`,
+    de: (d, c) => `Guten Tag ${c}, für den Abschluss der StyleSphere-Lieferantenprüfung benötigen wir noch «${d}». Antworten Sie einfach auf diese Nachricht und hängen Sie die Datei an - eine Portal-Anmeldung ist nicht erforderlich.`,
+    en: (d, c) => `Hello ${c} - to finish your StyleSphere supplier review we still need your ${d}. Just reply to this message with the file attached; there is no portal to log into.`,
   },
   followup: {
     zh: (d) => `温馨提醒：《${d}》仍未收到，您的供应商审核目前暂停中。回复本消息并附上文件即可继续。`,
@@ -401,22 +401,22 @@ const TEMPLATES: Record<string, Record<string, (d: string, c: string) => string>
     bn: (d) => `স্মরণ করিয়ে দিচ্ছি: «${d}» এখনো পাইনি। এটি না পাওয়া পর্যন্ত আপনার আবেদনটি স্থগিত রয়েছে।`,
     tr: (d) => `Hatırlatma: «${d}» belgesini henüz alamadık. Bu belge gelene kadar başvurunuz beklemede.`,
     de: (d) => `Erinnerung: «${d}» ist bei uns noch nicht eingegangen. Ihre Bewerbung pausiert, bis das Dokument vorliegt.`,
-    en: (d) => `A reminder — we still have not received your ${d}. Your application is paused until it arrives.`,
+    en: (d) => `A reminder - we still have not received your ${d}. Your application is paused until it arrives.`,
   },
   escalate: {
     zh: (d) => `第三次提醒（已抄送贵司管理层联系人）：《${d}》仍未收到。若该文件存在获取困难，请回复说明，我们可安排人工协助。`,
     vi: (d) => `Nhắc lần thứ ba (đã gửi kèm người quản lý của quý công ty): vẫn thiếu «${d}». Nếu có khó khăn, xin trả lời để chúng tôi hỗ trợ trực tiếp.`,
     bn: (d) => `তৃতীয় স্মারক (আপনার ম্যানেজারকেও পাঠানো হয়েছে): «${d}» এখনো বাকি। সমস্যা হলে উত্তর দিন, আমরা সরাসরি সহায়তা করব।`,
     tr: (d) => `Üçüncü hatırlatma (yönetici iletişim kişiniz de bilgilendirildi): «${d}» hâlâ eksik. Sorun varsa yanıtlayın, doğrudan yardımcı olalım.`,
-    de: (d) => `Dritte Erinnerung (Ihre Führungskraft ist in Kopie): «${d}» fehlt weiterhin. Bei Schwierigkeiten antworten Sie bitte — wir helfen direkt.`,
-    en: (d) => `Third reminder, with your manager contact copied — your ${d} is still outstanding. Reply if you need help obtaining it.`,
+    de: (d) => `Dritte Erinnerung (Ihre Führungskraft ist in Kopie): «${d}» fehlt weiterhin. Bei Schwierigkeiten antworten Sie bitte - wir helfen direkt.`,
+    en: (d) => `Third reminder, with your manager contact copied - your ${d} is still outstanding. Reply if you need help obtaining it.`,
   },
 };
 
 const ENGLISH_COPY: Record<string, (d: string, c: string) => string> = {
-  request: (d, c) => `Hello ${c} — to finish your StyleSphere supplier review we still need your ${d}. Reply to this message with the file attached; no portal login required.`,
-  followup: (d) => `Reminder — your ${d} has not arrived. The application is paused until it does.`,
-  escalate: (d) => `Third reminder, manager contact copied — your ${d} is still outstanding. Reply if you need help obtaining it.`,
+  request: (d, c) => `Hello ${c} - to finish your StyleSphere supplier review we still need your ${d}. Reply to this message with the file attached; no portal login required.`,
+  followup: (d) => `Reminder - your ${d} has not arrived. The application is paused until it does.`,
+  escalate: (d) => `Third reminder, manager contact copied - your ${d} is still outstanding. Reply if you need help obtaining it.`,
 };
 
 const hashHours = (seed: string, span: number) => {
@@ -486,8 +486,8 @@ export function buildChaserThreads(vendor: Vendor, options: { config?: AgentConf
         : state.reason
           ? `${state.reason} · ${state.dueState || 'Due now'}`
           : stalled
-            ? `Three attempts over six days, no reply — handed to ${vendor.owner}.`
-            : `${lastSent ? `${lastSent.kind === 'request' ? 'Requested' : lastSent.kind === 'followup' ? 'Followed up' : 'Escalated'} ${formatAgo(lastSent.hoursAgo)}` : 'Queued'} in ${localise ? languageName : 'English'} · next ${next ? next.kind : 'handoff'} in ${next ? `${next.dueInHours}h` : '—'}`;
+            ? `Three attempts over six days, no reply - handed to ${vendor.owner}.`
+            : `${lastSent ? `${lastSent.kind === 'request' ? 'Requested' : lastSent.kind === 'followup' ? 'Followed up' : 'Escalated'} ${formatAgo(lastSent.hoursAgo)}` : 'Queued'} in ${localise ? languageName : 'English'} · next ${next ? next.kind : 'handoff'} in ${next ? `${next.dueInHours}h` : '-'}`;
 
     return {
       docId: doc.id, docCode: doc.code, docTitle: doc.title, vendorId: vendor.id,
@@ -505,7 +505,7 @@ export function buildChaserThreads(vendor: Vendor, options: { config?: AgentConf
 }
 
 export function formatAgo(hours: number | null | undefined): string {
-  if (hours == null) return '—';
+  if (hours == null) return '-';
   if (hours < 1) return 'just now';
   if (hours < 24) return `${Math.round(hours)}h ago`;
   return `${Math.round(hours / 24)}d ago`;
@@ -513,8 +513,8 @@ export function formatAgo(hours: number | null | undefined): string {
 
 export const BANDS = [
   ['decide', 'Ready for your decision', 'Everything the agents can do is done. These need a human.'],
-  ['blocked', 'Blocked — needs your intervention', 'An agent has stopped and is waiting on you to unblock it.'],
-  ['working', 'Agents working — nothing needed from you', 'In flight. Look only if you want to.'],
+  ['blocked', 'Blocked - needs your intervention', 'An agent has stopped and is waiting on you to unblock it.'],
+  ['working', 'Agents working - nothing needed from you', 'In flight. Look only if you want to.'],
   ['closed', 'Closed', 'Decided and logged.'],
 ] as const;
 
@@ -527,7 +527,7 @@ export function triageVendor(vendor: Vendor, assessment: any, threads: any[]): T
     return {
       band: 'blocked',
       headline: `Chaser stopped after 3 attempts on ${stalled.docTitle}`,
-      waitingOn: 'You — the supplier is not responding',
+      waitingOn: 'You - the supplier is not responding',
       agentId: 'chaser',
     } as any;
   }
@@ -559,7 +559,7 @@ export function triageVendor(vendor: Vendor, assessment: any, threads: any[]): T
   }
   return {
     band: 'decide',
-    headline: 'Pack complete, no findings open — ready for approval',
+    headline: 'Pack complete, no findings open - ready for approval',
     waitingOn: 'Your decision',
     agentId: 'compliance',
   } as any;
@@ -633,7 +633,7 @@ export function configInsights(auditLogs: AuditLogEntry[], vendors: Vendor[]) {
       agentId: 'chaser',
       title: `${slowest.country} suppliers hold the most outstanding evidence`,
       detail: `${slowest.perVendor.toFixed(1)} documents outstanding per supplier, against ${slowest.vendors} active application${slowest.vendors > 1 ? 's' : ''}.`,
-      proposal: `Check the ${languageFor(slowest.country)[1]} template wording — a chase that does not convert is usually unclear, not ignored.`,
+      proposal: `Check the ${languageFor(slowest.country)[1]} template wording - a chase that does not convert is usually unclear, not ignored.`,
       metric: `${slowest.missing} open`,
     });
   }

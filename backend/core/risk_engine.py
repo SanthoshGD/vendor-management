@@ -1,7 +1,7 @@
 """Deterministic risk engine (spec §12).
 
 Pure business logic: no database calls, no AI calls, no HTTP, and no hidden
-clock — the evaluation date is injectable. Per the plan, "it isn't a service,
+clock - the evaluation date is injectable. Per the plan, "it isn't a service,
 it's a function". Gemini's role is limited to producing the *inputs* this
 consumes (extracted fields, confidence scores); the score itself stays
 explainable and reproducible.
@@ -12,7 +12,7 @@ are tunable without a redeploy.
 
 Every driver that fires appears in `drivers` with its points. A score a
 reviewer cannot decompose is not explainable, and explainability is the stated
-design philosophy — so this returns the decomposition, never a bare number.
+design philosophy - so this returns the decomposition, never a bare number.
 """
 
 from __future__ import annotations
@@ -60,7 +60,7 @@ class RiskResult:
 
 
 # Fallbacks used only when `settings/risk_rules.json` is missing or partial.
-# The engine must produce a defensible score even with no config on disk —
+# The engine must produce a defensible score even with no config on disk -
 # silently scoring every vendor 0 would be worse than using the spec defaults.
 _DEFAULT_POINTS: dict[DriverCode, int] = {
     DriverCode.insurance_expired: 25,
@@ -289,7 +289,7 @@ def calculate(
             RiskDriver(
                 code=code,
                 points=config.points(code),
-                description=f"{description} — {detail}" if detail else description,
+                description=f"{description} - {detail}" if detail else description,
             )
         )
 
@@ -448,9 +448,9 @@ def band_for(score: int, bands: Mapping[str, Any] | None = None) -> RiskLevel:
 
 def _recommendation(config: _Rules, level: RiskLevel, has_drivers: bool) -> str:
     if not has_drivers:
-        return config.recommendation("clean", "Approve — every checked rule passed.")
+        return config.recommendation("clean", "Approve - every checked rule passed.")
     fallbacks = {
-        "low": "Approve — no blocking findings.",
+        "low": "Approve - no blocking findings.",
         "medium": "Review before approval. Resolve the findings below.",
         "high": "Do not approve as-is. Request corrected documents.",
     }

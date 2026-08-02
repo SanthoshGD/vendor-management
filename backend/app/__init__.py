@@ -1,1 +1,1 @@
-"""StyleSphere Nexus API — ASGI entrypoint package."""
+"""StyleSphere Nexus API - ASGI entrypoint package."""

@@ -1,6 +1,6 @@
 """Domain exceptions and their HTTP handlers.
 
-Every failure — domain, validation, framework, or unexpected — is rendered
+Every failure - domain, validation, framework, or unexpected - is rendered
 through the spec §8 envelope with `success: false`. A client parsing responses
 only ever has to understand one shape, and a failure can never be mistaken for
 a success.
@@ -133,7 +133,7 @@ def register_exception_handlers(app: FastAPI) -> None:
     async def _handle_not_implemented(request: Request, exc: NotImplementedError) -> JSONResponse:
         # This scaffold ships routers, wiring and seams but no business logic.
         # 501 is the honest answer: the route exists and is correctly wired,
-        # the behaviour behind it is not built. Deliberately not a 500 —
+        # the behaviour behind it is not built. Deliberately not a 500 -
         # 500 must mean "something broke", and nothing is broken here.
         logger.info("not_implemented: %s %s", request.method, request.url.path)
         return _envelope(

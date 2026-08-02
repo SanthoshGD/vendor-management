@@ -6,7 +6,7 @@ depends on the `AIProvider` Protocol.
 
 Responsibilities stop at the transport boundary: build a client for one key,
 issue one call, normalise the result and the failure. It knows nothing about
-key selection, retries, quota or cooldown — those belong to `KeyRotationPolicy`
+key selection, retries, quota or cooldown - those belong to `KeyRotationPolicy`
 and `GeminiProvider`, and keeping them out of here is what makes each testable
 without a network.
 

@@ -1,4 +1,4 @@
-"""Vendor contracts — mirrors `types/vendor.ts` (spec §3).
+"""Vendor contracts - mirrors `types/vendor.ts` (spec §3).
 
 `types/*.ts` remain the source of truth for shape; these mirror them
 field-for-field so `services/api.ts` needs zero response transformation.
@@ -16,7 +16,7 @@ from schemas.risk import RiskOut
 
 
 class VendorSummary(CamelModel):
-    """List-row projection — the columns the Vendors table renders."""
+    """List-row projection - the columns the Vendors table renders."""
 
     id: str
     company_name: str

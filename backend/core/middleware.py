@@ -2,7 +2,7 @@
 
 Implemented as pure ASGI rather than Starlette's `BaseHTTPMiddleware` on
 purpose. `BaseHTTPMiddleware` runs the downstream app in a separate anyio task,
-which breaks `ContextVar` propagation — the request id would be invisible to
+which breaks `ContextVar` propagation - the request id would be invisible to
 every log record and error envelope produced downstream, logging `"-"` instead.
 Pure ASGI runs in the same task, so the context is shared. It also avoids an
 extra task hop and does not interfere with the SSE streaming that spec §7.3

@@ -1,6 +1,6 @@
 """Normalised AI provider failures.
 
-The rotation policy has to branch on *why* a call failed — a rate limit means
+The rotation policy has to branch on *why* a call failed - a rate limit means
 cool this key down and try the next one, a revoked key means disable it, a
 malformed request means stop and surface the error. The SDK expresses those as
 a mix of exception types, HTTP statuses and message strings, so they are
@@ -53,7 +53,7 @@ class GeminiError(Exception):
 
     @property
     def is_transient(self) -> bool:
-        """Worth retrying — on this key or the next one."""
+        """Worth retrying - on this key or the next one."""
         if self.status_code is not None and self.status_code >= 500:
             return True
         return self.is_rate_limited or self._matches(_TRANSIENT_MARKERS)

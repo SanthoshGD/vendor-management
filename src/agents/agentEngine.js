@@ -3,7 +3,7 @@
 //
 // Everything in here is a PURE FUNCTION of vendor state + agent config + the
 // policy pack. Nothing is stored, so a finding can never drift out of sync with
-// the evidence that produced it — the same reason `deriveVendorView` derives
+// the evidence that produced it - the same reason `deriveVendorView` derives
 // progress and risk rather than storing them.
 //
 // The simulation is deliberately deterministic: no randomness, no clock-drift,
@@ -32,7 +32,7 @@ export function skillEnabled(config, agentId, skillId) {
 
 // The single choke point every agent action passes through. Returns a decision
 // object rather than a boolean so the caller can log *why* something was
-// blocked — a refusal is as auditable as an execution.
+// blocked - a refusal is as auditable as an execution.
 export function canPerform(config, agentId, actionId, actorRole) {
   const definition = AGENTS_BY_ID[agentId];
   if (!definition) return { allowed: false, reason: 'Unknown agent.' };
@@ -40,7 +40,7 @@ export function canPerform(config, agentId, actionId, actorRole) {
   if (FORBIDDEN_IDS.has(actionId)) {
     return {
       allowed: false, blocked: 'forbidden', clauseId: 'PROC-5.1',
-      reason: 'This action is withheld from every agent by policy PROC-5.1 — human approval is mandatory.',
+      reason: 'This action is withheld from every agent by policy PROC-5.1 - human approval is mandatory.',
     };
   }
 
@@ -87,7 +87,7 @@ const LEGAL_FORMS = /\b(co|company|ltd|limited|pvt|private|inc|corp|corporation|
 const normalizeEntity = (value) => String(value || '')
   .toLowerCase()
   .replace(/[.,()'"&]/g, ' ')
-  .replace(/[-–—]/g, ' ')
+  .replace(/[-–-]/g, ' ')
   .replace(LEGAL_FORMS, ' ')
   .replace(/\s+/g, ' ')
   .trim();
@@ -102,7 +102,7 @@ const tokenOverlap = (a, b) => {
 };
 
 // Fields that all claim to name the same legal entity. Comparing these across
-// documents is where real supplier fraud shows up — and it is invisible when a
+// documents is where real supplier fraud shows up - and it is invisible when a
 // reviewer reads one document at a time.
 const ENTITY_FIELD_KEYS = new Set(['legal_name', 'account_holder_name', 'signatory_name', 'legal_representative']);
 
@@ -128,7 +128,7 @@ export function tierForConfidence(confidence) {
 
 const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
 
-// Tolerant date reader — the source values are OCR output from five countries,
+// Tolerant date reader - the source values are OCR output from five countries,
 // so "31 Dec 2026", "07 Aug 2026" and "2026年08月" all have to land.
 function readDate(raw) {
   const value = String(raw || '');
@@ -150,7 +150,7 @@ function readDate(raw) {
 const DAY = 86400000;
 
 // ---------------------------------------------------------------------------
-// evaluateVendor — the whole assessment, in one pass.
+// evaluateVendor - the whole assessment, in one pass.
 // ---------------------------------------------------------------------------
 export function evaluateVendor(vendor, { allVendors = [], config, now = Date.now(), resolutions = {} } = {}) {
   const findings = [];
@@ -217,7 +217,7 @@ export function evaluateVendor(vendor, { allVendors = [], config, now = Date.now
         confidence: Math.round(60 + overlap * 39),
         resolved: Boolean(other.field.resolved),
         recommendation: normalisedMatch
-          ? 'Accept. No supplier action required — this is an abbreviation, not a different company.'
+          ? 'Accept. No supplier action required - this is an abbreviation, not a different company.'
           : tier === 'amber'
             ? 'Confirm which name is authoritative against the registry, then correct the weaker source.'
             : 'Do not proceed. Request a corrected document naming the contracting entity.',
@@ -322,7 +322,7 @@ export function evaluateVendor(vendor, { allVendors = [], config, now = Date.now
   }
 
   // --- Verification Agent: external corroboration ---------------------------
-  // MODEL SEAM — in production this calls the national tax portal / IEC
+  // MODEL SEAM - in production this calls the national tax portal / IEC
   // directory / denied-party list. Simulated deterministically here so the
   // provenance chain is demonstrable without a network dependency.
   if (enabled('verification', 'corroborate')) {
@@ -347,13 +347,13 @@ export function evaluateVendor(vendor, { allVendors = [], config, now = Date.now
   // deadlocks: an entity-name conflict or a duplicate applicant has no field to
   // "accept", so without this every red finding would block approval forever.
   // Each resolution carries the human's outcome and reason and is written to
-  // the audit trail by the caller — the override rule from the brief.
+  // the audit trail by the caller - the override rule from the brief.
   for (const f of findings) {
     const decision = resolutions[f.id];
     if (!decision) continue;
     // A time-boxed risk acceptance stops holding the moment it expires. Deriving
-    // that from the date — rather than trusting a stored flag someone has to
-    // remember to clear — is what stops the platform quietly carrying a waiver
+    // that from the date - rather than trusting a stored flag someone has to
+    // remember to clear - is what stops the platform quietly carrying a waiver
     // that ran out months ago, which is the classic third-party-risk audit
     // failure. The lapsed decision stays on the finding so the UI can say why
     // it came back.
@@ -404,13 +404,13 @@ export function evaluateVendor(vendor, { allVendors = [], config, now = Date.now
       autoClearRate: checked ? Math.round((autoCleared / checked) * 100) : 0,
       needsHuman: open.length,
     },
-    // The reviewer brief — Compliance Agent's `brief` skill.
+    // The reviewer brief - Compliance Agent's `brief` skill.
     brief: buildBrief(vendor, { blockers, cautions, recommendation, mandatoryDocsComplete }),
   };
 }
 
 const RECOMMENDATION_COPY = {
-  HOLD: 'Hold — approval is not ready',
+  HOLD: 'Hold - approval is not ready',
   RECOMMEND_WITH_NOTES: 'Ready for approval, with noted cautions',
   RECOMMEND_APPROVAL: 'Ready for approval',
 };
@@ -419,7 +419,7 @@ export const recommendationLabel = (key) => RECOMMENDATION_COPY[key] || key;
 
 function buildBrief(vendor, { blockers, cautions, recommendation, mandatoryDocsComplete }) {
   const lines = [];
-  lines.push(`${vendor.name} — ${vendor.category || 'uncategorised'}, manufacturing in ${vendor.country || 'an unstated market'}.`);
+  lines.push(`${vendor.name} - ${vendor.category || 'uncategorised'}, manufacturing in ${vendor.country || 'an unstated market'}.`);
   lines.push(mandatoryDocsComplete
     ? `Full evidence pack received: ${vendor.documents.length} documents, ${vendor.docs} verified.`
     : `Evidence pack incomplete: ${vendor.missingCount} of ${vendor.documents.length} documents outstanding.`);
@@ -434,7 +434,7 @@ function buildBrief(vendor, { blockers, cautions, recommendation, mandatoryDocsC
 }
 
 // ---------------------------------------------------------------------------
-// Chaser Agent — the completion engine.
+// Chaser Agent - the completion engine.
 // ---------------------------------------------------------------------------
 
 const LANGUAGE_BY_COUNTRY = {
@@ -448,18 +448,18 @@ const LANGUAGE_BY_COUNTRY = {
 
 export const languageFor = (country) => LANGUAGE_BY_COUNTRY[country] || ['en', 'English'];
 
-// MODEL SEAM — a real deployment generates these with a model and a glossary.
+// MODEL SEAM - a real deployment generates these with a model and a glossary.
 // Written out here so the demo shows what the supplier actually receives, not a
 // placeholder, and so the English copy stored for the audit trail is visible
 // alongside it.
 const TEMPLATES = {
   request: {
     zh: (d, c) => `${c}您好：为完成 StyleSphere 供应商审核，我们还需要《${d}》。请直接回复本条消息并附上文件即可，无需登录任何系统。`,
-    vi: (d, c) => `Kính gửi ${c}, để hoàn tất hồ sơ nhà cung cấp StyleSphere, chúng tôi cần bản «${d}». Quý công ty chỉ cần trả lời tin nhắn này kèm tệp đính kèm — không cần đăng nhập hệ thống.`,
-    bn: (d, c) => `প্রিয় ${c}, StyleSphere সরবরাহকারী যাচাই সম্পূর্ণ করতে আমাদের «${d}» প্রয়োজন। এই বার্তার উত্তরে ফাইলটি সংযুক্ত করে পাঠালেই হবে — কোনো পোর্টালে লগইন করতে হবে না।`,
-    tr: (d, c) => `Sayın ${c}, StyleSphere tedarikçi incelemesini tamamlamak için «${d}» belgesine ihtiyacımız var. Bu mesajı yanıtlayıp dosyayı ekleyebilirsiniz — herhangi bir portala giriş yapmanız gerekmez.`,
-    de: (d, c) => `Guten Tag ${c}, für den Abschluss der StyleSphere-Lieferantenprüfung benötigen wir noch «${d}». Antworten Sie einfach auf diese Nachricht und hängen Sie die Datei an — eine Portal-Anmeldung ist nicht erforderlich.`,
-    en: (d, c) => `Hello ${c} — to finish your StyleSphere supplier review we still need your ${d}. Just reply to this message with the file attached; there is no portal to log into.`,
+    vi: (d, c) => `Kính gửi ${c}, để hoàn tất hồ sơ nhà cung cấp StyleSphere, chúng tôi cần bản «${d}». Quý công ty chỉ cần trả lời tin nhắn này kèm tệp đính kèm - không cần đăng nhập hệ thống.`,
+    bn: (d, c) => `প্রিয় ${c}, StyleSphere সরবরাহকারী যাচাই সম্পূর্ণ করতে আমাদের «${d}» প্রয়োজন। এই বার্তার উত্তরে ফাইলটি সংযুক্ত করে পাঠালেই হবে - কোনো পোর্টালে লগইন করতে হবে না।`,
+    tr: (d, c) => `Sayın ${c}, StyleSphere tedarikçi incelemesini tamamlamak için «${d}» belgesine ihtiyacımız var. Bu mesajı yanıtlayıp dosyayı ekleyebilirsiniz - herhangi bir portala giriş yapmanız gerekmez.`,
+    de: (d, c) => `Guten Tag ${c}, für den Abschluss der StyleSphere-Lieferantenprüfung benötigen wir noch «${d}». Antworten Sie einfach auf diese Nachricht und hängen Sie die Datei an - eine Portal-Anmeldung ist nicht erforderlich.`,
+    en: (d, c) => `Hello ${c} - to finish your StyleSphere supplier review we still need your ${d}. Just reply to this message with the file attached; there is no portal to log into.`,
   },
   followup: {
     zh: (d) => `温馨提醒：《${d}》仍未收到，您的供应商审核目前暂停中。回复本消息并附上文件即可继续。`,
@@ -467,22 +467,22 @@ const TEMPLATES = {
     bn: (d) => `স্মরণ করিয়ে দিচ্ছি: «${d}» এখনো পাইনি। এটি না পাওয়া পর্যন্ত আপনার আবেদনটি স্থগিত রয়েছে।`,
     tr: (d) => `Hatırlatma: «${d}» belgesini henüz alamadık. Bu belge gelene kadar başvurunuz beklemede.`,
     de: (d) => `Erinnerung: «${d}» ist bei uns noch nicht eingegangen. Ihre Bewerbung pausiert, bis das Dokument vorliegt.`,
-    en: (d) => `A reminder — we still have not received your ${d}. Your application is paused until it arrives.`,
+    en: (d) => `A reminder - we still have not received your ${d}. Your application is paused until it arrives.`,
   },
   escalate: {
     zh: (d) => `第三次提醒（已抄送贵司管理层联系人）：《${d}》仍未收到。若该文件存在获取困难，请回复说明，我们可安排人工协助。`,
     vi: (d) => `Nhắc lần thứ ba (đã gửi kèm người quản lý của quý công ty): vẫn thiếu «${d}». Nếu có khó khăn, xin trả lời để chúng tôi hỗ trợ trực tiếp.`,
     bn: (d) => `তৃতীয় স্মারক (আপনার ম্যানেজারকেও পাঠানো হয়েছে): «${d}» এখনো বাকি। সমস্যা হলে উত্তর দিন, আমরা সরাসরি সহায়তা করব।`,
     tr: (d) => `Üçüncü hatırlatma (yönetici iletişim kişiniz de bilgilendirildi): «${d}» hâlâ eksik. Sorun varsa yanıtlayın, doğrudan yardımcı olalım.`,
-    de: (d) => `Dritte Erinnerung (Ihre Führungskraft ist in Kopie): «${d}» fehlt weiterhin. Bei Schwierigkeiten antworten Sie bitte — wir helfen direkt.`,
-    en: (d) => `Third reminder, with your manager contact copied — your ${d} is still outstanding. If there is a problem obtaining it, reply and we will help directly.`,
+    de: (d) => `Dritte Erinnerung (Ihre Führungskraft ist in Kopie): «${d}» fehlt weiterhin. Bei Schwierigkeiten antworten Sie bitte - wir helfen direkt.`,
+    en: (d) => `Third reminder, with your manager contact copied - your ${d} is still outstanding. If there is a problem obtaining it, reply and we will help directly.`,
   },
 };
 
 const ENGLISH_COPY = {
-  request: (d, c) => `Hello ${c} — to finish your StyleSphere supplier review we still need your ${d}. Reply to this message with the file attached; no portal login required.`,
-  followup: (d) => `Reminder — your ${d} has not arrived. The application is paused until it does.`,
-  escalate: (d) => `Third reminder, manager contact copied — your ${d} is still outstanding. Reply if you need help obtaining it.`,
+  request: (d, c) => `Hello ${c} - to finish your StyleSphere supplier review we still need your ${d}. Reply to this message with the file attached; no portal login required.`,
+  followup: (d) => `Reminder - your ${d} has not arrived. The application is paused until it does.`,
+  escalate: (d) => `Third reminder, manager contact copied - your ${d} is still outstanding. Reply if you need help obtaining it.`,
 };
 
 // Stable per-document offset so the timeline does not churn between renders.
@@ -557,8 +557,8 @@ export function buildChaserThreads(vendor, { config, chaseState = {} } = {}) {
         : state.reason
           ? `${state.reason} · ${state.dueState || 'Due now'}`
           : stalled
-            ? `Three attempts over six days, no reply — handed to ${vendor.owner}.`
-            : `${lastSent ? `${lastSent.kind === 'request' ? 'Requested' : lastSent.kind === 'followup' ? 'Followed up' : 'Escalated'} ${formatAgo(lastSent.hoursAgo)}` : 'Queued'} in ${localise ? languageName : 'English'} · next ${next ? next.kind : 'handoff'} in ${next ? `${next.dueInHours}h` : '—'}`;
+            ? `Three attempts over six days, no reply - handed to ${vendor.owner}.`
+            : `${lastSent ? `${lastSent.kind === 'request' ? 'Requested' : lastSent.kind === 'followup' ? 'Followed up' : 'Escalated'} ${formatAgo(lastSent.hoursAgo)}` : 'Queued'} in ${localise ? languageName : 'English'} · next ${next ? next.kind : 'handoff'} in ${next ? `${next.dueInHours}h` : '-'}`;
 
     return {
       docId: doc.id, docCode: doc.code, docTitle: doc.title, vendorId: vendor.id,
@@ -575,14 +575,14 @@ export function buildChaserThreads(vendor, { config, chaseState = {} } = {}) {
   });
 }
 export function formatAgo(hours) {
-  if (hours == null) return '—';
+  if (hours == null) return '-';
   if (hours < 1) return 'just now';
   if (hours < 24) return `${Math.round(hours)}h ago`;
   return `${Math.round(hours / 24)}d ago`;
 }
 
 // ---------------------------------------------------------------------------
-// Triage — Screen 1's three bands.
+// Triage - Screen 1's three bands.
 //
 // Sorting by "what needs a human" rather than by date is the actual AI feature
 // on the queue: the machine does the triage so the reviewer opens the day with
@@ -591,8 +591,8 @@ export function formatAgo(hours) {
 
 export const BANDS = [
   ['decide', 'Ready for your decision', 'Everything the agents can do is done. These need a human.'],
-  ['blocked', 'Blocked — needs your intervention', 'An agent has stopped and is waiting on you to unblock it.'],
-  ['working', 'Agents working — nothing needed from you', 'In flight. Look only if you want to.'],
+  ['blocked', 'Blocked - needs your intervention', 'An agent has stopped and is waiting on you to unblock it.'],
+  ['working', 'Agents working - nothing needed from you', 'In flight. Look only if you want to.'],
   ['closed', 'Closed', 'Decided and logged.'],
 ];
 
@@ -605,7 +605,7 @@ export function triageVendor(vendor, assessment, threads) {
     return {
       band: 'blocked',
       headline: `Chaser stopped after 3 attempts on ${stalled.docTitle}`,
-      waitingOn: 'You — the supplier is not responding',
+      waitingOn: 'You - the supplier is not responding',
       agentId: 'chaser',
     };
   }
@@ -637,14 +637,14 @@ export function triageVendor(vendor, assessment, threads) {
   }
   return {
     band: 'decide',
-    headline: 'Pack complete, no findings open — ready for approval',
+    headline: 'Pack complete, no findings open - ready for approval',
     waitingOn: 'Your decision',
     agentId: 'compliance',
   };
 }
 
 // ---------------------------------------------------------------------------
-// Config Agent — reads the audit trail back and finds the process defects.
+// Config Agent - reads the audit trail back and finds the process defects.
 //
 // This is the loop that compounds: the audit log stops being a compliance tax
 // and starts being the dataset that improves extraction quality.
@@ -655,7 +655,7 @@ export function configInsights(auditLogs, vendors) {
   const overrides = auditLogs.filter((l) => l.actionType === 'FIELD_OVERRIDE');
   const accepts = auditLogs.filter((l) => l.actionType === 'FIELD_ACCEPT');
 
-  // Override clusters by field label — a repeat is an extraction defect.
+  // Override clusters by field label - a repeat is an extraction defect.
   const byField = {};
   for (const log of overrides) {
     const vendor = vendors.find((v) => v.id === log.vendorId);
@@ -683,7 +683,7 @@ export function configInsights(auditLogs, vendors) {
     });
   }
 
-  // Agreement rate — how often the human took the machine's answer as-is.
+  // Agreement rate - how often the human took the machine's answer as-is.
   const decided = accepts.length + overrides.length;
   if (decided > 0) {
     const rate = Math.round((accepts.length / decided) * 100);
@@ -700,7 +700,7 @@ export function configInsights(auditLogs, vendors) {
     });
   }
 
-  // Time-to-document by country — where the chase is slowest.
+  // Time-to-document by country - where the chase is slowest.
   const byCountry = {};
   for (const vendor of vendors) {
     if (!vendor.country || vendor.country === 'Not yet provided') continue;
@@ -719,7 +719,7 @@ export function configInsights(auditLogs, vendors) {
       agentId: 'chaser',
       title: `${slowest.country} suppliers hold the most outstanding evidence`,
       detail: `${slowest.perVendor.toFixed(1)} documents outstanding per supplier, against ${slowest.vendors} active application${slowest.vendors > 1 ? 's' : ''}.`,
-      proposal: `Check the ${languageFor(slowest.country)[1]} template wording — a chase that does not convert is usually unclear, not ignored.`,
+      proposal: `Check the ${languageFor(slowest.country)[1]} template wording - a chase that does not convert is usually unclear, not ignored.`,
       metric: `${slowest.missing} open`,
     });
   }
@@ -728,7 +728,7 @@ export function configInsights(auditLogs, vendors) {
 }
 
 // ---------------------------------------------------------------------------
-// Outcome metrics — Screen 3. Instruments the brief's own success metric
+// Outcome metrics - Screen 3. Instruments the brief's own success metric
 // (7 days → 2 days) so it is a product output rather than a claim on a slide.
 // ---------------------------------------------------------------------------
 
